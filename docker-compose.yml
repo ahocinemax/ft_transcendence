@@ -1,41 +1,48 @@
-version: '3'
+version: '3.7'
 services:
-  # back:
-  #   build:
-  #     context: back
-  #   ports:
-  #     - 8080:8080
-  #   depends_on:
-  #     - db
-
+  back:
+    build:
+      context: ./back
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: <your_user>
+      DATABASE_PASSWORD: <your_password>
+      DATABASE_NAME: <your_database_name>
+    networks:
+      - transcendence
+  
   front:
     build:
-      context: front
+      context: ./front
     ports:
       - 3000:3000
     depends_on:
-      - db
+      - back
+    networks:
+      - transcendence
+  
   db:
-    image: postgres
+    image: postgres:latest
     restart: always
     environment:
       POSTGRES_USER: <your_user>
       POSTGRES_PASSWORD: <your_password>
       POSTGRES_DB: <your_database_name>
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
     networks:
-            - transcendence
+      - transcendence
+  
 networks:
-    transcendence:
-        # name: transcendence
-        driver: bridge
-
+  transcendence:
+    driver: bridge
+  
 volumes:
-    db_data:
-        driver: local
-        driver_opts:
-            type: 'none'
-            o: 'bind'
-            device: /home/$USER/data/DB
-
+  db_data:
