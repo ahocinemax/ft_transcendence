@@ -1,9 +1,16 @@
 version: '3'
 services:
-  app:
+  # back:
+  #   build:
+  #     context: back
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     - db
+
+  front:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: front
     ports:
       - 3000:3000
     depends_on:
@@ -17,3 +24,18 @@ services:
       POSTGRES_DB: <your_database_name>
     volumes:
       - ./data:/var/lib/postgresql/data
+    networks:
+            - transcendence
+networks:
+    transcendence:
+        # name: transcendence
+        driver: bridge
+
+volumes:
+    db_data:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: /home/$USER/data/DB
+
