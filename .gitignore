@@ -1,0 +1,8 @@
+# node modules
+node_modules/
+dist/
+.nfs*
+*.swp
+# migrations/
+package-lock.json
+.vscode/
