@@ -5,6 +5,18 @@ function Login() {
   return (
     <div className="Login">
       {/* Le contenu de ton composant */}
+
+      <div className="Login-container">
+        <form className="Login-form">
+          <label htmlFor="username">Identifiant:</label>
+          <input type="text" id="username" />
+
+          <label htmlFor="password">Mot de passe:</label>
+          <input type="password" id="password" />
+
+          <button type="submit">Se connecter</button>
+        </form>
+      </div>
     </div>
   );
 }
