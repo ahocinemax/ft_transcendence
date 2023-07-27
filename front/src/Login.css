@@ -1,4 +1,9 @@
 /* Login.css */
+.test {
+    width: 50vw;
+    height: 5vh;
+}
+
 .Login {
     background-image: url(../public/loginpong.gif);
     background-size: cover;

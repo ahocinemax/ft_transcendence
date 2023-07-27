@@ -7,6 +7,7 @@ function Login() {
       {/* Le contenu de ton composant */}
 
       <div className="bg-white/80 p-5 rounded-lg flex flex-col items-center justify-center">
+        <div className="test"></div>
       {/* <div className="Login-container"> */}
         <form className="Login-form">
           <label htmlFor="username">Identifiant:</label>
