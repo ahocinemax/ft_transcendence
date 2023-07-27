@@ -1,23 +1,13 @@
-# Définir l'image de base
-FROM node:14
+###
+## BACK END DOCKERFILE
+###
 
-# Définir le répertoire de travail dans le conteneur
-WORKDIR /usr/src/app
+FROM node:lts-alpine
 
-# Copier package.json et package-lock.json
-COPY package*.json ./
+COPY ./     /app/
 
-# Installer les dépendances
-RUN npm install
+WORKDIR /app
 
-# Copier le reste des fichiers de l'application
-COPY . .
+RUN  yarn install
 
-# Compiler l'application
-RUN npm run build
-
-# Exposer le port sur lequel l'application va s'exécuter
-EXPOSE 8080
-
-# Définir la commande pour démarrer l'application
-CMD [ "npm", "run", "start:prod" ]
+CMD ["yarn", "run", "start"]

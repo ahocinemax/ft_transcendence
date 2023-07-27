@@ -29,6 +29,6 @@ clean: dbclean
 fclean: down clean
 	docker system prune -af
 
-re: fclean all
+re: fclean build
 
 .PHONY: all build up down clean fclean
