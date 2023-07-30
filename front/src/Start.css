@@ -13,10 +13,28 @@
     align-items: center;
   }
 
-  .shadow-box {
+  .shadowbox {
     background-color: #8b8a8aee;
     position: absolute;
     z-index: 3;
     width: 30vw;
     height: 40vh;
+  }
+
+.invis-box {
+    width: 30vw;
+    height: 40vh;
+  }
+
+.heading {
+    text-align: center;
+    color: rgb(236, 166, 2);
+    font: bold;
+    font-size: 4em;
+    text-shadow:
+      2px 2px 2px rgb(249, 249, 249),
+      5px 5px 5px rgba(242, 238, 7, 0.924),
+      6px 6px 6px rgba(234, 170, 53, 0.997),
+      8px 8px 8px rgba(255, 0, 0, 0.946);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   }

@@ -1,7 +1,12 @@
 import React from 'react';
 import './Login.css';
 
+interface LoginProps {
+    onClose: () => void; // Properly define the type of onClose prop
+  }
+  
 function Login() {
+    
   return (
     <div className="Login">
       {/* Le contenu de ton composant */}
