@@ -1,0 +1,22 @@
+.Start {}
+
+.Start {
+    background-image: url(../public/pong2.gif);
+    background-size: cover;
+    background-position: center;
+    width: 100vw;
+    height: 100vh; /* Ajuste la hauteur selon tes besoins */
+
+      /* Centrer les enfants horizontalement et verticalement */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .shadow-box {
+    background-color: #8b8a8aee;
+    position: absolute;
+    z-index: 3;
+    width: 30vw;
+    height: 40vh;
+  }
