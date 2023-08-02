@@ -1,18 +1,17 @@
-import React, { useState } from 'react';
-import './Start.css';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Start from './Start';
+import Login from './Login';
+import Test from './Test'; // Create a Test component
 
-
-function Start() {
-  
+function App() {
     return (
-      <div className="Start">
-        <div className="container">
-          <h1 className="heading">
-            START
-          </h1>
-        </div>
-      </div>
+        <Routes>
+            <Route path="/" element={<Start />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/test" element={<Test />} />
+        </Routes>
     );
-  }
+}
 
-export default Start;
+export default App;
