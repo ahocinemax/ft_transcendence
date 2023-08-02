@@ -1,47 +1,46 @@
-/* Login.css */
-.test {
-    width: 50vw;
-    height: 5vh;
-}
-
 .Login {
-    background-image: url(../../public/loginpong.gif);
-    background-size: cover;
-    background-position: center;
-    height: 100vh; /* Ajuste la hauteur selon tes besoins */
-
-      /* Centrer les enfants horizontalement et verticalement */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    /* Other styles */
   }
-
-  .Login-container {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 20px;
-    border-radius: 8px;
   
-    /* Centrer les enfants horizontalement */
+  .VideoContainer {
     display: flex;
-    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
     align-items: center;
-
-    /* Centrer les enfants verticalement */
     justify-content: center;
   }
-
-  .Login-form 
-  {
-    /* Centrer les enfants horizontalement */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  
+  .BackgroundVideo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+  }
+  
+  .Overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3); /* Adjust the opacity as needed */
+    z-index: 1;
   }
 
-.Login-form label,
-.Login-form input{margin-bottom: 10px;}
-.Login-form button {margin-top: 20px; font-weight: bold;}
-
-.Login-form label{
-    font-weight: bold;
-}  
+  .Connexion_popup_container {
+    position: absolute;
+    height: 60vh;
+    width: 35vw;
+    background-color: rgba(21, 21, 21, 0.781);
+    z-index: 2;
+    border-radius: 8.5%;
+  }
+  
