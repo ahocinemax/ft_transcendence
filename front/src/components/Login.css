@@ -5,7 +5,7 @@
 }
 
 .Login {
-    background-image: url(../public/loginpong.gif);
+    background-image: url(../../public/loginpong.gif);
     background-size: cover;
     background-position: center;
     height: 100vh; /* Ajuste la hauteur selon tes besoins */

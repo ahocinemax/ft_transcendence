@@ -1,7 +1,7 @@
 .Start {}
 
 .Start {
-    background-image: url(../public/pong2.gif);
+    background-image: url(../../public/pong2.gif);
     background-size: cover;
     background-position: center;
     width: 100vw;
