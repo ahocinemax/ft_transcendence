@@ -14,15 +14,13 @@ function Login() {
           Your browser does not support the video tag.
         </video>
         <div className="Overlay"></div>
-        <div className="Connexion_popup_container"> {/* Popup container */}
-            <div className="logins_logos">                
-                <div className="fortytwo_log"></div>
-                <div className="google_log"></div>
-            </div>
-            <div className="pong_gif"></div>
+        <div className="Connexion_popup_container">
+          <div className="logins_logos">
+            <div className="fortytwo_logo"></div>
+            <div className="google_logo"></div>
+          </div>
         </div>
       </div>
-      {/*  */}
     </div>
   );
 }
