@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Auth Page</title>
+</head>
+<body>
+    <h1>Welcome to the Test Auth Page</h1>
+    <p>
+        <!-- <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=openid email">Auth</a> -->
+        <a href="https://api.intra.42.fr/oauth/authorize?client_id=<%= process.env.API42_ID %>&redirect_uri=<%= process.env.API42_URI %>&response_type=code&scope=public">Auth</a>
+    </p>
+</body>
+</html>

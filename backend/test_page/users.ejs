@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Users</title>
+</head>
+<body>
+    <h1>Users</h1>
+    <ul>
+    <% for(let user of users) { %>
+        <li>
+            Login: <%= user.user42Name %><br>
+            Name: <%= user.name %><br>
+            Email: <%= user.email %><br>
+            Coalition: <%= user.coalition %><br>
+        </li>
+    <% } %>
+    </ul>
+</body>
+</html>

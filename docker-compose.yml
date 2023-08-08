@@ -1,32 +1,64 @@
-version: '3.7'
+version: '3.8'
 services:
-  back:
-    image: node:lts-alpine
-    container_name: back
-    working_dir: /app
-    restart: always
-    volumes:
-      - ./back:/app
-      - uploads:/app/img_dir
-    command: sh -c "yarn install
-              && npx prisma migrate deploy
-              && yarn run start"
+
+
+  postgres:
+    container_name: postgres
+    image: postgres:14.2-alpine
     ports:
-      - 4000:4000
-      - 5555:5555
+      - 5432:5432
+    volumes:
+       - db_data:/var/lib/postgresql/data     
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=en_US.utf8"
+      POSTGRES_DB: ${POSTGRES_DB}
+    restart: always
+    networks:
+      - ft_transcendence
+
+  backend:
+    build:
+      context: ./backend 
+    ports:
+     - ${SERVER_PORT}:${SERVER_PORT}
+    volumes:
+     - ./backend:/usr/src/app
+     - /usr/src/app/node_modules
+    networks:
+     - ft_transcendence
     depends_on:
       - postgres
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - 5050:80
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - SITE_URL=${SITE_URL}
-      - FRONT_URL=${FRONT_URL}
-      - BACK_URL=${BACK_URL}
-      - FRONT_PORT=${FRONT_PORT}
-      - BACK_PORT=${BACK_PORT}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_MAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
     networks:
-      - transcendence
+      - ft_transcendence
+#for connect pgadmin: http:://localhost:5050
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    ports:
+      - 1024:1024
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - ft_transcendence
 
   front:
     image: node:lts-alpine
@@ -42,46 +74,18 @@ services:
     environment:
       - PUBLIC_URL=${FRONT_URL}
       - REACT_APP_BACK_URL=${BACK_URL}
-      - REACT_APP_BACK_PORT=${BACK_PORT}
+      - REACT_APP_BACK_PORT=${SERVER_PORT}
     ports:
       - 3000:3000
     depends_on:
-      - back
+      - backend
     networks:
-      - transcendence
-
-  postgres:
-    image: postgres:14-alpine
-    container_name: postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
-    networks:
-      - transcendence
-
-  nginx:
-    image: nginx:stable-alpine
-    container_name: nginx
-    ports:
-      - 1024:1024
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - back
-    restart: unless-stopped
-    networks:
-      - transcendence
+      - ft_transcendence
 
 networks:
-  transcendence:
+  ft_transcendence:
     driver: bridge
 
 volumes:
-  db_data:
-  uploads:
+  db_data: {}
+  pgadmin_data: {}

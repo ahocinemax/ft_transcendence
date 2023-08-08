@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@nestjs/cli": "^10.1.11",
+    "@prisma/client": "^5.1.0",
+    "bcrypt": "^5.1.0",
+    "prisma": "^5.1.0"
+  }
+}
