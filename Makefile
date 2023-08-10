@@ -23,7 +23,7 @@ dbclean: down
 	docker volume prune -f
 
 clean: dbclean
-	rm -rf back/dist back/node_modules front/node_modules
+	sudo rm -rf backend/dist backend/node_modules front/node_modules front/build
 
 # PRUNE DOCKER CONTAINERS
 fclean: down clean

@@ -63,10 +63,11 @@ services:
   front:
     image: node:lts-alpine
     container_name: front
-    working_dir: /app
+    working_dir: /usr/src/app
     restart: unless-stopped
     volumes:
-      - ./front:/app
+     - ./front:/usr/src/app
+     - /usr/src/app/node_modules
     command: sh -c "yarn install
               && yarn run build
               && yarn global add serve

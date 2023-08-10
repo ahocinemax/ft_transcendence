@@ -19,14 +19,6 @@ COPY --chown=node:node .env .env
 RUN mkdir -p /usr/src/app/dist && chown -R node:node /usr/src/app/dist
 
 RUN npx prisma generate
-#RUN npx prisma migrate dev --preview-feature
-#RUN npx prisma migrate deploy
 
 # アプリケーションを実行
 CMD [ "sh", "./start.sh"]
-#CMD [ "npm", "run", "start"]
-
-
-#memo 
-#docker exec -it "container ID" /bin/bash
-#psql -h postgres -p 5432 -U postgres -d postgres

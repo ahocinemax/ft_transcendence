@@ -2,7 +2,7 @@
 FROM node:lts-alpine
 
 # Définissez le répertoire de travail à l'intérieur du conteneur
-WORKDIR /app/src
+WORKDIR /usr/src/app
 
 # Copiez le package.json et le package-lock.json dans le répertoire de travail
 COPY package*.json ./
