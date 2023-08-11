@@ -26,10 +26,12 @@ services:
     volumes:
      - ./backend:/usr/src/app
      - /usr/src/app/node_modules
+    environment:
+     - NODE_ENV=${NODE_ENV}
     networks:
      - ft_transcendence
     depends_on:
-      - postgres
+     - postgres
 
   pgadmin:
     image: dpage/pgadmin4

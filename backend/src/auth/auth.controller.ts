@@ -26,10 +26,11 @@ export class AuthController {
 
   @Get("callback")
   async getToken(@Req() req: Request, @Res() res: Response) {
-    console.log("Callback endpoint called");
-    console.log("Request query parameters:", req.query);
-    const codeFromUrl = req.query.code as string;
-    const token = await this.Auth42.getAccessToken(codeFromUrl);
+    console.log("Request query (code from 42API):", req.query);
+    const codeFromApi = req.query.code as string;
+    const token = await this.Auth42.getAccessToken(codeFromApi);
+    console.log("Token:", token);
+    console.log("Token.access_token:", token.access_token);
     const user42infos = await this.Auth42.access42UserInformation(
       token.access_token
     );
@@ -37,13 +38,18 @@ export class AuthController {
       // Use the information from the 42API to create the user in the database.
       const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, true);
       // Respond with the user information.
-      // res.json(user);
-      res.redirect("/user");
-    } else {
+      if (process.env.NODE_ENV === 'development') {
+        res.redirect("/user");
+      }
+      else if (process.env.NODE_ENV === 'production') {
+      res.json(user);
+      } 
+    else {
       // Handle the error when we do not get the user info from the 42API.
       res.status(400).json({ error: 'Unable to get the user information from the 42API.' });
     }
   }
+}
 
   @Get("logout")
   async deleteCookies(@Req() req: Request, @Res() res: Response) {
@@ -54,4 +60,4 @@ export class AuthController {
   async checkIfTokenValid(@Req() req: Request, @Res() res: Response) {
     return this.authService.checkIfTokenValid(req, res);
   }
-}
+  }

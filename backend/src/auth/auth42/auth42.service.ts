@@ -23,7 +23,7 @@ export class Auth42Service {
       });
       console.log("Status code:", response.status);
       const responseText = await response.text();
-      console.log("Response text:", responseText);
+      console.log("AccessToken(Response text):", responseText);
       const data = JSON.parse(responseText);
       //const data = await response.json();      
       if (!data)
@@ -55,6 +55,9 @@ export class Auth42Service {
       if (response.ok) 
       { 
         const data = await response.json();
+        console.log('---data---');
+        //console.log(data);
+        console.log('---data---');
         return data;
       }
     }
@@ -78,7 +81,7 @@ export class Auth42Service {
           accessToken: token,
           isRegistered: isRegistered,
           user42Name: user42.login,
-          name: name,
+          name: user42.displayname,
           email: user42.email,
         },
       });

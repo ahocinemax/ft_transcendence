@@ -31,8 +31,14 @@ export class UserController {
 
 	@Get()
 	async getUsers(@Res() res: Response) {
-	  const users = await this.userService.getAllUsers();
-	  res.render('users.ejs', { users }); // users is a .ejs file under the views directory
+		console.log('NODE_ENV value:', process.env.NODE_ENV);
+		if (process.env.NODE_ENV === 'development') {
+	  		const users = await this.userService.getAllUsers();
+	  		res.render('users.ejs', { users });
+		} // users is a .ejs file under the views directory
+		else {
+			return this.userService.getAllUsers();	
+		}
 	}
 	
 	@Get(':name')

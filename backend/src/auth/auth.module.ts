@@ -5,9 +5,10 @@ import { PrismaModule } from "../../prisma/prisma.module";
 import { Auth42Module } from "src/auth/auth42/auth42.module";
 import { UserModule } from "src/user/user.module";
 import { UserService } from "src/user/user.service";
+import { GoogleAuthModule } from './google-auth/google-auth.module';
 
 @Module({
-  imports: [PrismaModule, Auth42Module, UserModule],
+  imports: [PrismaModule, Auth42Module, UserModule, GoogleAuthModule],
   controllers: [AuthController],
   providers: [AuthService, UserService],
 })
