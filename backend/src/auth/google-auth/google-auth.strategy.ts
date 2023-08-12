@@ -2,6 +2,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
+import { AuthService } from '../auth.service';
+import { UnauthorizedException } from '@nestjs/common';
+import { GoogleAuthService } from './google-auth.service';
+
 
 type GoogleUser = {
   id: string;
@@ -12,9 +16,10 @@ type GoogleUser = {
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor(configService: ConfigService) {
+  constructor(configService: ConfigService,
+    private GoogleAuthService: GoogleAuthService,) {
     super({
-      clientID: configService.get<string>('google.clientId'),
+      clientID: configService.get<string>('google.clientID'),
       clientSecret: configService.get<string>('google.clientSecret'),
       callbackURL: configService.get<string>('google.callbackUrl'),
       scope: ['email', 'profile'], 
@@ -27,7 +32,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     refreshToken: string,
     profile: Profile,
     _done: VerifyCallback,
-  ): Promise<GoogleUser> {
+  ): Promise<any> {
     const { emails } = profile;
     const user: GoogleUser = {
       id: profile.id, 
@@ -35,6 +40,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       userName: profile.displayName, 
       accessToken,
     };
-    return user;
+    const validatedUser = await this.GoogleAuthService.validateUser(user);
+    if (!validatedUser) {
+      throw new UnauthorizedException();
+    }
+    return validatedUser;
   }
 }

@@ -23,11 +23,10 @@ async createDataBase42User(
   try {
     const user = await this.prisma.user.create({
       data: {
-        coalition: user42.coalition,
         achievements: [],
         accessToken: token,
         isRegistered: isRegistered,
-        user42Name: user42.login,
+        login42: user42.login,
         name: username,
         email: user42.email,
       },
