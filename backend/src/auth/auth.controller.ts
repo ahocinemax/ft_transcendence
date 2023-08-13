@@ -60,4 +60,9 @@ export class AuthController {
   async checkIfTokenValid(@Req() req: Request, @Res() res: Response) {
     return this.authService.checkIfTokenValid(req, res);
   }
-  }
+  
+  @Get("google")
+  async getGoogleAuthToken(@Req() req: Request, @Res() res: Response){
+    
+  } 
+}

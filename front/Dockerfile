@@ -8,13 +8,17 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Installez les dépendances
-RUN npm install
+RUN npm install 
 
 # Copiez le reste des fichiers de l'application dans le répertoire de travail
 COPY . .
 
 # Construisez l'application
 RUN npm run build
+
+RUN npm install -g serve
+
+#RUN serve -s build -l 3000
 
 # Exposez le port 3000 sur le conteneur
 EXPOSE 3000

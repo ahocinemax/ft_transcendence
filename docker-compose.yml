@@ -63,17 +63,17 @@ services:
       - ft_transcendence
 
   front:
-    image: node:lts-alpine
+    build: ./front
     container_name: front
     working_dir: /usr/src/app
     restart: unless-stopped
     volumes:
      - ./front:/usr/src/app
      - /usr/src/app/node_modules
-    command: sh -c "yarn install
-              && yarn run build
-              && yarn global add serve
-              && serve -s build"
+    #command: sh -c "npm install
+    #          && npm run build
+    #          && npm install -g serve
+    #          && serve -s build -l 3000"
     environment:
       - PUBLIC_URL=${FRONT_URL}
       - REACT_APP_BACK_URL=${BACK_URL}
