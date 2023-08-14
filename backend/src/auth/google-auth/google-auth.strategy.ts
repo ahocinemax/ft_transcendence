@@ -40,10 +40,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       userName: profile.displayName, 
       accessToken,
     };
-    const validatedUser = await this.GoogleAuthService.validateUser(user);
-    if (!validatedUser) {
-      throw new UnauthorizedException();
-    }
-    return validatedUser;
+    // const validatedUser = await this.GoogleAuthService.createDataBaseGoogleUser(user);
+    // if (!validatedUser) {
+      // throw new UnauthorizedException();
+    // }
+    // return validatedUser;
   }
 }

@@ -4,7 +4,7 @@ import { Auth42Service } from "src/auth/auth42/auth42.service";
 import { Request, Response } from "express";
 import { UserService } from "src/user/user.service";
 import { UserDto } from "./dto/user.dto";
-
+import { GoogleAuthService } from "./google-auth/google-auth.service";
 
 
 @Controller("auth")
@@ -63,6 +63,6 @@ export class AuthController {
   
   @Get("google")
   async getGoogleAuthToken(@Req() req: Request, @Res() res: Response){
-    
-  } 
+    console.log("Request query (code from GoogleOAuth):", req.query);
+  }
 }
