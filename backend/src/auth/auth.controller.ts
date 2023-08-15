@@ -4,6 +4,8 @@ import { Auth42Service } from "src/auth/auth42/auth42.service";
 import { Request, Response } from "express";
 import { UserService } from "src/user/user.service";
 import { UserDto } from "./dto/user.dto";
+import { GoogleAuthGuard } from "./google-auth/google-auth.guard";
+import { User } from "@prisma/client";
 import { GoogleAuthService } from "./google-auth/google-auth.service";
 
 
@@ -13,6 +15,7 @@ export class AuthController {
     private authService: AuthService,
     private Auth42: Auth42Service,
     private userService: UserService,
+    private googleAuthService: GoogleAuthService,
   ) {}
   
   @Get("getuserbytoken")
@@ -61,8 +64,33 @@ export class AuthController {
     return this.authService.checkIfTokenValid(req, res);
   }
   
-  @Get("google")
+  @Get("OAuth")
+  @UseGuards(GoogleAuthGuard)
   async getGoogleAuthToken(@Req() req: Request, @Res() res: Response){
     console.log("Request query (code from GoogleOAuth):", req.query);
+  }
+
+   @Get('google/callback')
+   @UseGuards(GoogleAuthGuard)
+   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
+  // 1. 認証コードの取得
+  const code = req.query.code as string;
+  console.log(code);
+  // 2. 認証コードを使用してアクセストークンを取得
+  //const accessToken = req.query.accessToken as string;
+
+  // 3. アクセストークンを使用してユーザー情報を取得
+  const googleUser = await this.googleAuthService.getGoogleUser(code);
+
+  console.log("googleUser", googleUser);
+  // 4. 取得したユーザー情報をデータベースに保存
+  const user = await this.googleAuthService.createDataBaseGoogleAuth(
+    googleUser.email,
+    googleUser.accessToken,
+    googleUser.userName,
+    true
+    );
+  console.log("auth.controller(GoogleAuth-callback)")
+  res.json(user);
   }
 }

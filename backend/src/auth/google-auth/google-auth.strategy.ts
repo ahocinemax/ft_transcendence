@@ -27,23 +27,27 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
   }
 
-  async validate(
-    accessToken: string,
-    refreshToken: string,
-    profile: Profile,
-    _done: VerifyCallback,
-  ): Promise<any> {
-    const { emails } = profile;
+  async validate(accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback): Promise<void> {
+    const { id, emails, name } = profile;
     const user: GoogleUser = {
-      id: profile.id, 
+      id,
       email: emails[0].value,
-      userName: profile.displayName, 
+      userName: name.givenName,
       accessToken,
     };
-    // const validatedUser = await this.GoogleAuthService.createDataBaseGoogleUser(user);
-    // if (!validatedUser) {
-      // throw new UnauthorizedException();
-    // }
-    // return validatedUser;
+  
+    const savedUser = await this.GoogleAuthService.createDataBaseGoogleAuth(
+      user.email,
+      user.accessToken,
+      user.userName,
+      true
+      );
+    
+    if (!savedUser) {
+      done(new UnauthorizedException());
+      return;
+    }
+  
+    done(null, savedUser);
   }
 }
