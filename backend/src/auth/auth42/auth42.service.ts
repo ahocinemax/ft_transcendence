@@ -10,10 +10,10 @@ export class Auth42Service {
 
   //42API
   async getAccessToken(req: string) {
-    console.log(req);
-    console.log(process.env.API42_ID);
-    console.log(process.env.API42_SECRET);
-    console.log(process.env.API42_URI);
+    //console.log(req);
+    //console.log(process.env.API42_ID);
+    //console.log(process.env.API42_SECRET);
+    //console.log(process.env.API42_URI);
 
     try {
       const response = await fetch("https://api.intra.42.fr/oauth/token", {
@@ -21,9 +21,9 @@ export class Auth42Service {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `grant_type=authorization_code&client_id=${process.env.API42_ID}&client_secret=${process.env.API42_SECRET}&code=${req}&redirect_uri=${process.env.API42_URI}`,
       });
-      console.log("Status code:", response.status);
+      //console.log("Status code:", response.status);
       const responseText = await response.text();
-      console.log("AccessToken(Response text):", responseText);
+      //console.log("AccessToken(Response text):", responseText);
       const data = JSON.parse(responseText);
       //const data = await response.json();      
       if (!data)
@@ -55,9 +55,6 @@ export class Auth42Service {
       if (response.ok) 
       { 
         const data = await response.json();
-        console.log('---data---');
-        //console.log(data);
-        console.log('---data---');
         return data;
       }
     }

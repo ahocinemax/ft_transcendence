@@ -7,6 +7,7 @@ import { UserDto } from "./dto/user.dto";
 import { GoogleAuthGuard } from "./google-auth/google-auth.guard";
 import { User } from "@prisma/client";
 import { GoogleAuthService } from "./google-auth/google-auth.service";
+import { AuthGuard } from '@nestjs/passport'
 
 
 @Controller("auth")
@@ -29,11 +30,11 @@ export class AuthController {
 
   @Get("callback")
   async getToken(@Req() req: Request, @Res() res: Response) {
-    console.log("Request query (code from 42API):", req.query);
+    //console.log("Request query (code from 42API):", req.query);
     const codeFromApi = req.query.code as string;
     const token = await this.Auth42.getAccessToken(codeFromApi);
-    console.log("Token:", token);
-    console.log("Token.access_token:", token.access_token);
+    //console.log("Token:", token);
+    //console.log("Token.access_token:", token.access_token);
     const user42infos = await this.Auth42.access42UserInformation(
       token.access_token
     );
@@ -65,32 +66,31 @@ export class AuthController {
   }
   
   @Get("OAuth")
-  @UseGuards(GoogleAuthGuard)
+  @UseGuards(AuthGuard('google'))
   async getGoogleAuthToken(@Req() req: Request, @Res() res: Response){
-    console.log("Request query (code from GoogleOAuth):", req.query);
+    //console.log("Request query (code from GoogleOAuth):", req.query);
   }
 
    @Get('google/callback')
-   @UseGuards(GoogleAuthGuard)
    async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
-  // 1. 認証コードの取得
   const code = req.query.code as string;
-  console.log(code);
-  // 2. 認証コードを使用してアクセストークンを取得
-  //const accessToken = req.query.accessToken as string;
+  //console.log("code", code);
 
-  // 3. アクセストークンを使用してユーザー情報を取得
   const googleUser = await this.googleAuthService.getGoogleUser(code);
 
-  console.log("googleUser", googleUser);
-  // 4. 取得したユーザー情報をデータベースに保存
+  //console.log("googleUser", googleUser);
   const user = await this.googleAuthService.createDataBaseGoogleAuth(
     googleUser.email,
     googleUser.accessToken,
     googleUser.userName,
     true
     );
-  console.log("auth.controller(GoogleAuth-callback)")
+  //console.log("auth.controller(GoogleAuth-callback)")
+  if (process.env.NODE_ENV === 'development') {
+    res.redirect("/user");
+  }
+  else if (process.env.NODE_ENV === 'production') {
   res.json(user);
+  } 
   }
 }

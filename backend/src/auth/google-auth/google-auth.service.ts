@@ -21,10 +21,6 @@ type GoogleUser = {
      private userService: UserService,
    ) {}
    async createDataBaseGoogleAuth(email: string, token: string, name: string, isRegistered: boolean) {
-    console.log("maaaaaaaaail:", email);
-    console.log("Registeeeerd:", isRegistered);
-    console.log("Tooooooooken:", token);
-    console.log("naaaaaaaaame:", name);
     try {
         let userAlreadyRegisterd = await this.prisma.user.findUnique({
           where: {
@@ -46,7 +42,6 @@ type GoogleUser = {
                     isRegistered: isRegistered
                 }
             });
-            console.log(userAlreadyRegisterd);
             return userAlreadyRegisterd;
         } else {
             // 新しいユーザーを作成する
@@ -60,7 +55,6 @@ type GoogleUser = {
                     isRegistered: isRegistered
                 }
             });
-            console.log(user);
             return user;
         }
     } catch (error) {
@@ -73,9 +67,14 @@ type GoogleUser = {
   }
   async getGoogleUser(code: string): Promise<any> {
     const accessToken = await this.getAccessTokenFromCode(code);
-    
-    const googleUser = await this.getUserInfoFromAccessToken(accessToken);
-    
+    const response = await this.getUserInfoFromAccessToken(accessToken);
+    const googleUser: GoogleUser = {
+        id: response.sub,
+        email: response.email,
+        userName: response.name,
+        accessToken: accessToken,
+        isRegistered: true
+    };
     return googleUser;
 }
 
@@ -90,9 +89,11 @@ async getAccessTokenFromCode(code: string): Promise<string> {
         redirect_uri: process.env.GOOGLE_REDIRECT_URI, // 環境変数または ConfigService から取得
         grant_type: 'authorization_code',
         code: code
+    },{
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded',
+        }
     });
-    console.log("response", response);
-
     if (response.data && response.data.access_token) {
         return response.data.access_token;
     } else {
@@ -116,9 +117,3 @@ async getUserInfoFromAccessToken(accessToken: string): Promise<any> {
 }
 
  }
- 
- 
- 
- 
- 
- 

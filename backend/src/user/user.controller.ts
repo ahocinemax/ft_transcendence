@@ -31,7 +31,6 @@ export class UserController {
 
 	@Get()
 	async getUsers(@Res() res: Response) {
-		console.log('NODE_ENV value:', process.env.NODE_ENV);
 		if (process.env.NODE_ENV === 'development') {
 	  		const users = await this.userService.getAllUsers();
 	  		res.render('users.ejs', { users });
