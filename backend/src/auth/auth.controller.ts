@@ -41,6 +41,9 @@ export class AuthController {
     if (user42infos) {
       // Use the information from the 42API to create the user in the database.
       const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, true);
+      this.authService.createCookies(res, token);
+      const userAlreadyRegisterd = await this.authService.getUserByEmail(user.email);
+      this.authService.updateCookies(res, token, userAlreadyRegisterd);
       // Respond with the user information.
       if (process.env.NODE_ENV === 'development') {
         res.redirect("/user");
@@ -57,6 +60,7 @@ export class AuthController {
 
   @Get("logout")
   async deleteCookies(@Req() req: Request, @Res() res: Response) {
+    console.log(res); 
     await this.authService.deleteCookies(res);
   }
 
@@ -77,7 +81,9 @@ export class AuthController {
   //console.log("code", code);
 
   const googleUser = await this.googleAuthService.getGoogleUser(code);
-
+  this.authService.createCookies(res, googleUser);
+  const userAlreadyRegisterd = await this.authService.getUserByEmail(googleUser.email);
+  this.authService.updateCookies(res, googleUser.accessToken, userAlreadyRegisterd);
   //console.log("googleUser", googleUser);
   const user = await this.googleAuthService.createDataBaseGoogleAuth(
     googleUser.email,
@@ -85,6 +91,7 @@ export class AuthController {
     googleUser.userName,
     true
     );
+
   //console.log("auth.controller(GoogleAuth-callback)")
   if (process.env.NODE_ENV === 'development') {
     res.redirect("/user");
@@ -92,5 +99,5 @@ export class AuthController {
   else if (process.env.NODE_ENV === 'production') {
   res.json(user);
   } 
-  }
+}
 }

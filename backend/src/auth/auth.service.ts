@@ -88,8 +88,10 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
+    //console.log(req.cookies, "request : getUserbyToken");
     try {
-      const accessToken = req.cookies.token;
+      const accessToken = req.cookies.accessToken;
+      //console.log("req.cookies.accessToken", req.cookies.accessToken);
       const user = await this.prisma.user.findFirst({
         where: {
           accessToken: accessToken,
@@ -100,11 +102,12 @@ async createDataBase42User(
         throw new HttpException(
           {
             status: HttpStatus.BAD_REQUEST,
-            error: "Error to get the user by token"},
+            error: "Error to get the user by token (user empty)"},
            HttpStatus.BAD_REQUEST);
           };
       return user;
     } catch (error) {
+      //console.error("Error getUserbyToken", error); 
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -113,18 +116,17 @@ async createDataBase42User(
         };
   }
 
-/* COOKIES MANAGEMENT */
-
+//COOKIES
   async createCookies(@Res() res: Response, token: any) {
-    const cookies = res.cookie("token", token.access_token,
+    const cookies = res.cookie("token", token.accessToken,
       {
-        expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000), // expires in 7 days
-        httpOnly: true, // for security
+        expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
+        httpOnly: true,
       });
       const Googlecookies = res.cookie("FullToken", token,
       {
-        expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000), // expires in 7 days
-        httpOnly: true, // for security
+        expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000), 
+        httpOnly: true,
       });
 
   }
@@ -134,7 +136,7 @@ async createDataBase42User(
       if (userInfos)
       { const name = userInfos.name;
         const user = await this.prisma.user.update({where: {name: name,},
-        data: {  accessToken: token.access_token,},
+        data: {  accessToken: token.accessToken,},
         });
         return user;
       }
@@ -151,7 +153,7 @@ async createDataBase42User(
 
   async deleteCookies(@Res() res: Response) {
     try {
-      res.clearCookie("token").clearCookie("FullToken").end();
+      res.clearCookie("accessToken").clearCookie("FullToken").end();
     } catch (error)
     {
       throw new HttpException({
@@ -160,5 +162,16 @@ async createDataBase42User(
       HttpStatus.BAD_REQUEST);
   }
   }
+  
+  async getUserByEmail(email: string){
+    try {
+        const userAlreadyRegisterd = await this.prisma.user.findUnique({
+            where: {
+                email: email,
+            }
+        });
+        return userAlreadyRegisterd;
+    } catch (error) {}
+}
 }
 
