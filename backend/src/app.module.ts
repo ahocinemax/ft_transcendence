@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { Auth42Module } from './auth/auth42/auth42.module';
 import configuration from './config/configuration';
 import { ConfigModule } from '@nestjs/config';
+import { CloudinaryService } from './cloudinary/cloudinary.service';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -18,8 +20,9 @@ import { ConfigModule } from '@nestjs/config';
             isGlobal: true,
             load: [configuration],
         }),
+        CloudinaryModule,
       ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CloudinaryService],
 })
 export class AppModule {}

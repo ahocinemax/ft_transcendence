@@ -12,29 +12,15 @@ export class UserService {
 		return await this.prisma.user.findMany();
 	}
 
-	async getUser(name: string) {
+	async getUserByName(name: string) {
 		try {
 			const user = await this.prisma.user.findFirst({
 				where: {
-					name,
+					name: name,
 				},
-			});
-			return user;
-		} catch (error) {
-			throw new HttpException(
-				{
-					status: HttpStatus.BAD_REQUEST,
-					error: 'Error to find user',
-				},
-				HttpStatus.BAD_REQUEST
-			);
-		}
-	}
-
-	async getUserByName(name: string) {
-		try {
-			const users = await this.getAllUsers();
-			const user = users.find((u) => u.name === name);
+			})
+			console.log(name);
+			console.log(user);
 			return user;
 		} catch (error) {
 			throw new HttpException(

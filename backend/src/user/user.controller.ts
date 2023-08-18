@@ -24,11 +24,6 @@ export class UserController {
 		private userService: UserService,
 	) {}
 
-	//@Get()
-	//async getUsers(@Req() req: Request) {
-	//	return this.userService.getAllUsers();
-	//}
-
 	@Get()
 	async getUsers(@Res() res: Response) {
 		if (process.env.NODE_ENV === 'development') {
