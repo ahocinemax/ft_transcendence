@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@nestjs/cli": "^10.1.11",
+    "@nestjs/platform-socket.io": "^10.2.1",
+    "@nestjs/websockets": "^10.2.1",
     "@prisma/client": "^5.1.0",
     "bcrypt": "^5.1.0",
     "prisma": "^5.1.0"
