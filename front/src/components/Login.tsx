@@ -1,9 +1,9 @@
 import React from 'react';
 import './Login.css';
 
-interface LoginProps {
-  onClose: () => void;
-}
+// interface LoginProps {
+//   onClose: () => void;
+// }
 
 function Login() {
   return (
@@ -16,8 +16,12 @@ function Login() {
         <div className="Overlay"></div>
         <div className="Connexion_popup_container">
           <div className="logins_logos">
-            <div className="fortytwo_logo"></div>
-            <div className="google_logo"></div>
+            <a href="http://localhost:4000/auth/callback">
+              <div className="fortytwo_logo"></div>
+            </a>
+            <a href="http://localhost:4000/auth/OAuth">
+              <div className="google_logo"></div>
+            </a>
           </div>
         </div>
       </div>

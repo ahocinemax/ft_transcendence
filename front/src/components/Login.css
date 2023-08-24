@@ -54,10 +54,10 @@
   .logins_logos {
     width: 100%;
     height: 50%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between; /* Add space between child elements */;
-    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(2, 3fr);
+    gap: 10px;
+    align-items: center;
   }
 
   .google_logo {
