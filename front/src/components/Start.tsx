@@ -12,6 +12,11 @@ function Start() {
         navigate("/login");
         return;
     }
+
+    const navigate_to_homepage = () => {
+      navigate("/homepage");
+      return;
+  }
   
     return (
       <div className="Start">
@@ -19,6 +24,9 @@ function Start() {
           <h1 className="heading" onClick={navigate_to_login}>
             START
           </h1>
+          <h2 className="heading" onClick={navigate_to_homepage}>
+            HOMEPAGE
+          </h2>
         </div>
       </div>
     );
