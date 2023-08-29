@@ -8,11 +8,11 @@ interface LoginProps {
 function Login() {
   return (
     <div className="Login">
-      <div className="VideoContainer">
+      <div className="VideoContainer">{/* 
         <video autoPlay muted loop className="BackgroundVideo">
           <source src="/aurores.mp4" type="video/mp4" />
           Your browser does not support the video tag.
-        </video>
+        </video> */}
         <div className="Overlay"></div>
         <div className="Connexion_popup_container">
           <div className="logins_logos">

@@ -13,9 +13,13 @@
     height: 100vh;
     align-items: center;
     justify-content: center;
+    
+    background-image: url(../../public/login_space2.gif);
+    background-size: cover;
+    background-position: center;
   }
   
-  .BackgroundVideo {
+/*   .BackgroundVideo {
     position: absolute;
     top: 0;
     left: 0;
@@ -23,7 +27,7 @@
     height: 100vh;
     object-fit: cover;
     z-index: -1;
-  }
+  } */
   body {
     margin: 0;
     padding: 0;
@@ -45,7 +49,7 @@
   justify-content: center;
   height: 20vh;
   width: 20vw;
-  background-color: rgba(21, 21, 21, 0.781);
+  background-color: rgba(9, 10, 10, 0.679);
   z-index: 2;
   border-radius: 8.5%;
   padding: 20px; /* Add padding to all sides of the container */
