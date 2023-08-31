@@ -15,7 +15,7 @@ export class GameController {
         @Body('StartTime') StartTime: Date,
         @Body('EndTime') EndTime: Date,
     ) {
-        const game = await this.gameService.startGame(
+        const res = await this.gameService.saveGame(
             id,
             IdPlayer1,
             IdPlayer2,
@@ -24,12 +24,12 @@ export class GameController {
             StartTime,
             EndTime,
         );
-        return game;
+        return res;
     }
 
     @Get('/getGame')
-    getGame(@Body('id') id: number) {
-        const game = this.gameService.getGame(id);
+    getGame(@Body('pairID') pairID: number) {
+        const game = this.gameService.getGame(pairID);
         return game;
     }
 }

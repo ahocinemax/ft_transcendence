@@ -6,10 +6,10 @@ import {
 import { PrismaService } from 'prisma/prisma.service';
 import { Server } from 'socket.io';
 import { UserService } from '../user/user.service';
-import { ScheduleHistory } from '@nestjs/schedule';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { Mutex } from 'async-mutex';
-import { Room } from './interfaces/room.interface';
-import { GameData } from './interfaces/gameData.interface';
+import { Room } from './interface/room.interface';
+import { GameData } from './interface/game-data.interface';
 
 @Injectable()
 export class GameService {
@@ -20,6 +20,43 @@ export class GameService {
     ) {}
 
     static rooms: Room[] = [];
+
+    async saveGame(
+        id: number,
+        IdPlayer1: number,
+        IdPlayer2: number,
+        ScorePlayer1: number,
+        ScorePlayer2: number,
+        StartTime: Date,
+        EndTime: Date,
+    ) {
+        const game = await this.prisma.game.create({
+            data: {
+                id: id,
+                player1: IdPlayer1,
+                player2: IdPlayer2,
+                ScorePlayer1: ScorePlayer1,
+                ScorePlayer2: ScorePlayer2,
+                StartTime: StartTime,
+                EndTime: EndTime,
+            },
+        });
+        return game;
+    }
+
+    async getGame(id: number) {
+		try {
+			const game = await this.prisma.game.findUnique({
+				where: {
+					id: id,
+				},
+				rejectOnNotFound: true,
+			});
+			return game;
+		} catch (error) {
+			throw new ForbiddenException('getGame error : ' + error);
+		}
+	}
 
     async startGame(roomID: number, server: Server) {
         const gameData = {
