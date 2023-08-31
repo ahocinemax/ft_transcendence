@@ -5,6 +5,8 @@
     "@nestjs/websockets": "^10.2.1",
     "@prisma/client": "^5.1.0",
     "bcrypt": "^5.1.0",
-    "prisma": "^5.1.0"
+    "class-transformer": "^0.5.1",
+    "prisma": "^5.1.0",
+    "websockets": "^0.2.0"
   }
 }
