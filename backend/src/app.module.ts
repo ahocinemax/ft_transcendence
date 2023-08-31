@@ -16,6 +16,7 @@ import { Auth42Module } from './auth/auth42/auth42.module';
 // CLOUDINARY
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
             expandVariables: true,
         }),
         CloudinaryModule,
+        GameModule,
       ],
   controllers: [AppController],
   providers: [AppService, CloudinaryService],
