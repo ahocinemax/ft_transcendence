@@ -41,6 +41,18 @@ export class GameService {
                 endTime: endTime,
             },
         });
+
+		const duration = Math.abs(game.endTime.getTime() - game.startTime.getTime());
+		await this.prisma.game.update({
+			where: {
+				id: id,
+			},
+			data: {
+				duration: duration,
+			},
+		});
+
+		
         return game;
     }
 

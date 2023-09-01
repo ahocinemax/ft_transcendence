@@ -29,7 +29,12 @@ model User {
   blockedof     User[]    @relation("blocked")
   otp_enabaled  Boolean   @default(false)//for one time pass
   otp_verified  Boolean   @default(false)// for one time pass
-  otp_validated Boolean   @default(false)// for one time pass 
+  otp_validated Boolean   @default(false)// for one time pass
+
+  gamesLost     Int       @default(0)
+  gamesWon      Int       @default(0)
+  gamesPlayed   Int       @default(0)
+  gameHistory   Int[]
 }
 
 model Game {
