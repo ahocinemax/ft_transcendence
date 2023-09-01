@@ -56,17 +56,12 @@ export class GameService {
         return game;
     }
 
-    async getGame(id: number) {
-		try {
-			const game = await this.prisma.game.findUniqueOrThrow({
-				where: {
-					id: id,
-				},
-			});
-			return game;
-		} catch (error) {
-			throw new ForbiddenException('getGame error : ' + error);
-		}
+    async getGame(id: number)
+	{
+		const game = await this.prisma.game.findUniqueOrThrow({
+			where: { id: id, },
+		});
+		return game;
 	}
 
     async startGame(roomID: number, server: Server){
