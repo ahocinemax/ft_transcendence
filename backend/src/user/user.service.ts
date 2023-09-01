@@ -47,4 +47,34 @@ export class UserService {
 			);
 		}
 	}
+	
+	async updateUser(req: Request) {
+		try{
+			const { name }  = req.params;
+			const user = await this.prisma.user.update({
+				where: {
+					name,
+				},
+				data: req.body,
+			});
+			if (!user) {
+				throw new HttpException(
+					{
+						status: HttpStatus.BAD_REQUEST,
+						error: 'Error to update user',
+					},
+					HttpStatus.BAD_REQUEST
+				);
+			}
+		return user;
+		} catch (error) {
+		throw new HttpException(
+			{
+				status: HttpStatus.BAD_REQUEST,
+				error: 'Error to update user',
+			},
+			HttpStatus.BAD_REQUEST
+		);
+	}
+	}
 }

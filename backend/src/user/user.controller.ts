@@ -40,14 +40,15 @@ export class UserController {
 		return this.userService.getUserByName(req.params.name);
 	}
 
-	//@Patch(':name')
-	//async PatchUser(@Req() req: Request) {
-	//	if (req.body.image) {
-	//		const user = this.cloudinaryService.uploadImage(req);
-	//		return user;
-	//	}
-	//	return this.userService.updateUser(req);
-	//}
+	@Patch(':name')
+	async UpdateUser(@Req() req: Request) {
+		if (req.body.image) {
+			//uploading image !
+			//const user = this.cloudinaryService.uploadImage(req);
+			//return user;
+		}
+		return this.userService.updateUser(req);
+	}
 
 	@Delete('deleteall')
 	async DeleteAllUsers() {

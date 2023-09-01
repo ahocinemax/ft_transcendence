@@ -2,6 +2,20 @@
 <html>
 <head>
     <title>Users</title>
+    <script>
+        function deleteUser() {
+            fetch('http://localhost:4000/user/deleteall', {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    alert('Users deleted successfully');
+                    window.location.href = 'http://localhost:4000';
+                } else {
+                    alert('Failed to delete users');
+                }
+            });
+        }
+    </script>
 </head>
 <body>
     <h1>Users</h1>
@@ -12,8 +26,11 @@
             Login: <%= user.login42 %><br>
             Name: <%= user.name %><br>
             Email: <%= user.email %><br>
+            Image: <img src="<%= user.image %>" alt="User Image" width="100"><br>
         </li>
     <% } %>
     </ul>
+    <button onclick="deleteUser()">Delete All Users</button><br>
+    <a href="http://localhost:4000">Back to Home</a>
 </body>
 </html>

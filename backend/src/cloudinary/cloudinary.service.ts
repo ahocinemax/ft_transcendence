@@ -21,7 +21,7 @@ import { PrismaService } from 'prisma/prisma.service';
 //  }
 //}
 export class CloudinaryService {
-    async uploadImage( req: Request ){
+    async uploadImage( req: Request ) {
         return null;
     }
 }

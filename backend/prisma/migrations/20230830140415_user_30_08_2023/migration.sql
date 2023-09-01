@@ -4,6 +4,7 @@ CREATE TABLE "User" (
     "name" TEXT DEFAULT '',
     "login42" TEXT,
     "email" TEXT DEFAULT '',
+    "image" TEXT DEFAULT 'https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png',
     "status" TEXT DEFAULT 'offline',
     "games" INTEGER DEFAULT 0,
     "wins" INTEGER DEFAULT 0,
