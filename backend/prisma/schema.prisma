@@ -31,3 +31,17 @@ model User {
   otp_verified  Boolean   @default(false)// for one time pass
   otp_validated Boolean   @default(false)// for one time pass 
 }
+
+model Game {
+  id            Int       @id @unique
+
+  player1       Int
+  ScorePlayer1  Int
+  player2       Int
+  ScorePlayer2  Int
+
+  startTime    DateTime @default(now())
+  endTime      DateTime
+  duration     Int?
+
+}
