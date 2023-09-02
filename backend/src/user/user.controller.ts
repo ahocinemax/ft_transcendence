@@ -9,6 +9,7 @@ import {
 	Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { Request, Response } from 'express';
 import { UserDto } from 'src/auth/dto/user.dto';
 
@@ -22,6 +23,7 @@ app.use(express.urlencoded({limit: '50mb', extended: true}));
 export class UserController {
 	constructor(
 		private userService: UserService,
+		private cloudinaryService: CloudinaryService,
 	) {}
 
 	@Get()
@@ -44,8 +46,8 @@ export class UserController {
 	async UpdateUser(@Req() req: Request) {
 		if (req.body.image) {
 			//uploading image !
-			//const user = this.cloudinaryService.uploadImage(req);
-			//return user;
+			const user = this.cloudinaryService.uploadImage(req);
+			return user;
 		}
 		return this.userService.updateUser(req);
 	}
