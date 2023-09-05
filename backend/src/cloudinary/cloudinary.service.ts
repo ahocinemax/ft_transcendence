@@ -11,15 +11,18 @@ export class CloudinaryService {
   async uploadImage(req: Request) {
     const { name } = req.params;
     const image = req.body.image;
-
     try {
+      console.log("upload step");
+      console.log(process.env.CLOUDINARY_NAME);
       const uploadedResponse = await v2.uploader.upload(image, {
-        upload_preset: 'your_upload_preset', 
+        upload_preset: 'ya7xyeys', 
         allowed_formats: ['jpg', 'png'],
       });
-
+      console.log("upload success");
       const imageURL = v2.url(uploadedResponse.public_id);
-
+      console.log("uploadedResponse:\t",uploadedResponse);
+      console.log("imageURL:\t\t",imageURL);
+      
       const user = await this.prisma.user.update({
         where: {
           name,
@@ -32,6 +35,7 @@ export class CloudinaryService {
       return user;
 
     } catch (error) {
+      console.log("Error details:", error);
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
         error: 'Invalid File'
@@ -39,3 +43,4 @@ export class CloudinaryService {
     }
   }
 }
+

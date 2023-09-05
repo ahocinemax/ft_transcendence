@@ -15,22 +15,56 @@
                 }
             });
         }
+        async function updateImage(userName) {
+    const fileInput = document.getElementById(`file-input-${userName}`);
+    const file = fileInput.files[0];
+    const fileType = file.type; // MIME type (e.g., "image/png")
+
+    const reader = new FileReader();
+
+    reader.onloadend = async function() {
+        // Base64 encoding, with added MIME type at the start
+        const base64Image = `data:${fileType};base64,${reader.result.split(',')[1]}`;
+
+        const response = await fetch(`http://localhost:4000/user/${userName}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image: base64Image })
+        });
+
+        if (response.ok) {
+            const imgElement = document.getElementById(`image-${userName}`);
+            imgElement.src = base64Image; // reader.result;
+            alert('Image updated successfully');
+        } else {
+            alert('Failed to update image');
+        }
+    };
+
+    reader.readAsDataURL(file);
+}
+
     </script>
-</head>
-<body>
+    </head>
+    <body>
     <h1>Users</h1>
     <ul>
     <% for(let user of users) { %>
-        <li>
-            ID: <%= user.id %><br>
-            Login: <%= user.login42 %><br>
-            Name: <%= user.name %><br>
-            Email: <%= user.email %><br>
-            Image: <img src="<%= user.image %>" alt="User Image" width="100"><br>
-        </li>
+    <li>
+        ID: <%= user.id %><br>
+        Login: <%= user.login42 %><br>
+        Name: <%= user.name %><br>
+        Email: <%= user.email %><br>
+        Image: <img id="image-<%= user.name %>" src="<%= user.image %>" alt="User Image" width="100"><br>
+        <input type="file" id="file-input-<%= user.name %>">
+        <button onclick="updateImage('<%= user.name %>')">Update Image</button>
+    </li>
     <% } %>
     </ul>
     <button onclick="deleteUser()">Delete All Users</button><br>
     <a href="http://localhost:4000">Back to Home</a>
-</body>
-</html>
+    </body>
+    </html>
+
