@@ -12,7 +12,7 @@ export class SubjectiveGameDto {
 
 	@IsNumber()
 	@IsNotEmpty()
-	opponentId: number;
+	opponentID: number;
 
 	@IsString()
 	@IsNotEmpty()

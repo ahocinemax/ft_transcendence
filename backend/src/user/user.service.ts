@@ -7,9 +7,11 @@ import
 } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { Game, User } from '@prisma/client';
+import { plainToClass } from 'class-transformer';
 
 import { GameService } from 'src/game/game.service';
-import { SubjectiveGameDto } from 'src/game/dto';
+import { SubjectiveGameDto } from 'src/game/dto/game.dto';
+import { UserDto } from './dto/user.dto';
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
@@ -91,7 +93,7 @@ export class UserService
 		for (const gameID of gameHistoryInt)
 			gameHistory.push(await this.gameService.getGame(gameID));
 
-		const gameDTOs: SubjectiveGameDTO[] = [];
+		const gameDTOs: SubjectiveGameDto[] = [];
 
 		for (const game of gameHistory)
 		{
@@ -102,9 +104,9 @@ export class UserService
 			game.player1 === id ? (opponentID = game.player2) : (opponentID = game.player1);
 			game.player1 === id ? (userScore = game.ScorePlayer1) : (userScore = game.ScorePlayer2);
 			game.player1 === id ? (opponentScore = game.ScorePlayer2) : (opponentScore = game.ScorePlayer1);
-			const opponent: UserDTO = await this.getUser(opponentID);
+			const opponent: UserDto = await this.getUser(opponentID);
 
-			const gameDTO: SubjectiveGameDTO =
+			const gameDTO: SubjectiveGameDto =
 			{
 				duration: game.duration,
 
@@ -133,7 +135,7 @@ export class UserService
 				id: id,
 			},
 		});
-		const dtoUser = plainToClass(UserDTO, user);
+		const dtoUser = plainToClass(UserDto, user);
 		return dtoUser;
 	}
 
