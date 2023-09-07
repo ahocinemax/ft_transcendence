@@ -41,9 +41,10 @@ export class AuthController {
     );
     if (user42infos) {
       // Use the information from the 42API to create the user in the database.
-      if () // user doesn't exist in database, create new entry
+      let user;
+      if (true) // user doesn't exist in database, create new entry
       {
-        const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, true);
+        user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, true);
         this.authService.createCookies(res, token);
         const userAlreadyRegisterd = await this.authService.getUserByEmail(user.email);
         this.authService.updateCookies(res, token, userAlreadyRegisterd);
