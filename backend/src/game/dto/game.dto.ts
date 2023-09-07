@@ -1,4 +1,4 @@
-import { UserDto } from 'src/user/dto';
+import { UserDto } from 'src/user/dto/user.dto';
 import { IsNotEmpty, IsString, IsNumber, MaxLength } from 'class-validator';
 
 /*
