@@ -36,9 +36,6 @@ export class UserService {
 	async deleteAllUsers() {
 		try {
 			const user = await this.prisma.user.deleteMany({});
-			// reset ID autoincrement to 0
-			console.log("reset ID autoincrement to 0");
-			await this.prisma.$executeQuery(`ALTER SEQUENCE "public"."User_id_seq" RESTART WITH 1`);
 			return user;
 		} catch (error) {
 			throw new HttpException(
