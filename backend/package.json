@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.9.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.0.0",
@@ -33,6 +34,7 @@
     "@types/cookie-parser": "^1.4.3",
     "async-mutex": "^0.4.0",
     "axios": "^1.4.0",
+    "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "cloudinary": "^1.40.0",
     "cookie-parser": "^1.4.6",
