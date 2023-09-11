@@ -43,6 +43,22 @@
         }
     };
 
+    function enable2FA(userName) {
+        fetch('http://localhost:4000/auth-2FA/send2faMail', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userName: userName })  // userIdをリクエストのボディとして送る
+        }).then(response => {
+            if (response.ok) {
+                alert('2FA enabled successfully');
+            } else {
+                alert('Failed to enable 2FA');
+            }
+        });
+    }
+
     reader.readAsDataURL(file);
 }
 
@@ -60,6 +76,7 @@
         Image: <img id="image-<%= user.name %>" src="<%= user.image %>" alt="User Image" width="100"><br>
         <input type="file" id="file-input-<%= user.name %>">
         <button onclick="updateImage('<%= user.name %>')">Update Image</button>
+        <button onclick="enable2FA('<%= user.name %>')">2FA Enable</button>
     </li>
     <% } %>
     </ul>

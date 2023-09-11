@@ -17,8 +17,7 @@ import { Auth42Module } from './auth/auth42/auth42.module';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { GameModule } from './game/game.module';
-import { Auth2faService } from './auth_2fa/auth_2fa.service';
-import { Auth2faController } from './auth_2fa/auth_2fa.controller';
+//2FA
 import { Auth2faModule } from './auth_2fa/auth_2fa.module';
 
 @Module({
@@ -36,7 +35,7 @@ import { Auth2faModule } from './auth_2fa/auth_2fa.module';
         GameModule,
         Auth2faModule,
       ],
-  controllers: [AppController, Auth2faController],
-  providers: [AppService, CloudinaryService, Auth2faService],
+  controllers: [AppController],
+  providers: [AppService, CloudinaryService],
 })
 export class AppModule {}
