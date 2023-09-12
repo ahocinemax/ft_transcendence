@@ -43,6 +43,6 @@ export class SubjectiveGameDto {
 	@IsNotEmpty()
 	opponentScore: number;
 
-	@IsNotEmpty()
-	victory: boolean;
+	// @IsNotEmpty()
+	// victory: boolean;
 }

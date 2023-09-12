@@ -8,7 +8,7 @@ import
 import { PrismaService } from 'prisma/prisma.service';
 import { Game, User } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
-
+import { Request } from 'express';
 import { GameService } from 'src/game/game.service';
 import { SubjectiveGameDto } from 'src/game/dto/game.dto';
 import { UserDto } from './dto/user.dto';
