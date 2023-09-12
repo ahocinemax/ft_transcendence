@@ -1,15 +1,15 @@
-import { Module } from '@nestjs/common';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
-import { PrismaModule } from '../../prisma/prisma.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
-import { GameService } from 'src/game/game.service';
-import { GameController } from 'src/game/game.controller';
+import { PrismaModule } from '../../prisma/prisma.module';
+import { forwardRef, Module } from '@nestjs/common';
+import { UserController } from './user.controller';
+import { GameModule } from 'src/game/game.module';
+import { UserService } from './user.service';
 
 @Module({
-	imports: [PrismaModule, CloudinaryModule],
-	controllers: [UserController, GameController],
-	providers: [UserService, GameService],
+	imports: [GameModule, forwardRef(() => PrismaModule), CloudinaryModule],
+	controllers: [UserController],
+	providers: [UserService],
 	exports: [UserService],
 })
+
 export class UserModule {}

@@ -1,9 +1,12 @@
 import
 {
-	ForbiddenException,
 	BadRequestException,
-	Inject,
+	ForbiddenException,
+	HttpException,
+	Injectable,
 	forwardRef,
+	HttpStatus,
+	Inject,
 } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { Game, User } from '@prisma/client';
@@ -12,8 +15,6 @@ import { Request } from 'express';
 import { GameService } from 'src/game/game.service';
 import { SubjectiveGameDto } from 'src/game/dto/game.dto';
 import { UserDto } from './dto/user.dto';
-
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 @Injectable({})
 export class UserService
