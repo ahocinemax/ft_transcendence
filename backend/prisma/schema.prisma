@@ -29,6 +29,25 @@ model User {
   blockedof     User[]   @relation("blocked")
   otp_enabled  Boolean  @default(false) //for one time pass
   otp_verified  Boolean  @default(false) // for one time pass
-  otp_validated Boolean  @default(false) // for one time pass 
+  otp_validated Boolean  @default(false) // for one time pass
   otp_code      String?  @default("")
+
+  gamesLost     Int       @default(0)
+  gamesWon      Int       @default(0)
+  gamesPlayed   Int       @default(0)
+  gameHistory   Int[]
+}
+
+model Game {
+  id            Int       @id @unique
+
+  player1       Int
+  ScorePlayer1  Int
+  player2       Int
+  ScorePlayer2  Int
+
+  startTime    DateTime @default(now())
+  endTime      DateTime
+  duration     Int?
+
 }

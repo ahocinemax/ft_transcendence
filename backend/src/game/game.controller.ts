@@ -5,6 +5,8 @@ import { GameService } from './game.service';
 export class GameController {
     constructor(private gameService: GameService) {}
 
+    // Launch a game by selecting datas from the web page
+    // IDs much match with the database
     @Post('/start')
     async startGame(
         @Body('id') id: number,
@@ -12,17 +14,17 @@ export class GameController {
         @Body('IdPlayer2') IdPlayer2: number,
         @Body('ScorePlayer1') ScorePlayer1: number,
         @Body('ScorePlayer2') ScorePlayer2: number,
-        @Body('StartTime') StartTime: Date,
-        @Body('EndTime') EndTime: Date,
-    ) {
+        @Body('startTime') startTime: Date,
+        @Body('endTime') endTime: Date,
+    ) { // giving the datas to the service
         const res = await this.gameService.saveGame(
             id,
             IdPlayer1,
             IdPlayer2,
             ScorePlayer1,
             ScorePlayer2,
-            StartTime,
-            EndTime,
+            startTime,
+            endTime,
         );
         return res;
     }

@@ -27,8 +27,8 @@ export class GameService {
         IdPlayer2: number,
         ScorePlayer1: number,
         ScorePlayer2: number,
-        StartTime: Date,
-        EndTime: Date,
+        startTime: Date,
+        endTime: Date,
     ) {
         const game = await this.prisma.game.create({
             data: {
@@ -37,28 +37,34 @@ export class GameService {
                 player2: IdPlayer2,
                 ScorePlayer1: ScorePlayer1,
                 ScorePlayer2: ScorePlayer2,
-                StartTime: StartTime,
-                EndTime: EndTime,
+                startTime: startTime,
+                endTime: endTime,
             },
         });
+
+		const duration = Math.abs(game.endTime.getTime() - game.startTime.getTime());
+		await this.prisma.game.update({
+			where: {
+				id: id,
+			},
+			data: {
+				duration: duration,
+			},
+		});
+
+		
         return game;
     }
 
-    async getGame(id: number) {
-		try {
-			const game = await this.prisma.game.findUnique({
-				where: {
-					id: id,
-				},
-				rejectOnNotFound: true,
-			});
-			return game;
-		} catch (error) {
-			throw new ForbiddenException('getGame error : ' + error);
-		}
+    async getGame(id: number)
+	{
+		const game = await this.prisma.game.findUniqueOrThrow({
+			where: { id: id, },
+		});
+		return game;
 	}
 
-    async startGame(roomID: number, server: Server) {
+    async startGame(roomID: number, server: Server){
         const gameData = {
             paddleLeft: 0,
             paddleRight: 0,
@@ -73,6 +79,6 @@ export class GameService {
             startTime: new Date(),
         };
         const mutex = new Mutex();
-
+        return gameData;
     }
 }
