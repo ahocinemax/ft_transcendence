@@ -1,8 +1,5 @@
 import { Injectable, HttpStatus, HttpException, Req, Res, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { Request, Response } from 'express';
-import { UserService } from 'src/user/user.service';
-import { User } from '@prisma/client';
 import axios from 'axios';
 
 
@@ -18,7 +15,6 @@ type GoogleUser = {
 export class GoogleAuthService {
     constructor(
         private prisma: PrismaService,
-        private userService: UserService,
     ) { }
 
     async createDataBaseGoogleAuth(

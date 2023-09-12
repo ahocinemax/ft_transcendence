@@ -8,6 +8,7 @@ import
 	HttpStatus,
 	Inject,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { PrismaService } from 'prisma/prisma.service';
 import { Game, User } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
