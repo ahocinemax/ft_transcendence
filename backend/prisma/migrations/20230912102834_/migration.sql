@@ -15,6 +15,7 @@ CREATE TABLE "User" (
     "otp_enabaled" BOOLEAN NOT NULL DEFAULT false,
     "otp_verified" BOOLEAN NOT NULL DEFAULT false,
     "otp_validated" BOOLEAN NOT NULL DEFAULT false,
+    "otp_code" TEXT DEFAULT '',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

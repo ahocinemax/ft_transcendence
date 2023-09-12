@@ -30,4 +30,5 @@ model User {
   otp_enabaled  Boolean  @default(false) //for one time pass
   otp_verified  Boolean  @default(false) // for one time pass
   otp_validated Boolean  @default(false) // for one time pass 
+  otp_code      String?  @default("")
 }
