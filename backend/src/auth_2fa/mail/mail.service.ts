@@ -12,7 +12,7 @@ const htmlForMail = fs.readFileSync('/usr/src/app/src/auth_2fa/mail/mailFor2FA.h
 @Injectable()
 export class MailService implements OnModuleInit {
     private transporter;
-    constructor(private readonly prismaService: PrismaService) {}   
+    constructor(private readonly prisma: PrismaService) {}   
     async onModuleInit() {
         const oauth2Client = new OAuth2(
             process.env.AUTH_2FA_CLIENT,
@@ -62,7 +62,7 @@ export class MailService implements OnModuleInit {
     
     async getMailFromReq(req: Request): Promise<string> {
         try {
-            const user = await this.prismaService.user.findUnique({
+            const user = await this.prisma.user.findUnique({
             where: {
                 name: req.body.name,
             },});
@@ -122,7 +122,7 @@ export class MailService implements OnModuleInit {
 			const userName  = req.body.name;
             console.log("userName", userName);
 			const hash = await bcrypt.hash(password, saltOrRounds);
-			await this.prismaService.user.update({
+			await this.prisma.user.update({
 				where: { name:  userName},
 				data: {otp_code: hash},
 			})

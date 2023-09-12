@@ -12,7 +12,7 @@ CREATE TABLE "User" (
     "score" INTEGER DEFAULT 0,
     "accessToken" TEXT NOT NULL DEFAULT 'noToken',
     "isRegistered" BOOLEAN NOT NULL DEFAULT false,
-    "otp_enabaled" BOOLEAN NOT NULL DEFAULT false,
+    "otp_enabled" BOOLEAN NOT NULL DEFAULT false,
     "otp_verified" BOOLEAN NOT NULL DEFAULT false,
     "otp_validated" BOOLEAN NOT NULL DEFAULT false,
     "otp_code" TEXT DEFAULT '',

@@ -27,7 +27,7 @@ model User {
   friendOf      User[]   @relation("friends") // fait référence aux autres utilisateurs qui ont ajouté l'utilisateur en tant qu'ami.
   blocked       User[]   @relation("blocked")
   blockedof     User[]   @relation("blocked")
-  otp_enabaled  Boolean  @default(false) //for one time pass
+  otp_enabled  Boolean  @default(false) //for one time pass
   otp_verified  Boolean  @default(false) // for one time pass
   otp_validated Boolean  @default(false) // for one time pass 
   otp_code      String?  @default("")
