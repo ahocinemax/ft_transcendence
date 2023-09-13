@@ -13,10 +13,16 @@ export class ConfirmService {
     async validate2FA(@Req() req: Request, @Res() res: Response)
     {
         try {
-            const user = await this.prisma.user.findUnique({where: {name: req.body.name}});
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    name: req.body.name,
+                }});
             const otp_code = user?.otp_code;
-            const {hash} = req.body;
-            const valid = await bcrypt.compare(otp_code, hash);
+            //console.log("otp_code", otp_code);
+            const { hash } = req.body;
+            //console.log("hash", hash);
+            //console.log("req.body", req.body);
+            const valid = await bcrypt.compare(hash, otp_code);
             if (valid) {
                 await this.updateUser(req);
                 res.status(200).json({

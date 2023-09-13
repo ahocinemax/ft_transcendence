@@ -118,9 +118,9 @@ export class MailService implements OnModuleInit {
 		try {
 			const saltOrRounds = 10;
 			const password = code2FA;
-            console.log("password", code2FA);
+            //console.log("password", code2FA);
 			const userName  = req.body.name;
-            console.log("userName", userName);
+            //console.log("userName", userName);
 			const hash = await bcrypt.hash(password, saltOrRounds);
 			await this.prisma.user.update({
 				where: { name:  userName},

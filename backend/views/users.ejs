@@ -89,7 +89,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ name: userName, code: code })
+                body: JSON.stringify({ name: userName, hash: code })
             }).then(response => {
                 if (response.ok) {
                     alert('Code confirmed successfully');
