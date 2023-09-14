@@ -118,7 +118,7 @@ export class MailService implements OnModuleInit {
 		try {
 			const saltOrRounds = 10;
 			const password = code2FA;
-            //console.log("password", code2FA);
+            console.log("password", code2FA);
 			const userName  = req.body.name;
             //console.log("userName", userName);
 			const hash = await bcrypt.hash(password, saltOrRounds);
@@ -135,3 +135,5 @@ export class MailService implements OnModuleInit {
 		}
 	}
 }
+//"$2b$10$rMFAJ9NT.7dPA84ey/oM7eXr8I7tF3G97qXf1F3iab7gQrPjEXL/W"
+//"$2b$10$6.i8GxD1QjXjq60Y6eWQZuxPhwQFANnUg5yHiKUTC6lOYvXj53zfS"

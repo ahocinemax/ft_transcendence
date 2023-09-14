@@ -32,6 +32,7 @@ export class DisableService {
     async updateUser(req: Request) {
 		try{
 			const name   = req.body.name;
+			console.log("name", name);
 			const user = await this.prisma.user.update({
 				where: {name: name},
                 data: {

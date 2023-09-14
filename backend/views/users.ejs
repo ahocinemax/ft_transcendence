@@ -47,59 +47,87 @@
         }
 
 
+        let is2FAEnabled = {};  // ユーザーごとの2FA状態を保存するオブジェクト
 
-        function enable2FA(userName) {
-            console.log("enable2FA function started");
-            fetch('http://localhost:4000/auth-2FA/send2FAMail', {
+        function toggle2FA(userName) {
+            if (is2FAEnabled[userName]) {
+                disable2FA(userName);
+            } else {
+                enable2FA(userName);
+            }
+    }
+        
+    async function enable2FA(userName) {
+            const response = await fetch('http://localhost:4000/auth-2FA/send2FAMail', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ name: userName })
-            }).then(response => {
-                console.log("Received response", response);
-                if (response.ok) {
-                    alert('2FA enabled successfully');
-                    const liElement = document.getElementById(`user-${userName}`);  // この行を追加
-                    const inputElement = document.createElement('input');
-                    inputElement.type = 'text';
-                    inputElement.id = `code-input-${userName}`;
-                    const buttonElement = document.createElement('button');
-                    buttonElement.innerHTML = 'Send';
-                    buttonElement.onclick = function () {
-                        confirmCode(userName);
-                    };
-                    liElement.appendChild(inputElement);
-                    liElement.appendChild(buttonElement);
-                } else {
-                    alert('Failed to enable 2FA');
-                }
-                
-            })
-            .catch(error => {
-                console.log("Error occurred", error);  // 追加
-                alert('An error occurred');
             });
+        
+            if (response.ok) {
+                alert('2FA enabled successfully');
+                is2FAEnabled[userName] = true;
+                const buttonElement = document.getElementById(`2fa-button-${userName}`);
+                buttonElement.textContent = '2FA Disable';
+                const liElement = document.getElementById(`user-${userName}`);
+                const inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.id = `code-input-${userName}`;
+                const sendButtonElement = document.createElement('button');
+                sendButtonElement.id = `send-button-${userName}`;
+                sendButtonElement.innerHTML = 'Send';
+                sendButtonElement.onclick = function () {
+                    confirmCode(userName);
+                };
+                liElement.appendChild(inputElement);
+                liElement.appendChild(sendButtonElement);
+            } else {
+                alert('Failed to enable 2FA');
+            }
         }
-
-        function confirmCode(userName) {
+        
+        async function disable2FA(userName) {
+            const response = await fetch('http://localhost:4000/auth-2FA/disable2FA', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: userName })
+            });
+        
+            if (response.ok) {
+                alert('2FA disabled successfully');
+                is2FAEnabled[userName] = false;
+                const buttonElement = document.getElementById(`2fa-button-${userName}`);
+                buttonElement.textContent = '2FA Enable';
+                document.getElementById(`code-input-${userName}`).style.display = 'none';
+                document.getElementById(`send-button-${userName}`).style.display = 'none';
+            } else {
+                alert('Failed to disable 2FA');
+            }
+        }
+        
+        async function confirmCode(userName) {
             const code = document.getElementById(`code-input-${userName}`).value;
-            fetch('http://localhost:4000/auth-2FA/confirmCode', {
+            const response = await fetch('http://localhost:4000/auth-2FA/confirmCode', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ name: userName, hash: code })
-            }).then(response => {
-                if (response.ok) {
-                    alert('Code confirmed successfully');
-                } else {
-                    alert('Failed to confirm code');
-                }
             });
+        
+            if (response.ok) {
+                alert('Code confirmed successfully');
+                document.getElementById(`code-input-${userName}`).style.display = 'none';
+                document.getElementById(`send-button-${userName}`).style.display = 'none';
+            } else {
+                alert('Failed to confirm code');
+            }
         }
-
-
+        
 
     </script>
 </head>
@@ -117,7 +145,9 @@
                                     width="100"><br>
                                 <input type="file" id="file-input-<%= user.name %>">
                                 <button onclick="updateImage('<%= user.name %>')">Update Image</button>
-                                <button onclick="enable2FA('<%= user.name %>')">2FA Enable</button>
+                                <!-- <button onclick="enable2FA('<%= user.name %>')">2FA Enable</button> -->
+                                <button id="2fa-button-<%= user.name %>" onclick="toggle2FA('<%= user.name %>')">2FA Enable</button>
+
             </li>
             <% } %>
     </ul>
