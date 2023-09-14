@@ -19,6 +19,10 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { GameModule } from './game/game.module';
 //2FA
 import { Auth2faModule } from './auth_2fa/auth_2fa.module';
+import { FriendController } from './friend/friend.controller';
+import { FriendService } from './friend/friend.service';
+import { FriendModule } from './friend/friend.module';
+import { BlockModule } from './block/block.module';
 
 @Module({
   imports: [
@@ -34,8 +38,10 @@ import { Auth2faModule } from './auth_2fa/auth_2fa.module';
         CloudinaryModule,
         GameModule,
         Auth2faModule,
+        FriendModule,
+        BlockModule,
       ],
-  controllers: [AppController],
-  providers: [AppService, CloudinaryService],
+  controllers: [AppController, FriendController],
+  providers: [AppService, CloudinaryService, FriendService],
 })
 export class AppModule {}
