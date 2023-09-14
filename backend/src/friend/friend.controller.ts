@@ -27,4 +27,12 @@ export class FriendController {
     ) {
         return this.friendService.addFriend(name, friend);
     }
+
+    @Delete(':name/:friend')
+    async deleteFriend(
+        @Param('name') name: string,
+        @Param('friend') friend: string,
+    ) {
+        return this.friendService.deleteFriend(name, friend);
+    }
 }

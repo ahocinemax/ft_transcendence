@@ -71,4 +71,49 @@ export class FriendService {
             );
         }
     }
+
+    async deleteFriend(name: string, friend: string) {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    name: name,
+                },
+            });
+            const friendUser = await this.prisma.user.findUnique({
+                where: {
+                    name: friend,
+                },
+            });
+            if (!user || !friendUser) {
+                throw new HttpException(
+                    {
+                        status: HttpStatus.BAD_REQUEST,
+                        error: 'Error to find user or friend',
+                    },
+                    HttpStatus.BAD_REQUEST
+                );
+            }
+            const friendDeleted = await this.prisma.user.update({
+                where: {
+                    name: name,
+                },
+                data: {
+                    friends: {
+                        disconnect: {
+                            name: friend,
+                        },
+                    },
+                },
+            });
+            return friendDeleted;
+        } catch (error) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.BAD_REQUEST,
+                    error: 'Error to delete friend',
+                },
+                HttpStatus.BAD_REQUEST
+            );
+        }
+    }
 }
