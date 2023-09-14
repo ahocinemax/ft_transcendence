@@ -26,4 +26,49 @@ export class FriendService {
             );
         }
     }
+
+    async addFriend(name: string, friend: string) {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    name: name,
+                },
+            });
+            const friendUser = await this.prisma.user.findUnique({
+                where: {
+                    name: friend,
+                },
+            });
+            if (!user || !friendUser) {
+                throw new HttpException(
+                    {
+                        status: HttpStatus.BAD_REQUEST,
+                        error: 'Error to find user or friend',
+                    },
+                    HttpStatus.BAD_REQUEST
+                );
+            }
+            const friendAdded = await this.prisma.user.update({
+                where: {
+                    name: name,
+                },
+                data: {
+                    friends: {
+                        connect: {
+                            name: friend,
+                        },
+                    },
+                },
+            });
+            return friendAdded;
+        } catch (error) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.BAD_REQUEST,
+                    error: 'Error to add friend',
+                },
+                HttpStatus.BAD_REQUEST
+            );
+        }
+    }
 }
