@@ -23,6 +23,9 @@ import { FriendController } from './friend/friend.controller';
 import { FriendService } from './friend/friend.service';
 import { FriendModule } from './friend/friend.module';
 import { BlockModule } from './block/block.module';
+import { PendingService } from './pending/pending.service';
+import { PendingController } from './pending/pending.controller';
+import { PendingModule } from './pending/pending.module';
 
 @Module({
   imports: [
@@ -40,8 +43,9 @@ import { BlockModule } from './block/block.module';
         Auth2faModule,
         FriendModule,
         BlockModule,
+        PendingModule,
       ],
-  controllers: [AppController, FriendController],
-  providers: [AppService, CloudinaryService, FriendService],
+  controllers: [AppController, FriendController, PendingController],
+  providers: [AppService, CloudinaryService, FriendService, PendingService],
 })
 export class AppModule {}

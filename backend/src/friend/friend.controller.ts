@@ -20,7 +20,12 @@ export class FriendController {
         return this.friendService.getFriend(req.params.name);
     }
     
-    @Patch(':name/:friend')
+    @Get(':name/friendOf')
+    async getFriendOfUser(@Req() req: Request) {
+        return this.friendService.getFriendOfUser(req.params.name);
+    }
+    
+    @Patch('add/:name/:friend')
     async addFriend(
         @Param('name') name: string,
         @Param('friend') friend: string,
@@ -28,7 +33,7 @@ export class FriendController {
         return this.friendService.addFriend(name, friend);
     }
 
-    @Delete(':name/:friend')
+    @Delete('remove/:name/:friend')
     async deleteFriend(
         @Param('name') name: string,
         @Param('friend') friend: string,

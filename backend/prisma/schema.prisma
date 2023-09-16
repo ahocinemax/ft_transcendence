@@ -23,10 +23,17 @@ model User {
   score         Int?     @default(0)
   accessToken   String   @default("noToken")
   isRegistered  Boolean  @default(false)
+  //social network
+  //friend list
   friends       User[]   @relation("friends") // fait référence aux autres utilisateurs que l'utilisateur a ajoutés en tant qu'amis
   friendOf      User[]   @relation("friends") // fait référence aux autres utilisateurs qui ont ajouté l'utilisateur en tant qu'ami.
+  //blocked list
   blocked       User[]   @relation("blocked")
-  blockedof     User[]   @relation("blocked")
+  blockedOf     User[]   @relation("blocked")
+  //friend request
+  pending       User[]   @relation("pending")
+  pendingOf     User[]   @relation("pending")
+  
   otp_enabled  Boolean  @default(false) //for one time pass
   otp_verified  Boolean  @default(false) // for one time pass
   otp_validated Boolean  @default(false) // for one time pass
