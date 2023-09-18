@@ -26,6 +26,7 @@ import { BlockModule } from './block/block.module';
 import { PendingService } from './pending/pending.service';
 import { PendingController } from './pending/pending.controller';
 import { PendingModule } from './pending/pending.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { PendingModule } from './pending/pending.module';
         FriendModule,
         BlockModule,
         PendingModule,
+        ChatModule,
       ],
   controllers: [AppController, FriendController, PendingController],
   providers: [AppService, CloudinaryService, FriendService, PendingService],
