@@ -8,5 +8,8 @@
     "class-transformer": "^0.5.1",
     "prisma": "^5.1.0",
     "websockets": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.0"
   }
 }

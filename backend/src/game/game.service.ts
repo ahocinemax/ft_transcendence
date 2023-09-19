@@ -13,6 +13,8 @@ import { GameData } from './interface/game-data.interface';
 
 @Injectable()
 export class GameService {
+    ballSpeed = 0.25;
+
     constructor(
     private readonly prisma: PrismaService,
     @Inject(forwardRef(() => UserService))
@@ -44,12 +46,8 @@ export class GameService {
 
 		const duration = Math.abs(game.endTime.getTime() - game.startTime.getTime());
 		await this.prisma.game.update({
-			where: {
-				id: id,
-			},
-			data: {
-				duration: duration,
-			},
+			where: { id: id, },
+			data: { duration: duration, },
 		});
 
 		
@@ -58,9 +56,7 @@ export class GameService {
 
     async getGame(id: number)
 	{
-		const game = await this.prisma.game.findUniqueOrThrow({
-			where: { id: id, },
-		});
+		const game = await this.prisma.game.findUniqueOrThrow({ where: { id: id, }, });
 		return game;
 	}
 
@@ -79,6 +75,8 @@ export class GameService {
             startTime: new Date(),
         };
         const mutex = new Mutex();
+        // init ball (roomID)
+        // create game loop
         return gameData;
     }
 }

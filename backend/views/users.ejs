@@ -1,19 +1,128 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Users</title>
+    <script>
+        function deleteUser() {
+            fetch('http://localhost:4000/user/deleteall', {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    alert('Users deleted successfully');
+                    window.location.href = 'http://localhost:4000';
+                } else {
+                    alert('Failed to delete users');
+                }
+            });
+        }
+        async function updateImage(userName) {
+            const fileInput = document.getElementById(`file-input-${userName}`);
+            const file = fileInput.files[0];
+            const fileType = file.type; // MIME type (e.g., "image/png")
+
+            const reader = new FileReader();
+
+            reader.onloadend = async function () {
+                // Base64 encoding, with added MIME type at the start
+                const base64Image = `data:${fileType};base64,${reader.result.split(',')[1]}`;
+
+                const response = await fetch(`http://localhost:4000/user/${userName}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image: base64Image })
+                });
+
+                if (response.ok) {
+                    const imgElement = document.getElementById(`image-${userName}`);
+                    imgElement.src = base64Image; // reader.result;
+                    alert('Image updated successfully');
+                } else {
+                    alert('Failed to update image');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+
+
+        function enable2FA(userName) {
+            console.log("enable2FA function started");
+            fetch('http://localhost:4000/auth-2FA/send2FAMail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: userName })
+            }).then(response => {
+                console.log("Received response", response);
+                if (response.ok) {
+                    alert('2FA enabled successfully');
+                    const liElement = document.getElementById(`user-${userName}`);  // この行を追加
+                    const inputElement = document.createElement('input');
+                    inputElement.type = 'text';
+                    inputElement.id = `code-input-${userName}`;
+                    const buttonElement = document.createElement('button');
+                    buttonElement.innerHTML = 'Send';
+                    buttonElement.onclick = function () {
+                        confirmCode(userName);
+                    };
+                    liElement.appendChild(inputElement);
+                    liElement.appendChild(buttonElement);
+                } else {
+                    alert('Failed to enable 2FA');
+                }
+                
+            })
+            .catch(error => {
+                console.log("Error occurred", error);  // 追加
+                alert('An error occurred');
+            });
+        }
+
+        function confirmCode(userName) {
+            const code = document.getElementById(`code-input-${userName}`).value;
+            fetch('http://localhost:4000/auth-2FA/confirmCode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: userName, code: code })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Code confirmed successfully');
+                } else {
+                    alert('Failed to confirm code');
+                }
+            });
+        }
+
+
+
+    </script>
 </head>
+
 <body>
     <h1>Users</h1>
     <ul>
-    <% for(let user of users) { %>
-        <li>
-            ID: <%= user.id %><br>
-            Login: <%= user.login42 %><br>
-            Name: <%= user.name %><br>
-            Email: <%= user.email %><br>
-        </li>
-    <% } %>
+        <% for(let user of users) { %>
+            <li id="user-<%= user.name %>" name="user-<%= user.name %>">
+                ID: <%= user.id %><br>
+                    Login: <%= user.login42 %><br>
+                        Name: <%= user.name %><br>
+                            Email: <%= user.email %><br>
+                                Image: <img id="image-<%= user.name %>" src="<%= user.image %>" alt="User Image"
+                                    width="100"><br>
+                                <input type="file" id="file-input-<%= user.name %>">
+                                <button onclick="updateImage('<%= user.name %>')">Update Image</button>
+                                <button onclick="enable2FA('<%= user.name %>')">2FA Enable</button>
+            </li>
+            <% } %>
     </ul>
+    <button onclick="deleteUser()">Delete All Users</button><br>
+    <a href="http://localhost:4000">Back to Home</a>
 </body>
+
 </html>

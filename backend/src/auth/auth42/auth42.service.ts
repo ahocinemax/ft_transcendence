@@ -6,7 +6,7 @@ import { PrismaService } from "../../../prisma/prisma.service";
 @Injectable()
 export class Auth42Service {
   constructor(
-    private prisma: PrismaService) {}
+    private prisma: PrismaService) { }
 
   //42API
   async getAccessToken(req: string) {
@@ -26,42 +26,44 @@ export class Auth42Service {
       //console.log("AccessToken(Response text):", responseText);
       const data = JSON.parse(responseText);
       //const data = await response.json();      
-      if (!data)
-      {
+      if (!data) {
         throw new HttpException(
           {
             status: HttpStatus.BAD_REQUEST,
             error: "the user token is empty"
           },
-           HttpStatus.BAD_REQUEST); 
-        };
+          HttpStatus.BAD_REQUEST);
+      };
       return data;
     } catch (error) {
-      console.error("Error during fetch:", error); 
+      console.error("Error during fetch:", error);
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: "Error to get the user by token"},
-         HttpStatus.BAD_REQUEST); 
-        };
-    }
+          error: "Error to get the user by token"
+        },
+        HttpStatus.BAD_REQUEST);
+    };
+  }
 
-  async access42UserInformation(accessToken: string) {    
+  async access42UserInformation(accessToken: string) {
     try {
       const response = await fetch("https://api.intra.42.fr/v2/me", {
         method: "GET",
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      if (response.ok) 
-      { 
+      if (response.ok) {
         const data = await response.json();
         return data;
       }
+      else {
+        console.log("Received a non-ok response");
+      }
     }
-    catch(error) {
-      console.log("Fetch42 user error")
+    catch (error) {
+      console.log("Fetch42 user error", error);
     }
-      return null;
+    return null;
   }
 
   async createDataBase42User(
@@ -71,23 +73,49 @@ export class Auth42Service {
     isRegistered: boolean
   ) {
     try {
-      const user = await this.prisma.user.create({
-        data: {
-          achievements: [],
-          accessToken: token,
-          isRegistered: isRegistered,
-          login42: user42.login,
-          name: user42.displayname,
+      //check if user is already logged or not
+      let userAlreadyRegisterd = await this.prisma.user.findUnique({
+        where: {
           email: user42.email,
-        },
+        }
       });
-      return user;
+      //if user exists alredy, do update db
+      if (userAlreadyRegisterd) {
+        userAlreadyRegisterd = await this.prisma.user.update({
+          where: {
+            email: user42.email
+          },
+          data: {
+            achievements: userAlreadyRegisterd.achievements || [], 
+            accessToken: token,
+            isRegistered: isRegistered,
+            login42: user42.login,
+            name: user42.displayname,
+          }
+        });
+        return userAlreadyRegisterd;
+      }
+      else {
+        console.log("user not exist");
+        const user = await this.prisma.user.create({
+          data: {
+            achievements: [],
+            accessToken: token,
+            isRegistered: isRegistered,
+            login42: user42.login,
+            name: user42.displayname,
+            email: user42.email,
+          }
+        });
+        return user;
+      }
     } catch (error) {
+      console.log("42api error", error);
       throw new HttpException(
-      {
-        status: HttpStatus.BAD_REQUEST,
-        error: "Error to create the user to the database((API42)"
-      }, HttpStatus.BAD_REQUEST); 
-      };
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: "Error to create the user to the database((API42)"
+        }, HttpStatus.BAD_REQUEST);
+    };
   }
 }

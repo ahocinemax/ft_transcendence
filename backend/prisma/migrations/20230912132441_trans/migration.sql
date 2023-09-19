@@ -4,6 +4,7 @@ CREATE TABLE "User" (
     "name" TEXT DEFAULT '',
     "login42" TEXT,
     "email" TEXT DEFAULT '',
+    "image" TEXT DEFAULT 'https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png',
     "status" TEXT DEFAULT 'offline',
     "games" INTEGER DEFAULT 0,
     "wins" INTEGER DEFAULT 0,
@@ -11,11 +12,30 @@ CREATE TABLE "User" (
     "score" INTEGER DEFAULT 0,
     "accessToken" TEXT NOT NULL DEFAULT 'noToken',
     "isRegistered" BOOLEAN NOT NULL DEFAULT false,
-    "otp_enabaled" BOOLEAN NOT NULL DEFAULT false,
+    "otp_enabled" BOOLEAN NOT NULL DEFAULT false,
     "otp_verified" BOOLEAN NOT NULL DEFAULT false,
     "otp_validated" BOOLEAN NOT NULL DEFAULT false,
+    "otp_code" TEXT DEFAULT '',
+    "gamesLost" INTEGER NOT NULL DEFAULT 0,
+    "gamesWon" INTEGER NOT NULL DEFAULT 0,
+    "gamesPlayed" INTEGER NOT NULL DEFAULT 0,
+    "gameHistory" INTEGER[],
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Game" (
+    "id" INTEGER NOT NULL,
+    "player1" INTEGER NOT NULL,
+    "ScorePlayer1" INTEGER NOT NULL,
+    "player2" INTEGER NOT NULL,
+    "ScorePlayer2" INTEGER NOT NULL,
+    "startTime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "endTime" TIMESTAMP(3) NOT NULL,
+    "duration" INTEGER,
+
+    CONSTRAINT "Game_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -35,6 +55,9 @@ CREATE UNIQUE INDEX "User_name_key" ON "User"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Game_id_key" ON "Game"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_friends_AB_unique" ON "_friends"("A", "B");

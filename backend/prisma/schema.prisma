@@ -16,6 +16,8 @@ model User {
 
   name          String?   @unique @default("")
   email         String?   @unique @default("")
+  image         String?  @default("https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png")
+
   
   status        String?   @default("offline")
   games         Int?      @default(0)
@@ -35,6 +37,7 @@ model User {
   otp_enabaled  Boolean   @default(false) //for one time pass
   otp_verified  Boolean   @default(false) // for one time pass
   otp_validated Boolean   @default(false) // for one time pass
+  otp_code      String?  @default("")
 
   gamesLost     Int       @default(0)
   gamesWon      Int       @default(0)

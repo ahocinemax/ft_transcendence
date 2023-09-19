@@ -1,27 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException,HttpStatus } from '@nestjs/common';
 import { Request} from 'express';
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
 import { PrismaService } from 'prisma/prisma.service';
-// import toStream = require('buffer-to-stream');
-@Injectable()
 
-//export class CloudinaryService {
-//  async uploadImage(
-//    file: Express.Multer.File,
-//  ): Promise<UploadApiResponse | UploadApiErrorResponse> {
-//    
-//    return new Promise((resolve, reject) => {
-//      const upload = v2.uploader.upload_stream((error, result) => {
-//        if (error) return reject(error);
-//        resolve(result);
-//      });
-//    
-//      toStream(file.buffer).pipe(upload);
-//    });
-//  }
-//}
+
+@Injectable()
 export class CloudinaryService {
-    async uploadImage( req: Request ){
-        return null;
+  constructor(private prisma: PrismaService) {}
+
+  async uploadImage(req: Request) {
+    const { name } = req.params;
+    const image = req.body.image;
+    try {
+      console.log("upload step");
+      console.log(process.env.CLOUDINARY_NAME);
+      const uploadedResponse = await v2.uploader.upload(image, {
+        upload_preset: 'ya7xyeys', 
+        allowed_formats: ['jpg', 'png'],
+      });
+      console.log("upload success");
+      const imageURL = v2.url(uploadedResponse.public_id);
+      console.log("uploadedResponse:\t",uploadedResponse);
+      console.log("imageURL:\t\t",imageURL);
+      
+      const user = await this.prisma.user.update({
+        where: {
+          name,
+        },
+        data: {
+          image: imageURL,
+        },
+      });
+
+      return user;
+
+    } catch (error) {
+      console.log("Error details:", error);
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'Invalid File'
+      }, HttpStatus.BAD_REQUEST);
     }
+  }
 }
+
