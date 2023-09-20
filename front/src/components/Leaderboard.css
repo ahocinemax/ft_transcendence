@@ -53,10 +53,11 @@
     height: 7.5%;
     background-color: rgb(0, 0, 0);
     box-shadow: rgb(0, 0, 0);
-    box-shadow: 0px 0px 10px rgb(234, 166, 8);
+    box-shadow: 0px 0px 6px rgb(234, 166, 8);
     border-radius: 10%;
     margin-top: 1.25%;
     margin-bottom: 1.25%;
+    padding-right: 2.5%;
 
     display : flex;
     align-items: center;
@@ -73,8 +74,6 @@
     width: 20%;
     height:80%;
     /* background-color: rgb(222, 13, 13); */
-    padding-left: 50px;
-    padding-right: 50px;
     /* margin-left: 5%; */
 }
 
@@ -87,7 +86,6 @@
     width: 30%;
     height:80%;
     /* background-color: rgb(222, 13, 13); */
-    margin-left: 2.5%;
 }
 
 .games_div{
@@ -99,7 +97,6 @@
     width: 20%;
     height:80%;
     /* background-color: rgb(222, 13, 13); */
-    margin-left: 5%;
 }
 
 .h1{
