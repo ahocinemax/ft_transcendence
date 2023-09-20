@@ -16,7 +16,6 @@ import { GameService } from 'src/game/game.service';
 import { SubjectiveGameDto } from 'src/game/dto/game.dto';
 import { UserDto } from './dto/user.dto';
 
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { triggerAsyncId } from 'async_hooks';
 
 @Injectable({})
@@ -31,15 +30,15 @@ export class UserService
 	async createUser(
 		email: string,
 		name: string,
-		hash: string,
-		id: 0, // auto-incremented
+		accessToken: string,
+		id: string
 	): Promise<User> {
 		const user = this.prisma.user.create({
 			data: {
 				email,
 				name,
-				hash,
-				id42: id,
+				accessToken,
+				login42: id,
 			},
 		});
 		return (user);
@@ -66,9 +65,7 @@ export class UserService
 			for (let i = 0 ; i < elem.friends.length ; i++)
 			{
 				const friend = await this.prisma.user.findUnique({
-					where: {
-						id: elem.friends[i],
-					}
+					where: { id: elem.friends[i].id, },
 				});
 				const dtoUser = plainToClass(UserDto, friend);
 				friendList.push(dtoUser);
@@ -135,7 +132,7 @@ export class UserService
 			},
 			select: {
 				id: true,
-				username: true,
+				name: true,
 				rank: true,
 				winRate: true,
 				gamesPlayed: true,
