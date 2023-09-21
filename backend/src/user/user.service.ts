@@ -16,6 +16,8 @@ import { GameService } from 'src/game/game.service';
 import { SubjectiveGameDto } from 'src/game/dto/game.dto';
 import { UserDto } from './dto/user.dto';
 
+import { triggerAsyncId } from 'async_hooks';
+
 @Injectable({})
 export class UserService
 {
@@ -25,9 +27,51 @@ export class UserService
 		private readonly gameService: GameService,
 	) {}
 
+	async createUser(
+		email: string,
+		name: string,
+		accessToken: string,
+		id: string
+	): Promise<User> {
+		const user = this.prisma.user.create({
+			data: {
+				email,
+				name,
+				accessToken,
+				login42: id,
+			},
+		});
+		return (user);
+	}
+
 	async getAllUsers()
 	{
-		return await this.prisma.user.findMany();
+		return (await this.prisma.user.findMany());
+	}
+
+	async getFriends(id: number)
+	{
+		const friendIDList = await this.prisma.user.findMany({
+			where: {
+				id: id,
+			},
+			select: {
+				friends: true,
+			},
+		});
+		const friendList: UserDto[] = [];
+		for (const elem of friendIDList)
+		{
+			for (let i = 0 ; i < elem.friends.length ; i++)
+			{
+				const friend = await this.prisma.user.findUnique({
+					where: { id: elem.friends[i].id, },
+				});
+				const dtoUser = plainToClass(UserDto, friend);
+				friendList.push(dtoUser);
+			}
+		}
+		return (friendList);
 	}
 
 	async getUserByName(name: string)
@@ -42,7 +86,7 @@ export class UserService
 			})
 			console.log(name);
 			console.log(user);
-			return user;
+			return (user);
 		}
 		catch (error)
 		{
@@ -73,6 +117,31 @@ export class UserService
 				HttpStatus.BAD_REQUEST
 			);
 		}
+	}
+
+	async getLeaderBoard()
+	{
+		// return all users id sorted by rank
+		const users = await this.prisma.user.findMany({
+			where: {
+				NOT: {
+					gamesPlayed: {
+						equals: 0,
+					},
+				},
+			},
+			select: {
+				id: true,
+				name: true,
+				rank: true,
+				winRate: true,
+				gamesPlayed: true,
+				gamesWon: true,
+				gamesLost: true,
+			},
+			orderBy: {rank: 'asc'},
+		});
+		return (users);
 	}
 		
 	async updateUser(req: Request) {
@@ -149,6 +218,7 @@ export class UserService
 					opponentRank: opponent.rank,
 					opponentID: opponent.id,
 					opponentUser: opponent,
+				victory: userScore > opponentScore ? true : false,
 				};
 				gameDTOs.push(gameDTO);
 			}

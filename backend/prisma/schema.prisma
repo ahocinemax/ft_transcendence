@@ -11,33 +11,40 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  name          String?  @unique @default("")
+  id            Int       @id @default(autoincrement())
   login42       String?
-  email         String?  @unique @default("")
-  image         String?  @default("https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png")
-  status        String?  @default("offline")
-  games         Int?     @default(0)
-  wins          Int?     @default(0)
+
+  name          String?   @unique @default("")
+  email         String?   @unique @default("")
+  image         String?   @default("https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png")
+
+  status        String?   @default("offline")
+  games         Int?      @default(0)
+  wins          Int?      @default(0)
+  winRate       Float?
   achievements  String[]
-  score         Int?     @default(0)
-  accessToken   String   @default("noToken")
-  isRegistered  Boolean  @default(false)
+  score         Int?      @default(0)
+  rank          Int?      @default(0)
+
+  accessToken   String    @default("noToken")
+  isRegistered  Boolean   @default(false)
+
   //social network
   //friend list
-  friends       User[]   @relation("friends") // fait référence aux autres utilisateurs que l'utilisateur a ajoutés en tant qu'amis
-  friendOf      User[]   @relation("friends") // fait référence aux autres utilisateurs qui ont ajouté l'utilisateur en tant qu'ami.
+  friends       User[]    @relation("friends") // fait référence aux autres utilisateurs que l'utilisateur a ajoutés en tant qu'amis
+  friendOf      User[]    @relation("friends") // fait référence aux autres utilisateurs qui ont ajouté l'utilisateur en tant qu'ami.
   //blocked list
-  blocked       User[]   @relation("blocked")
-  blockedOf     User[]   @relation("blocked")
+  blocked       User[]    @relation("blocked")
+  blockedOf     User[]    @relation("blocked")
+
   //friend request
   pending       User[]   @relation("pending")
   pendingOf     User[]   @relation("pending")
   
-  otp_enabled  Boolean  @default(false) //for one time pass
-  otp_verified  Boolean  @default(false) // for one time pass
-  otp_validated Boolean  @default(false) // for one time pass
-  otp_code      String?  @default("")
+  otp_enabaled  Boolean   @default(false) //for one time pass
+  otp_verified  Boolean   @default(false) // for one time pass
+  otp_validated Boolean   @default(false) // for one time pass
+  otp_code      String?   @default("")
 
   gamesLost     Int       @default(0)
   gamesWon      Int       @default(0)
