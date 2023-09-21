@@ -20,7 +20,6 @@ async function bootstrap() {
   app.setViewEngine('ejs');
   app.useStaticAssets(join(__dirname, '..', '..', 'views'));
 }
-
   await app.listen(4000);
 }
 bootstrap();
