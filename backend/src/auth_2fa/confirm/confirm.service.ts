@@ -51,7 +51,7 @@ export class ConfirmService {
 			const user = await this.prisma.user.update({
 				where: {name: name},
                 data: {
-					otp_enabaled: true,
+					otp_enabled: true,
                     otp_verified: true,
                     otp_validated: true
 				},

@@ -1,15 +1,17 @@
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
-    "name" TEXT DEFAULT '',
     "login42" TEXT,
+    "name" TEXT DEFAULT '',
     "email" TEXT DEFAULT '',
     "image" TEXT DEFAULT 'https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png',
     "status" TEXT DEFAULT 'offline',
     "games" INTEGER DEFAULT 0,
     "wins" INTEGER DEFAULT 0,
+    "winRate" DOUBLE PRECISION,
     "achievements" TEXT[],
     "score" INTEGER DEFAULT 0,
+    "rank" INTEGER DEFAULT 0,
     "accessToken" TEXT NOT NULL DEFAULT 'noToken',
     "isRegistered" BOOLEAN NOT NULL DEFAULT false,
     "otp_enabled" BOOLEAN NOT NULL DEFAULT false,
