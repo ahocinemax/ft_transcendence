@@ -2,12 +2,18 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   MessageBody,
-  WebSocketServer } from '@nestjs/websockets';
+  WebSocketServer,
+  OnGatewayInit,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+} from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
 
 @WebSocketGateway({cors: {origin: '*'}})
-export class ChatGateway {
+export class WebsocketGateway
+//implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{ 
   @WebSocketServer()
   server: Server;
 
