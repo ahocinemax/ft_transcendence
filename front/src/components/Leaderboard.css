@@ -1,0 +1,109 @@
+.Login {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    /* Other styles */
+  }
+  
+.VideoContainer {
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    
+    background-image: url(../../public/login_space2.gif);
+    background-size: cover;
+    background-position: center;
+}
+
+.Overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3); /* Adjust the opacity as needed */
+    z-index: 1;
+}
+
+.leaderboard_main_div {
+    width: 40vw; /* Définissez la largeur de votre div */
+    height: 90vh; /* Définissez la hauteur de votre div */
+    background-size: cover;
+    background-position: center;
+    /* background-color: rgba(0, 0, 0, 0.559);
+    border-image: url(../../public/sun.png) 2 repeat; */
+  
+    /* Ajustez ces valeurs selon vos préférences pour obtenir l'effet pixel art souhaité */
+    border-image-slice: 100;
+    border-image-width: 2.5px;
+
+    display : flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+  }
+
+.rank_div{
+    width: 95%;
+    height: 7.5%;
+    background-color: rgb(0, 0, 0);
+    box-shadow: rgb(0, 0, 0);
+    box-shadow: 0px 0px 6px rgb(234, 166, 8);
+    border-radius: 10%;
+    margin-top: 1.25%;
+    margin-bottom: 1.25%;
+    padding-right: 2.5%;
+
+    display : flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.position{
+    display : flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+
+    width: 20%;
+    height:80%;
+    /* background-color: rgb(222, 13, 13); */
+    /* margin-left: 5%; */
+}
+
+.pseudo_div{
+    display : flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+
+    width: 30%;
+    height:80%;
+    /* background-color: rgb(222, 13, 13); */
+}
+
+.games_div{
+    display : flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+
+    width: 20%;
+    height:80%;
+    /* background-color: rgb(222, 13, 13); */
+}
+
+.h1{
+    color: rgb(255, 255, 255);
+    font: bold;
+    font-size: 1.5em;
+    font-family: 'Press Start 2P', cursive;
+    text-shadow:
+      2px 2px 2px rgb(243, 152, 6);
+}
