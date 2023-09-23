@@ -1,0 +1,46 @@
+/* SearchComponent.css */
+
+/* Style pour le conteneur de la barre de recherche */
+searchbar_component_div {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: #f0f0f0;
+    border-radius: 25px;
+    padding: 5px;
+    margin: 10px;
+  }
+  
+  /* Style pour l'icône de recherche (facultatif) */
+  div .search_icon {
+    margin-left: 10px;
+    color: #555;
+  }
+  
+  /* Style pour la zone de texte de la barre de recherche */
+  div input {
+    flex: 1;
+    border: none;
+    padding: 10px;
+    outline: none;
+    font-size: 16px;
+    border-radius: 25px;
+  }
+  
+  /* Style pour le bouton de recherche */
+  div button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 0 25px 25px 0;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Style du bouton au survol */
+  div button:hover {
+    background-color: #0056b3;
+  }
+  
