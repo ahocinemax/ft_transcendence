@@ -1,7 +1,6 @@
 .sidebar {
 	position: fixed;
 	top: 50%;
-	left: 0;
 	transform: translateY(-50%);
 	background-color: #302b5e;
 	width: 3vw;
@@ -19,6 +18,8 @@
 	border: 0.6vh solid #000000;
 	margin: 0.6vh;
 	box-sizing: content-box;
+    transition: left 0.3s;
+    left: -3.2vw;
   }
   
   .nav-link {
@@ -35,7 +36,10 @@
   }
   
   .nav-link img {
-	max-width: 60%;
+	max-width: 70%;
 	height: auto;
   }
   
+  .sidebar:hover {
+    left : 0;
+  }
