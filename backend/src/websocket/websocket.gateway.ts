@@ -8,21 +8,33 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway({cors: {origin: '*'}})
-export class WebsocketGateway
-//implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+@WebSocketGateway()
+export class WebsocketGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 { 
   @WebSocketServer()
   server: Server;
 
   private logger: Logger = new Logger('ChatGateway Log');
+  
+  afterInit(server: Server) {
+    this.logger.log('Initialized!');
+    this.logger.log('server: ', server);
+  }
+
+  handleConnection(client: Socket, ...args: any[]) {
+    this.logger.log(`Client connected: ${client.id}`);
+  }
+
+  handleDisconnect(client: Socket) {
+    this.logger.log(`Client disconnected: ${client.id}`);
+  }
 
   @SubscribeMessage('chatToServer')
   handleMessage(@MessageBody() message: string) {
     this.logger.log('message received');
-    this.server.emit('update', message);
+    this.server.emit('chatToServer', message);
   }
 }
 
