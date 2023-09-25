@@ -25,6 +25,8 @@ model User {
   achievements  String[]
   score         Int?      @default(0)
   rank          Int?      @default(0)
+  playTime		  Int?	    @default(0)
+
 
   accessToken   String    @default("noToken")
   isRegistered  Boolean   @default(false)

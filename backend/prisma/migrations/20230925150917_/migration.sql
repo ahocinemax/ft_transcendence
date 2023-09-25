@@ -12,6 +12,7 @@ CREATE TABLE "User" (
     "achievements" TEXT[],
     "score" INTEGER DEFAULT 0,
     "rank" INTEGER DEFAULT 0,
+    "playTime" INTEGER DEFAULT 0,
     "accessToken" TEXT NOT NULL DEFAULT 'noToken',
     "isRegistered" BOOLEAN NOT NULL DEFAULT false,
     "otp_enabled" BOOLEAN NOT NULL DEFAULT false,
