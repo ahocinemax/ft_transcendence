@@ -26,9 +26,9 @@ export class UserService
 		private readonly prisma: PrismaService,
 		@Inject(forwardRef(() => GameService))
 		private readonly gameService: GameService,
-	) {}
-
-	private logger: Logger = new Logger('ChatGateway Log');
+		) {}
+		
+	private logger: Logger = new Logger('User Controller');
 
 	async createUser(
 		email: string,
@@ -139,6 +139,7 @@ export class UserService
 	async getLeaderBoard()
 	{
 		// return all users id sorted by rank
+		console.log('test test testt');
 		const users = await this.prisma.user.findMany({
 			where: {
 				NOT: {
@@ -158,7 +159,6 @@ export class UserService
 			},
 			orderBy: {rank: 'asc'},
 		});
-		console.log('test test testt');
 		this.logger.log("users are: " + users);
 		return (users);
 	}
