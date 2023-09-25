@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Logger } from '@nestjs/common';
 import { GameService } from './game.service';
 
 @Controller('Game')
 export class GameController {
 	constructor(private gameService: GameService) {}
+
+	private logger: Logger = new Logger('GameService Log');
 
 	// Launch a game by selecting datas from the web page
 	// IDs much match with the database
@@ -32,6 +34,7 @@ export class GameController {
 	@Get('/getGame')
 	getGame(@Body('pairID') pairID: number) {
 		const game = this.gameService.getGame(pairID);
+		this.logger.log('game: ', game);
 		return game;
 	}
 }

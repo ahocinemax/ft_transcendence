@@ -55,7 +55,7 @@ model User {
 }
 
 model Game {
-  id            Int       @id @unique
+  id            Int       @id @default(autoincrement())
 
   player1       Int
   ScorePlayer1  Int

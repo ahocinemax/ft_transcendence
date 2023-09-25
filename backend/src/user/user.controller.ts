@@ -59,7 +59,7 @@ export class UserController {
 
 	@Get('/getLeaderboard')
 	async getLeaderboard() {
-		console.log('getLeaderboard');
+		console.log('getLeaderboard log message');
 		return this.userService.getLeaderBoard();
 	}
 }

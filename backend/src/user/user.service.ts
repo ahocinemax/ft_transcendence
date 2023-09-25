@@ -123,14 +123,8 @@ export class UserService
 		// console.log('id = ' + id);
 		// console.log('duration = ' + duration);
 		const updateUser = await this.prisma.user.update({
-			where: {
-				id: id,
-			},
-			data: {
-				playTime: {
-					increment: duration,
-				},
-			},
+			where: { id: id, },
+			data: { playTime: { increment: duration, }, },
 		});
 
 		return updateUser;
@@ -141,13 +135,7 @@ export class UserService
 		// return all users id sorted by rank
 		console.log('test test testt');
 		const users = await this.prisma.user.findMany({
-			where: {
-				NOT: {
-					gamesPlayed: {
-						equals: 0,
-					},
-				},
-			},
+			where: { NOT: { gamesPlayed: { equals: 0, }, }, },
 			select: {
 				id: true,
 				name: true,
@@ -156,8 +144,7 @@ export class UserService
 				gamesPlayed: true,
 				gamesWon: true,
 				gamesLost: true,
-			},
-			orderBy: {rank: 'asc'},
+			}, orderBy: {rank: 'asc'},
 		});
 		this.logger.log("users are: " + users);
 		return (users);
