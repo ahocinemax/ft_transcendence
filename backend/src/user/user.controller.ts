@@ -57,9 +57,14 @@ export class UserController {
 		return this.userService.deleteAllUsers();
 	}
 
-	@Get('/getLeaderboard')
+	@Get('getLeaderboard')
 	async getLeaderboard() {
 		console.log('getLeaderboard log message');
 		return this.userService.getLeaderBoard();
+	}
+
+	@Get('getGameHistory')
+	async getGameHistory(@Req() req: Request) {
+		return this.userService.getGameHistory(req.body.id);
 	}
 }
