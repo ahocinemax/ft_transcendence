@@ -46,33 +46,38 @@ export class UserService
 		});
 		return (user);
 	}
+		
+	async updateUser(req: Request) {
+		try{
+			const { name }  = req.params;
+			const user = await this.prisma.user.update({
+				where: {
+					name,
+				},
+				data: req.body,
+			});
+			if (!user) {
+				throw new HttpException(
+					{
+						status: HttpStatus.BAD_REQUEST,
+						error: 'Error to update user',
+					},
+					HttpStatus.BAD_REQUEST
+				);
+			}
+		return user;
+		} catch (error) {
+			throw new HttpException(
+			{
+				status: HttpStatus.BAD_REQUEST,
+				error: 'Error to update user',
+			},
+			HttpStatus.BAD_REQUEST
+			);
+		}
+	}
 
 	async getAllUsers() { return (await this.prisma.user.findMany()); }
-
-	async getFriends(id: number)
-	{
-		const friendIDList = await this.prisma.user.findMany({
-			where: {
-				id: id,
-			},
-			select: {
-				friends: true,
-			},
-		});
-		const friendList: UserDto[] = [];
-		for (const elem of friendIDList)
-		{
-			for (let i = 0 ; i < elem.friends.length ; i++)
-			{
-				const friend = await this.prisma.user.findUnique({
-					where: { id: elem.friends[i].id, },
-				});
-				const dtoUser = plainToClass(UserDto, friend);
-				friendList.push(dtoUser);
-			}
-		}
-		return (friendList);
-	}
 
 	async getUserByName(name: string)
 	{
@@ -130,56 +135,72 @@ export class UserService
 		return updateUser;
 	}
 
+	async getFriends(id: number)
+	{
+		const friendIDList = await this.prisma.user.findMany({
+			where: {
+				id: id,
+			},
+			select: {
+				friends: true,
+			},
+		});
+		const friendList: UserDto[] = [];
+		for (const elem of friendIDList)
+		{
+			for (let i = 0 ; i < elem.friends.length ; i++)
+			{
+				const friend = await this.prisma.user.findUnique({
+					where: { id: elem.friends[i].id, },
+				});
+				const dtoUser = plainToClass(UserDto, friend);
+				friendList.push(dtoUser);
+			}
+		}
+		return (friendList);
+	}
+
+	// async isFriend(id1: number, id2: number) {
+	// 	try {
+	// 		const user1 = await this.prisma.user.findUniqueOrThrow({ where: { id: id1, }, });
+	// 		const user2 = await this.prisma.user.findUniqueOrThrow({ where: { id: id2, }, });
+	// 		return (user1.friends.findFirst(user2) != -1);
+	// 	} catch (error) { throw new ForbiddenException('isFriend error : ' + error); }
+	// }
+
 	async getLeaderBoard()
 	{
 		// return all users id sorted by rank
 		console.log('test test testt');
-		const users = await this.prisma.user.findMany({
-			where: { NOT: { gamesPlayed: { equals: 0, }, }, },
-			select: {
-				id: true,
-				name: true,
-				rank: true,
-				winRate: true,
-				gamesPlayed: true,
-				gamesWon: true,
-				gamesLost: true,
-			}, orderBy: {rank: 'asc'},
-		});
-		this.logger.log("users are: " + users);
-		return (users);
-	}
-		
-	async updateUser(req: Request) {
-		try{
-			const { name }  = req.params;
-			const user = await this.prisma.user.update({
-				where: {
-					name,
-				},
-				data: req.body,
+		try
+		{
+			const users = await this.prisma.user.findMany({
+				where: { NOT: { gamesPlayed: { equals: 0, }, }, },
+				select: {
+					id: true,
+					name: true,
+					rank: true,
+					winRate: true,
+					gamesPlayed: true,
+					gamesWon: true,
+					gamesLost: true,
+				}, orderBy: {rank: 'asc'},
 			});
-			if (!user) {
-				throw new HttpException(
-					{
-						status: HttpStatus.BAD_REQUEST,
-						error: 'Error to update user',
-					},
-					HttpStatus.BAD_REQUEST
-				);
-			}
-		return user;
-		} catch (error) {
+			this.logger.log("users are: " + users);
+			return (users);
+		}
+		catch (error)
+		{
 			throw new HttpException(
-			{
-				status: HttpStatus.BAD_REQUEST,
-				error: 'Error to update user',
-			},
-			HttpStatus.BAD_REQUEST
+				{
+					status: HttpStatus.BAD_REQUEST,
+					error: 'Error to get leaderboard',
+				},
+				HttpStatus.BAD_REQUEST
 			);
 		}
 	}
-		// Use prisma to find the user on DB
+	// Use prisma to find the user on DB
 	async getGameHistory(id: number)
 	{
 		const user = await this.prisma.user.findUnique({
