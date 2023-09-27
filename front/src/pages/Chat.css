@@ -3,29 +3,34 @@
 }
 
 .main_part{
-    width: 75vw;
+    width: 80vw;
     height: 100vh;
     background-color: black;
     background-image: url(../../public/pixelartchat.gif);
 }
 
 .channel_part{
-    width: 25vw;
+    width: 20vw;
     height: 100vh;
     background-color: rgba(7, 39, 112, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .Overlay {
     position: absolute;
     top: 0;
-    left: 24vw;
-    width: 76vw;
+    left: 19vw;
+    width: 81vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3); /* Adjust the opacity as needed */
+    background-color: rgba(0, 0, 0, 0.3);
     z-index: 1;
   }
 
 .channel_top_div{
+    display: flex;
+    justify-content: center;
     height: 10vh;
     width: 24vw;
     display : flex;
@@ -36,22 +41,24 @@
 }
 
 .searchbar_div{
+    display: flex;
+    justify-content: center;
     height: 10vh;
     width: 24vw;
     display : flex;
     align-items: center;
     flex-direction: row;
-    padding-left: 2.9vw;
     box-shadow: 0px 0px 5px rgba(21, 1, 17, 0.2);
 }
 
 .channel_div{
+    display: flex;
+    justify-content: center;
     height: 10vh;
     width: 24vw;
     display : flex;
     align-items: center;
     flex-direction: row;
-    padding-left: 3vw;
     box-shadow: 0px 0px 5px rgba(21, 1, 17, 0.2);
     transition: background-color 1.15s ease;
 }
