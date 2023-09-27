@@ -4,6 +4,7 @@ import PlayIcon from '../PlayIcon.png';
 import LeaderboardIcon from '../LeaderboardIcon.png';
 import ProfileIcon from '../ProfileIcon.png';
 import ChatIcon from '../ChatIcon.png';
+import SettingsIcon from '../SettingsIcon5.png';
 
 const Sidebar = () => {
   const sidebarRef = useRef<HTMLDivElement | null>(null);
@@ -33,6 +34,7 @@ const Sidebar = () => {
       <a href="/leaderboard" className="nav-link"><img src={LeaderboardIcon} alt="Logo 2" /></a>
       <a href="/profile" className="nav-link"><img src={ProfileIcon} alt="Logo 3" /></a>
       <a href="/chat" className="nav-link"><img src={ChatIcon} alt="Logo 4" /></a>
+      <a href="/settings" className="nav-link"><img src={SettingsIcon} alt="Logo 5" /></a>
     </div>
   );
 }

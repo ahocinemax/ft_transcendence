@@ -7,6 +7,7 @@ import Sidebar from './Sidebar';
 import Leaderboard from './Leaderboard';
 import Chat from './Chat';
 import Profile from './Profile';
+import Settings from './Settings';
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                     <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/chat" element={<Chat />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/settings" element={<Settings />} />
                 </Routes>
             </div>
         </div>
