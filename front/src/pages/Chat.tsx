@@ -100,19 +100,19 @@ const Chat = () => {
     
     const onClickSubmit = useCallback(() => {
         console.log(inputText); 
-        socket.emit('chatToServer', inputText);
+        socket.emit('message', inputText);
     }, [inputText]);
 
 
     useEffect(() => {
-        socket.on('chatToServer', (message: string) => {
+        socket.on('message', (message: string) => {
           console.log('recieved : ', message);
           setMsg(message);
         });
       }, []);
     
       useEffect(() => {
-        setChatLog(prevChatLog => [...prevChatLog, msg]);
+        setChatLog(ChatLog => [...ChatLog, msg]);
       }, [msg]);
 
     return (

@@ -16,14 +16,15 @@ async function bootstrap() {
   const server = await app.listen(4000);
   const io = new socketIo.Server(server, {
     cors: {
-    origin: "http://localhost:3000",
-    allowedHeaders: ['content-type'],
-    methods: ['GET','HEAD','PUT','PATCH','POST','DELETE'],
-    credentials: true
+      origin: "http://localhost:3000",
+      allowedHeaders: ['content-type'],
+      methods: ['GET','HEAD','PUT','PATCH','POST','DELETE'],
+      credentials: true
     }
   });
-  io.on('coonnection', (socket) => {
+  io.on('connection', (io) => {
     console.log('New client connected');
+    console.log('client ID: ', io.id);
   });
   //for test environement = NODE_ENV === development
   if (process.env.NODE_ENV === 'development') {
