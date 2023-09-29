@@ -4,8 +4,10 @@
     "@nestjs/platform-socket.io": "^10.2.6",
     "@nestjs/websockets": "^10.2.6",
     "@prisma/client": "^5.1.0",
+    "argon2": "^0.31.1",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
     "prisma": "^5.1.0",
     "websockets": "^0.2.0"
   },

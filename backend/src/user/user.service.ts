@@ -160,6 +160,12 @@ export class UserService
 		return (friendList);
 	}
 
+	async getRank(id: number)
+	{
+		const user = await this.prisma.user.findUnique({ where: {id: id, }, });
+		return (user.rank);
+	}
+
 	// async isFriend(id1: number, id2: number) {
 	// 	try {
 	// 		const user1 = await this.prisma.user.findUniqueOrThrow({ where: { id: id1, }, });
