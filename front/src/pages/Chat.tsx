@@ -97,6 +97,20 @@ const Chat = () => {
           console.log('connection ID : ', socket.id);
         });
       }, []);
+      
+      useEffect(() => {
+        socket.on('test', () => {
+          // eslint-disable-next-line no-console
+          console.log('teest test teeeest : ', socket.id);
+        });
+      }, []);
+
+      useEffect(() => {
+        socket.on('disconnect', () => {
+          // eslint-disable-next-line no-console
+          console.log('disconnect!!!! : ', socket.id);
+        });
+      }, []);      
     
     const onClickSubmit = useCallback(() => {
         console.log(inputText); 
