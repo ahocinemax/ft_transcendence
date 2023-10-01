@@ -12,7 +12,6 @@ import { GameGateway } from './game.gateway';
         ScheduleModule.forRoot(),
         forwardRef(() => AppModule),
         forwardRef(() => UserModule),
-
     ],
     providers: [GameService, GameGateway],
     controllers: [WatchController, GameController],
