@@ -32,6 +32,33 @@ export class ChatService {
 		return ;
 	}
 
+	async	getUsersChannels(id: number) {
+		try {
+			const userData = await this.prisma.user.findUnique({
+				where: { id, },
+				select: {
+					owner: { where: { dm: true, }, },
+					admin: true,
+					member: true,
+					invited: true,
+				},
+			});
+			const availableChannels = [];
+			for (const [index, channel] of userData.owner.entries()) {
+				availableChannels.push(channel.id);
+			}
+			for (const [index, channel] of userData.admin.entries()) {
+				availableChannels.push(channel.id);
+			}
+			for (const [index, channel] of userData.member.entries()) {
+				availableChannels.push(channel.id);
+			}
+			for (const [index, channel] of userData.invited.entries()) {
+				availableChannels.push(channel.id);
+			}
+			return availableChannels;
+		}
+
 	async	get_message_by_id(id: number) {
 		try {
 			const message = await this.prisma.message.findUnique({

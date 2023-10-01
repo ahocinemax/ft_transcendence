@@ -1,4 +1,8 @@
-import { UseFilters } from '@nestjs/common';
+import { UseFilters,
+		ValidationPipe,
+		UsePipes }
+from '@nestjs/common';
+
 import { 
   ConnectedSocket,
   MessageBody,
@@ -6,10 +10,16 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+
+import { HttpToWsFilter, ProperWsFilter } from './filter/chat.filter';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { UserService } from 'src/user/user.service';
 import { ChannelDTO } from './dto/chat.dto';
+
+@UsePipes(new ValidationPipe())
+@UseFilters(new HttpToWsFilter())
+@UseFilters(new ProperWsFilter())
 
 @WebSocketGateway()
 export class ChatGateway {
@@ -20,6 +30,14 @@ export class ChatGateway {
   @SubscribeMessage('message')
   handleMessage(client: any, payload: any): string {
     return 'Hello world!';
+  }
+
+  async newConnection(id: number, @ConnectedSocket() client: Socket) {
+	const channels = await this.chatService.getUsersChannels(id);
+	await client.join('default_all');
+	if (channels)
+		for (const channel of channels)
+			await client.join(channel);
   }
 
   @SubscribeMessage('new channel')
