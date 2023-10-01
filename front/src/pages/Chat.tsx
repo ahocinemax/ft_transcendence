@@ -113,7 +113,7 @@ const Chat = () => {
       }, []);      
     
     const onClickSubmit = useCallback(() => {
-        console.log(inputText); 
+        console.log(`Sending message: ${inputText}`); 
         socket.emit('message', inputText);
     }, [inputText]);
 

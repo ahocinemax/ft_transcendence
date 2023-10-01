@@ -49,6 +49,6 @@ import { WebsocketModule } from './websocket/websocket.module';
         WebsocketModule,
       ],
   controllers: [AppController, FriendController, PendingController],
-  providers: [AppService, CloudinaryService, FriendService, PendingService],
+  providers: [AppService, CloudinaryService, FriendService, PendingService,],
 })
 export class AppModule {}
