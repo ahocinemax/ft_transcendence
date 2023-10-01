@@ -6,6 +6,8 @@ interface LoginProps {
 }
 
 function Login() {
+  const googleAuthUrl = process.env.REACT_APP_GOOGLE_AUTH_URL;
+  const fortytwoAuthUrl = process.env.REACT_APP_AUTH42_URL;
   return (
     <div className="Login">
       <div className="VideoContainer">{/* 
@@ -16,8 +18,12 @@ function Login() {
         <div className="Overlay"></div>
         <div className="Connexion_popup_container">
           <div className="logins_logos">
-            <div className="fortytwo_logo"></div>
-            <div className="google_logo"></div>
+            <a href={fortytwoAuthUrl}>
+              <div className="fortytwo_logo"></div>
+            </a>
+            <a href={googleAuthUrl}>
+             <div className="google_logo"></div>
+            </a>
           </div>
         </div>
       </div>
