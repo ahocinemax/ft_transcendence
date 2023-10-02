@@ -50,7 +50,7 @@ const Chat = () => {
             </div>
         </div>
 		<div className="main_part">
-            {/* <div className="Overlay"></div> */}
+            <div className="Overlay"></div> 
         </div>
     </div>
   );
