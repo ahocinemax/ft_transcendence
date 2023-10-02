@@ -57,7 +57,10 @@ export class ChatService {
 				availableChannels.push(channel.id);
 			}
 			return availableChannels;
+		} catch (error) {
+			throw new WsException(error.message);
 		}
+	}
 
 	async	get_message_by_id(id: number) {
 		try {
