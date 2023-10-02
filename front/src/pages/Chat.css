@@ -3,16 +3,19 @@
 }
 
 .main_part{
-    width: 75vw;
+    width: 80vw;
     height: 100vh;
     background-color: black;
     background-image: url(../../public/pixelartchat.gif);
 }
 
 .channel_part{
-    width: 25vw;
+    width: 20vw;
     height: 100vh;
     background-color: rgba(7, 39, 112, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .Overlay {
@@ -21,38 +24,43 @@
     left: 100vw;
     width: 76vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3); /* Adjust the opacity as needed */
+    background-color: rgba(0, 0, 0, 0.3);
     z-index: 1;
   }
 
 .channel_top_div{
+    display: flex;
+    justify-content: center;
     height: 10vh;
     width: 24vw;
     display : flex;
     align-items: center;
     flex-direction: row;
-    padding-left: 5vw;
+    padding-left: 3vw;
     box-shadow: 0px 0px 5px rgba(233, 14, 189, 0.2);
 }
 
 .searchbar_div{
+    display: flex;
+    justify-content: center;
     height: 10vh;
     width: 24vw;
     display : flex;
     align-items: center;
     flex-direction: row;
-    padding-left: 4.9vw;
     box-shadow: 0px 0px 5px rgba(21, 1, 17, 0.2);
 }
 
 .channel_div{
+    display: flex;
+    justify-content: center;
     height: 10vh;
     width: 24vw;
     display : flex;
     align-items: center;
     flex-direction: row;
-    padding-left: 5vw;
     box-shadow: 0px 0px 5px rgba(21, 1, 17, 0.2);
+    transition: background-color 1.15s ease;
 }
 
 .h1{
@@ -65,10 +73,15 @@
 }
 
 .channel_title{
-    color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
     font: bold;
     font-size: 1.25em;
     font-family: 'Press Start 2P', cursive;
     text-shadow:
-      2px 2px 2px rgba(0, 0, 0, 0.767);
+      0.35px 0.35px 0.35px rgb(158, 8, 145, 0.767);
 }
+  
+.channel_div:hover {
+    background-color: rgba(77, 103, 165, 0.85);
+    cursor: pointer;
+  }
