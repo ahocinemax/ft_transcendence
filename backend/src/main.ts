@@ -1,37 +1,31 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { join } from 'path';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { config } from 'dotenv';
-import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import * as socketIo from 'socket.io';
-config();
+import { PrismaService } from 'prisma/prisma.service';
+import { JwtGuard } from './auth/guard/jwt.guard';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {cors: true});
-  app.use(cookieParser());
+  const app = await NestFactory.create(AppModule);
+  const config = new DocumentBuilder()
+      .setTitle('TranscendenceAPI')
+      .setDescription('Transcendence game data provider')
+      .setVersion('1.0')
+      .addTag('Transcendence')
+      .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
   
-  const server = await app.listen(4000);
-  const io = new socketIo.Server(server, {
-    cors: {
-    origin: "http://localhost:3000",
-    allowedHeaders: ['content-type'],
-    methods: ['GET','HEAD','PUT','PATCH','POST','DELETE'],
-    credentials: true
-    }
-  });
-  io.on('coonnection', (socket) => {
-    console.log('New client connected');
-  });
-  //for test environement = NODE_ENV === development
-  if (process.env.NODE_ENV === 'development') {
-    app.use(express.json({ limit: '50mb' }));
-    app.use(express.urlencoded({ limit: '50mb', extended: true }));
-    console.log('NODE_ENV:', process.env.NODE_ENV);
-  app.setBaseViewsDir('/usr/src/app/views');
-  app.setViewEngine('ejs');
-  app.useStaticAssets(join(__dirname, '..', '..', 'views'));
-}
+  app.enableCors({ origin: process.env.FRONT_URL});
+  app.get(PrismaService);
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, }));
+
+  const reflector = new Reflector();
+  app.useGlobalGuards(new JwtGuard(reflector));
+
+  await app.listen(process.env.SERVER_PORT);
 }
 bootstrap();

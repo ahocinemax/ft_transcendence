@@ -3,7 +3,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 // APP
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 // PRISMA
 import { PrismaModule } from 'prisma/prisma.module';
 // USER
@@ -11,6 +10,7 @@ import { UserModule } from './user/user.module';
 // CONFIG
 import configuration from './config/configuration';
 // AUTH
+import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { Auth42Module } from './auth/auth42/auth42.module';
 // CLOUDINARY
@@ -45,6 +45,7 @@ import { ChatService } from './chat/chat.service';
         CloudinaryModule,
         GameModule,
         Auth2faModule,
+        JwtModule.register({ secret: process.env.JWT_SECRET }),
         FriendModule,
         BlockModule,
         PendingModule,
@@ -52,6 +53,6 @@ import { ChatService } from './chat/chat.service';
         ChatModule,
       ],
   controllers: [AppController, FriendController, PendingController],
-  providers: [AppService, CloudinaryService, FriendService, PendingService, ChatService],
+  providers: [CloudinaryService, FriendService, PendingService, ChatService],
 })
 export class AppModule {}

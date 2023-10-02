@@ -30,6 +30,7 @@
     "@nestjs/websockets": "^10.2.6",
     "@prisma/client": "^5.1.1",
     "@types/cookie": "^0.5.1",
+    "@nestjs/swagger": "^7.1.12",
     "@types/cookie-parser": "^1.4.3",
     "@types/socket.io-client": "^3.0.0",
     "async-mutex": "^0.4.0",
