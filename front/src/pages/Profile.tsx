@@ -17,7 +17,7 @@ const Profile = () => {
   return (
     <div className="profile">
 		<div className="bande">
-            <div className="profile_img"></div>
+            <div className="profile_img" style={{ backgroundImage: `url(${userData?.image})` }}></div>
             <div className="profile_info">
                 <h1 className="info">playerPseudo</h1>
                 <h1 className="info">{userData?.name}</h1>

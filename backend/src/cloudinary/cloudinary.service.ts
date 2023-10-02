@@ -16,7 +16,7 @@ export class CloudinaryService {
       console.log(process.env.CLOUDINARY_NAME);
       const uploadedResponse = await v2.uploader.upload(image, {
         upload_preset: 'ya7xyeys', 
-        allowed_formats: ['jpg', 'png'],
+        allowed_formats: ['jpg', 'png', 'webp'],
       });
       console.log("upload success");
       const imageURL = v2.url(uploadedResponse.public_id);

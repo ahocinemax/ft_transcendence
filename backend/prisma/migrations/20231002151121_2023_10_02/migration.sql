@@ -8,7 +8,7 @@ CREATE TABLE "User" (
     "status" TEXT DEFAULT 'offline',
     "games" INTEGER DEFAULT 0,
     "wins" INTEGER DEFAULT 0,
-    "winRate" DOUBLE PRECISION,
+    "winRate" DOUBLE PRECISION DEFAULT 0,
     "achievements" TEXT[],
     "score" INTEGER DEFAULT 0,
     "rank" INTEGER DEFAULT 0,

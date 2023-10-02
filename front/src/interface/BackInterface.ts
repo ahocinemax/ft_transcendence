@@ -3,6 +3,7 @@ export interface User {
     login42:        String;
     name:           String;
     email:          String;
+    image:          String;
     games:          number;  
     wins:           number; 
     status:         String;
