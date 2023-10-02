@@ -23,24 +23,24 @@ import { ChannelDTO } from './dto/chat.dto';
 
 @WebSocketGateway()
 export class ChatGateway {
-  @WebSocketServer()
-  server: Server;
+	@WebSocketServer()
+	server: Server;
 
-  constructor(private chatService: ChatService, private UserService: UserService) {}
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
-    return 'Hello world!';
-  }
+	constructor(private chatService: ChatService, private UserService: UserService) {}
+	@SubscribeMessage('message')
+	handleMessage(client: any, payload: any): string {
+		return 'Hello world!';
+	}
 
-  async newConnection(id: number, @ConnectedSocket() client: Socket) {
-	const channels = await this.chatService.getUsersChannels(id);
-	await client.join('default_all');
-	if (channels)
-		for (const channel of channels)
-			await client.join(channel);
-  }
+	async newConnection(id: number, @ConnectedSocket() client: Socket) {
+		const channels = await this.chatService.getUsersChannels(id);
+		await client.join('default_all');
+		if (channels)
+			for (const channel of channels)
+				await client.join(channel);
+	}
 
-  @SubscribeMessage('new channel')
+	@SubscribeMessage('new channel')
 	async handleNewChannel(
 		@MessageBody() data: ChannelDTO,
 		@ConnectedSocket() client: Socket,
@@ -55,8 +55,18 @@ export class ChatGateway {
 			const preview = await this.chatService.get_preview(channelId, data.email, );
 			await client.join(preview.name);
 			client.emit('add preview', preview);
-			// this.updateChannelRequest('update channel request', 'default_all');
+			this.server.in('update channel request').emit('default_all');
 			return data;
 		}
+	}
+
+	@SubscribeMessage('add preview')
+	async handleChatSearch(
+		@MessageBody() data: any,
+		@ConnectedSocket() client: Socket,
+	) {
+		const preview = await this.chatService.get_preview(data.channelId, data.email, );
+		await client.join(preview.name);
+		client.emit('add preview', preview);
 	}
 }
