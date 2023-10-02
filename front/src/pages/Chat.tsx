@@ -50,22 +50,21 @@ const Chat = () => {
             </div>
         </div>
 		<div className="main_part">
-            {/* <div className="Overlay"></div> */}
+            {/* <div className="Overlay"></div> }
         </div>
     </div>
   );
 }
 
 export default Chat;
-*/
 
-/*
     Chat version Mariko
 */
 import React, { useState, useEffect, useCallback }  from 'react';
 import './Chat.css'; 
 import SearchComponent from './components/SearchComponent';
 import io from 'socket.io-client';
+import { Tag, newChannel } from "./chat.type";
 
 const socket = io('http://localhost:4000'); 
 
@@ -75,7 +74,40 @@ const Chat = () => {
     const [inputText, setInputText] = useState('');
     const [chatLog, setChatLog] = useState<string[]>([]);
     const [msg, setMsg] = useState('');
+    const [channelName, setChannelName] = useState('');
+    const [newChannelId, setNewChannelId] = useState('');
+    const email = localStorage.getItem("userEmail");
+    const [userTag, setUserTag] = useState<Tag[]>([]);
+    const [roomName, setRoomName] = useState("");
+    const [roomPass, setRoomPass] = useState("");
+    const [isPrivate, setPrivate] = useState(false);
+    const [isPassword, setIsPassword] = useState(false);
+    const [addedMember, setAddMember] = useState<Tag[]>([]);
 
+    const createNewChannel = () => {
+        let data: newChannel = {
+            name: roomName,
+            private: isPrivate,
+            isPassword: isPassword,
+            password: roomPass,
+            email: email,
+            members: addedMember,
+        }
+        socket.emit("new channel", data, (data: newChannel) => {
+          socket.emit('fetch new channel', data);
+        });
+        initVars();
+        // onNewRoomRequest();
+        socket.emit("get search suggest", email);
+    }
+
+    const initVars = () => {
+        setRoomName("");
+        setAddMember([]);
+        setPrivate(false);
+        setIsPassword(false);
+        setRoomPass("");
+    }
     
     const handleSearch = (query: string) => {
         // Insérez votre logique de recherche ici
@@ -109,7 +141,7 @@ const Chat = () => {
           console.log('recieved : ', message);
           setMsg(message);
         });
-      }, []);
+      }, []); 
     
       useEffect(() => {
         setChatLog(prevChatLog => [...prevChatLog, msg]);
@@ -151,6 +183,19 @@ const Chat = () => {
             </div>
             <div className="main_part">
                 <div className="Overlay"></div>
+                <div>
+                <h1>Créer un nouveau canal de chat</h1>
+                <div>
+                    <input
+                    type="text"
+                    placeholder="Nom du canal"
+                    value={channelName}
+                    onChange={(e) => setChannelName(e.target.value)}
+                    />
+                    <button onClick={createNewChannel}>Créer</button>
+                </div>
+                {newChannelId && <p>Nouveau canal créé avec l'ID : {newChannelId}</p>}
+                </div>
                 <div className="chat_content">
                     <input
                         id="inputText"

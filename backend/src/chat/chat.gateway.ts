@@ -1,6 +1,7 @@
 import { UseFilters,
 		ValidationPipe,
-		UsePipes }
+		UsePipes,
+		Logger }
 from '@nestjs/common';
 
 import { 
@@ -26,12 +27,14 @@ export class ChatGateway {
 	@WebSocketServer()
 	server: Server;
 
+	private logger: Logger = new Logger('ChatGateway');
+
 	constructor(private chatService: ChatService, private UserService: UserService) {}
 	@SubscribeMessage('message')
 	handleMessage(client: any, payload: any): string {
 		return 'Hello world!';
 	}
-
+ 
 	async newConnection(id: number, @ConnectedSocket() client: Socket) {
 		const channels = await this.chatService.getUsersChannels(id);
 		await client.join('default_all');
@@ -56,6 +59,8 @@ export class ChatGateway {
 			await client.join(preview.name);
 			client.emit('add preview', preview);
 			this.server.in('update channel request').emit('default_all');
+			console.log(data);
+			this.logger.log(data);
 			return data;
 		}
 	}

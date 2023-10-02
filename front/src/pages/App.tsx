@@ -10,6 +10,13 @@ import Profile from './Profile';
 import Settings from './Settings';
 import Gamepage from './Gamepage';
 import CreateProfile from './CreateProfile';
+import { io } from "socket.io-client";
+
+const socketOptions = {
+    transportOptions: { polling: { extraHeaders: { token: localStorage.getItem("userToken"), }, }, },
+};
+
+export const socket = io(`${process.env.REACT_APP_BACK_URL}`, socketOptions);
 
 function App() {
     return (
