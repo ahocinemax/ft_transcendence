@@ -49,6 +49,7 @@ export class WebsocketGateway implements OnGatewayInit, OnGatewayConnection, OnG
     this.logger.log(`message received: ${data}`);
     console.log('payload: ', data);
     console.log(client);
+    return data;
   }
 }
 

@@ -74,10 +74,10 @@ services:
     #          && npm run build
     #          && npm install -g serve
     #          && serve -s build -l 3000"
-    environment:
-      - PUBLIC_URL=${FRONT_URL}
-      - REACT_APP_BACK_URL=${BACK_URL}
-      - REACT_APP_BACK_PORT=${SERVER_PORT}
+    #environment:
+    #  - PUBLIC_URL=${FRONT_URL}
+    #  - REACT_APP_BACK_URL=${BACK_URL}
+    #  - REACT_APP_BACK_PORT=${SERVER_PORT}
     ports:
       - 3000:3000
     depends_on:

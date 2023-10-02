@@ -7,7 +7,12 @@ const requestConfig : RequestInit = {
 
 export const UserApi = {
     async get(url: string) {
-        return await fetch(`http://localhost:4000${url}`, requestConfig);
+        try {
+            return await fetch(`${process.env.REACT_APP_SERVER_HOST}${url}`, requestConfig);
+        } catch (error) {
+            console.error("Fetch failed:", error);
+            throw error;
+        }
     },
 
     async post(url: string, data: unknown) {

@@ -16,14 +16,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {cors: true});
   app.use(cookieParser());
   //cors for http requests
-  app.enableCors({
-        origin: ['http://localhost:4000', 'http://localhost:3000'],
-        allowedHeaders: ['content-type'],
-		    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-		    preflightContinue: false,
-		    optionsSuccessStatus: 204,
-		    credentials: true,
-	}); 
+
 
   const server = await app.listen(4000);
   //cors for websocket
@@ -41,16 +34,32 @@ async function bootstrap() {
   });
   const websocketService = app.get(WebsocketService);
   websocketService.setIo(io);
+  //console.log(websocketService.io);
+  app.enableCors({
+    origin: ['http://localhost:4000', 'http://localhost:3000'],
+    allowedHeaders: ['content-type'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true,
+}); 
   const websocketGateway = app.get(WebsocketGateway);
   websocketGateway.server = io;
   //for test environement = NODE_ENV === development
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
   if (process.env.NODE_ENV === 'development') {
-    app.use(express.json({ limit: '50mb' }));
-    app.use(express.urlencoded({ limit: '50mb', extended: true }));
     console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('development mode (back testpage available)');
     app.setBaseViewsDir('/usr/src/app/views');
     app.setViewEngine('ejs');
     app.useStaticAssets(join(__dirname, '..', '..', 'views'));
   }
+  else
+  {
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('production mode (back testpage unavailable)');
+  }
+
 }
 bootstrap();
