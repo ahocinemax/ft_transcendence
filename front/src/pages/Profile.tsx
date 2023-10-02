@@ -7,10 +7,10 @@ const Profile = () => {
 		<div className="bande">
             <div className="profile_img"></div>
             <div className="profile_info">
-                <h1 className="info">playerPseudo</h1>
-                <h1 className="info">whichTeam?</h1>
-                <h1 className="info">whichPosition?</h1>
-                <h1 className="info">whichTeamPosition?</h1>
+                <h1 className="info">#playerPseudo</h1>
+                <h1 className="info">#whichTeam?</h1>
+                <h1 className="info">#Score?</h1>
+                <h1 className="info">#Rank?</h1>
             </div>
         </div>
         <div className="centered_div_container">
