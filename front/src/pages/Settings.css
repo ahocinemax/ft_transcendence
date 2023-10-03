@@ -136,6 +136,26 @@
 
 .popup_enter_button:hover{
     background-color: rgb(116, 126, 114);
-    box-shadow: 1px 1px 1px rgb(63, 191, 97);
+    box-shadow: 1px 1px 1px rgb(63, 96, 195);
     transform: translateY(-2px);
+}
+
+.change_pseudo_button {
+    margin-top: 2.5%;
+    border-radius: 20%;
+    background-color: rgb(52, 59, 51);
+    box-shadow: 0.5px 0.5px 0.5px white;
+    transition: transform 0.3s ease;
+}
+
+.change_pseudo_button:hover{
+    background-color: rgb(116, 126, 114);
+    box-shadow: 1px 1px 1px rgb(63, 96, 195);
+    transform: translateY(-1px);
+}
+
+.change_nick_input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
