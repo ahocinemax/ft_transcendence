@@ -5,6 +5,7 @@ CREATE TABLE "User" (
     "name" TEXT DEFAULT '',
     "email" TEXT DEFAULT '',
     "image" TEXT DEFAULT 'https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png',
+    "nickname" TEXT DEFAULT '',
     "status" TEXT DEFAULT 'offline',
     "games" INTEGER DEFAULT 0,
     "wins" INTEGER DEFAULT 0,
@@ -133,6 +134,9 @@ CREATE UNIQUE INDEX "User_name_key" ON "User"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_nickname_key" ON "User"("nickname");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Channel_name_key" ON "Channel"("name");

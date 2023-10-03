@@ -9,7 +9,7 @@ const Profile = () => {
 
     useEffect(() => {
       const fetchData = async () => {
-        const user = await backFunctions.getUser('Mariko Tsuji');//your name~
+        const user = await backFunctions.getUserByToken();//your name~
         setUserData(user);
       };
       fetchData();
