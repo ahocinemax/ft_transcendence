@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Settings.css';
+import './CreateProfile.css';
 
 const Settings = () => {
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
@@ -47,23 +47,10 @@ const Settings = () => {
   };
 
   return (
-    <div className="settings" onClick={closeModal}>
-      <h1 className="Settingsh1">Settings</h1>
+    <div className="settings">
+      <h1 className="Settingsh1">Create profile</h1>
       <div className="settings_container">
         <div className="round_div_settings_img"></div>
-        <p className="info">{pseudo}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
-        <p className="info">#Rank</p>
-        <div className="twofa_container">
-          <span
-            className={`twoFA_status ${!is2FAEnabled ? 'clickable' : ''}`}
-            onClick={toggle2FA}
-          >
-            {is2FAEnabled ? '2FA Activé' : '2FA Désactivé'}
-          </span>
-          <div className={`switch ${is2FAEnabled ? 'active' : ''}`} onClick={toggle2FA}>
-            <div className="switch-button"></div>
-          </div>
-        </div>
       </div>
 
       {/* Swap nickname */}
@@ -73,21 +60,10 @@ const Settings = () => {
             className="change_nick_input"
             value={newPseudo}
             onChange={handleNewPseudoChange}
-            placeholder="Change nickname"
+            placeholder="Nickname"
           />
-          <button className="change_pseudo_button" onClick={updatePseudo}>Changer le pseudo</button>
+          <button className="change_pseudo_button" onClick={updatePseudo}>Choose nickname</button>
         </div>
-
-      {/* PopUp */}
-      {isModalOpen && (
-        <div className="modal" onClick={closeModal}>
-          <div className="modal_content" onClick={(e) => e.stopPropagation()}>
-            <p className="info_tiny">Enter the code received by e-mail to enable 2FA :</p>
-            <input type="number" placeholder="Code" />
-            <button className="popup_enter_button" onClick={closeModal}>Enter</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
