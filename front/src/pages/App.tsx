@@ -9,6 +9,7 @@ import Chat from './Chat';
 import Profile from './Profile';
 import Settings from './Settings';
 import Gamepage from './Gamepage';
+import CreateProfile from './CreateProfile';
 
 function App() {
     return (
@@ -24,6 +25,7 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/gamepage" element={<Gamepage />} />
+                    <Route path="/create" element={<CreateProfile />} />
                 </Routes>
             </div>
         </div>
