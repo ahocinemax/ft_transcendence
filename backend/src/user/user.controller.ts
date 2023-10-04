@@ -29,14 +29,14 @@ export class UserController {
 	private logger: Logger = new Logger('User Controller');
 
 	@Get()
-	async getUsers(@Res() res: Response) {
-		if (process.env.NODE_ENV === 'development') {
-	  		const users = await this.userService.getAllUsers();
-	  		res.render('users.ejs', { users });
-		} // users is a .ejs file under the views directory
-		else {
+	async getUsers(@Req() req: Request) {
+		//if (process.env.NODE_ENV === 'development') {
+	  	//	const users = await this.userService.getAllUsers();
+	  	//	res.render('users.ejs', { users });
+		//} // users is a .ejs file under the views directory
+		//else {
 			return this.userService.getAllUsers();	
-		}
+		//}
 	}
 	
 	@Get(':name')

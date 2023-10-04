@@ -45,7 +45,7 @@ export class AuthController {
           res.redirect("/user");
         }
         else if (process.env.NODE_ENV === 'production') {
-          res.json(user);
+          res.status(301).redirect(process.env.CLIENT_HOST);
         } 
       }
     else {
@@ -93,7 +93,7 @@ export class AuthController {
     res.redirect("/user");
   }
   else if (process.env.NODE_ENV === 'production') {
-  res.json(user);
+    res.status(301).redirect(process.env.CLIENT_HOST);
   } 
 }
 }

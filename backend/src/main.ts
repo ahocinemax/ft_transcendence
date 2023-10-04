@@ -5,6 +5,10 @@ import { AppModule } from './app.module';
 import { join } from 'path';
 import * as express from 'express';
 import * as socketIo from 'socket.io';
+import { Server, Socket } from 'socket.io';
+import { WebsocketGateway } from './websocket/websocket.gateway';
+import { WebsocketService } from './websocket/websocket.service';
+
 import { PrismaService } from 'prisma/prisma.service';
 import { JwtGuard } from './auth/guard/jwt.guard';
 

@@ -129,22 +129,36 @@ const Chat = () => {
           console.log('connection ID : ', socket.id);
         });
       }, []);
+      
+      useEffect(() => {
+        socket.on('test', () => {
+          // eslint-disable-next-line no-console
+          console.log('teest test teeeest : ', socket.id);
+        });
+      }, []);
+
+      useEffect(() => {
+        socket.on('disconnect', () => {
+          // eslint-disable-next-line no-console
+          console.log('disconnect!!!! : ', socket.id);
+        });
+      }, []);      
     
     const onClickSubmit = useCallback(() => {
-        console.log(inputText); 
-        socket.emit('chatToServer', inputText);
+        console.log(`Sending message: ${inputText}`); 
+        socket.emit('message', inputText);
     }, [inputText]);
 
 
     useEffect(() => {
-        socket.on('chatToServer', (message: string) => {
+        socket.on('message', (message: string) => {
           console.log('recieved : ', message);
           setMsg(message);
         });
       }, []); 
     
       useEffect(() => {
-        setChatLog(prevChatLog => [...prevChatLog, msg]);
+        setChatLog(ChatLog => [...ChatLog, msg]);
       }, [msg]);
 
     return (
