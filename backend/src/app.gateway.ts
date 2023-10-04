@@ -51,12 +51,12 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect, OnG
             if (!user)
                 throw new WsException('Invalid token');
             
+            this.logger.log(`Connect client: ${userId}`);
             this.userStatusMap.set(client.data.id, Status.online);
             const serializedMap = [...this.userStatusMap.entries()];
             this.server.emit('update-status', serializedMap);
             await this.clientSocketMap.set(userId, client);
             await this.chatGateway.newConnection(userId, client);
-            this.logger.log(`Client connected: ${client.id}`);
         } catch (error) {
             return false;
         }
@@ -79,7 +79,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect, OnG
 
     async afterInit() {
         this.logger.log('AppGateway Initialized!!');
-        this.logger.log(`Server is running : ${this.server.eventNames()}`);
+        this.logger.log(`Server is running`);
     }
 }
 

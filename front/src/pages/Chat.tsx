@@ -66,7 +66,8 @@ import SearchComponent from './components/SearchComponent';
 import io from 'socket.io-client';
 import { Tag, newChannel } from "./chat.type";
 
-const socket = io('http://localhost:4000'); 
+const socket = io('http://localhost:4000');
+console.log(socket);
 
 const Chat = () => {
     const [num] =  useState(0);
