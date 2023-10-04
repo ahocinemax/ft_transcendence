@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Tag, newChannel } from "./chat.type";
+import { Tag, newChannelType } from "./chat.type";
 import Switch from "react-switch";
 import { socket } from "../App";
 
-export function newChannel({newChannelRequest, onNewChannelRequest, updateStatus} : {
+export function NewChannel({newChannelRequest, onNewChannelRequest, updateStatus} : {
                             newChannelRequest: boolean,
                             onNewChannelRequest: () => void,
                             updateStatus: number}) {
@@ -16,7 +16,7 @@ export function newChannel({newChannelRequest, onNewChannelRequest, updateStatus
     const [addedMember, setAddMember] = useState<Tag[]>([]);
 
     const createNewChannel = () => {
-        let data: newChannel = {
+        let data: newChannelType = {
             name: roomName,
             private: isPrivate,
             isPassword: isPassword,
@@ -25,7 +25,7 @@ export function newChannel({newChannelRequest, onNewChannelRequest, updateStatus
             members: addedMember,
         }
         console.log(data);
-        socket.emit("new channel", data, (data: newChannel) => {
+        socket.emit("new channel", data, (data: newChannelType) => {
             socket.emit('fetch new channel', data);
         });
         initVars();

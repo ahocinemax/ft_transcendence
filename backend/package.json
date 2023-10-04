@@ -55,6 +55,7 @@
     "passport-google-oauth20": "^2.0.0",
     "path": "^0.12.7",
     "pg": "^8.11.2",
+    "react-switch": "^7.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "socket.io-client": "^4.7.2",

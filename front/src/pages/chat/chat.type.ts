@@ -1,4 +1,4 @@
-export type newChannel = {
+export type newChannelType = {
     name: string;
     private: boolean;
     isPassword: boolean;
