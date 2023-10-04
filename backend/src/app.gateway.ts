@@ -10,18 +10,18 @@ import { WebSocketGateway,
          WsException,
          OnGatewayConnection,
          OnGatewayDisconnect,
+         OnGatewayInit,
          BaseWsExceptionFilter,
          WebSocketServer,
          SubscribeMessage,
          MessageBody }
 from '@nestjs/websockets';
-import { Client } from 'socket.io/dist/client';
 
 /**
  * The AppGateway class is responsible for handling WebSocket connections and disconnections.
  */
 @WebSocketGateway({ cors: { origin: process.env.FRONT_URL}})
-export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     constructor(
         private readonly jwtService: JwtService,
         private readonly chatService: ChatService,
@@ -56,11 +56,10 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.server.emit('update-status', serializedMap);
             await this.clientSocketMap.set(userId, client);
             await this.chatGateway.newConnection(userId, client);
-
+            this.logger.log(`Client connected: ${client.id}`);
         } catch (error) {
             return false;
         }
-
     }
 
     async handleDisconnect(client: Socket) {
@@ -76,6 +75,11 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
             return ;
 
         client.removeAllListeners();
+    }
+
+    async afterInit() {
+        this.logger.log('AppGateway Initialized!!');
+        this.logger.log(`Server is running : ${this.server.eventNames()}`);
     }
 }
 

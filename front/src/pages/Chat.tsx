@@ -93,6 +93,7 @@ const Chat = () => {
             email: email,
             members: addedMember,
         }
+        console.log(data);
         socket.emit("new channel", data, (data: newChannel) => {
           socket.emit('fetch new channel', data);
         });
