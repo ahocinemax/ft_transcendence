@@ -34,7 +34,7 @@ export class ChatGateway {
 	handleMessage(client: any, payload: any): string {
 		return 'Hello world!';
 	}
- 
+
 	async newConnection(id: number, @ConnectedSocket() client: Socket) {
 		const channels = await this.chatService.getUsersChannels(id);
 		await client.join('default_all');

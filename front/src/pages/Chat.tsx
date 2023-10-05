@@ -14,7 +14,7 @@ const Chat = () => {
     const [msg, setMsg] = useState('');
     const [updateStatus, setUpdateStatus] = useState(0);
     const [channelName, setChannelName] = useState('');
-    const [newChannelRequest, setNewChannelRequest] = useState(false);
+    const [newChannelRequest, setNewChannelRequest] = useState(true);
 
     const handleSearch = (query: string) => {
     // Insérez votre logique de recherche ici
@@ -110,8 +110,11 @@ const Chat = () => {
         <div
           onClick={newChannelDisappear}
           className="card-disappear-click-zone"
-          style={{display: newChannelRequest ? "" : "none"}}>
-          <div 
+          style={{
+            display: newChannelRequest ? '' : 'none',
+            backgroundColor: 'pink',
+          }}>
+        <div 
             className="add-zone"
             // prevent event to propagate to the parent
             onClick={event => event.stopPropagation()}>

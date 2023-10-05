@@ -5,7 +5,6 @@ import { Request, Response } from "express";
 import { UserService } from "src/user/user.service";
 import { UserDto } from "./dto/user.dto";
 import { GoogleAuthGuard } from "./google-auth/google-auth.guard";
-import { User } from "@prisma/client";
 import { GoogleAuthService } from "./google-auth/google-auth.service";
 import { AuthGuard } from '@nestjs/passport'
 

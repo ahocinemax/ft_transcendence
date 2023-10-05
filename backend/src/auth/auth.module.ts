@@ -8,6 +8,8 @@ import { UserService } from "src/user/user.service";
 import { GoogleAuthModule } from './google-auth/google-auth.module';
 import { GoogleAuthService } from "./google-auth/google-auth.service";
 import { GameModule } from "src/game/game.module";
+import { JwtModule } from '@nestjs/jwt';
+import { jwtStrategy, RtStrategy, FortyTwoStrategy } from './strategy';
 
 @Module({
   imports: [PrismaModule, Auth42Module, UserModule, GoogleAuthModule, GameModule],
