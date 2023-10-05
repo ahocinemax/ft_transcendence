@@ -23,29 +23,37 @@ export class AuthController {
   async getUserByToken(@Req() req: Request) {
     return await this.authService.getUserByToken(req);
   }
-  @Post("Oauth")
+  @Post("Oauth42")
   async userOauthCreationInDataBase(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
    await this.authService.handleDataBaseCreation(req, res, UserDto);
+   console.log("Oauth42");
   }
 
   @Get("callback")
   async getToken(@Req() req: Request, @Res() res: Response) {
     const codeFromApi = req.query.code as string;
     const token = await this.Auth42.getAccessToken(codeFromApi);
+    console.log("token", token);
     const user42infos = await this.Auth42.access42UserInformation(
       token.access_token
     );
     if (user42infos) {
       // Use the information from the 42API to create the user in the database.
       const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, true);
-        this.authService.createCookies(res, token);
-        const userAlreadyRegisterd = await this.authService.getUserByEmail(user.email);
-        this.authService.updateCookies(res, token, userAlreadyRegisterd);
+        //this.authService.createCookies(res, token);
+      res.cookie("access_token", token,
+      {
+        expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
+        httpOnly: true,
+      });
+      console.log("Set-Cookie header:", res.get('Set-Cookie'));
+        const userAlreadyRegisterd = await this.authService.getUserByEmail(user42infos.email);
+        //this.authService.updateCookies(res, token, userAlreadyRegisterd);
         if (process.env.NODE_ENV === 'development') {
           res.redirect("/user");
         }
         else if (process.env.NODE_ENV === 'production') {
-          res.status(301).redirect(process.env.CLIENT_HOST);
+          res.status(301).redirect(process.env.CLIENT_CREATE);
         } 
       }
     else {

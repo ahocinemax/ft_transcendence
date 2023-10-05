@@ -17,6 +17,10 @@ export const backFunctions = {
 		const response = await UserApi.get('/auth/getuserbytoken');
 		return await response.json();
 	},
-
+ 
+    async checkIfTokenValid(): Promise<any> {
+		const response = await UserApi.get('/auth/token');
+		return await response.json();
+	},    
     
 };

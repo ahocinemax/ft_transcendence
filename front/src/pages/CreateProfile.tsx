@@ -1,11 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CreateProfile.css';
+import { useNavigate } from 'react-router-dom';
+import { backFunctions } from '../outils_back/BackFunctions';
 
 const Settings = () => {
+  const navigate = useNavigate();
+  const [token, setToken] = useState(false); // État pour stocker le token
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pseudo, setPseudo] = useState('#PlayerPseudo'); // État pour stocker le pseudo
   const [newPseudo, setNewPseudo] = useState(''); // État pour stocker le nouveau pseudo
+  const [tokenExists, setTokenExists] = useState(false);
+  async function checkCreateUser () {
+    const user = await backFunctions.getUserByToken();
+    if (user && user.nickName){
+      console.log('User already created');
+      console.log(user.nickNname);
+      navigate('/');
+      return;
+    }
+  }
+
+  async function checkUserToken() {
+    const response = await backFunctions.checkIfTokenValid();
+    if (response.statusCode == 400 || response.statusCode == 403) {
+      navigate("/");
+      return;
+    }
+    setTokenExists(true);
+  }
 
   const toggle2FA = () => {
     if (!is2FAEnabled) {
@@ -45,6 +68,12 @@ const Settings = () => {
         setPseudo(newPseudo);
     setNewPseudo(''); // Réinitialiser le champ de saisie
   };
+
+  useEffect(() => {
+    checkCreateUser();
+    //checkUserToken();
+  }, []);
+  
 
   return (
     <div className="settings">

@@ -21,9 +21,9 @@ export class Auth42Service {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `grant_type=authorization_code&client_id=${process.env.API42_ID}&client_secret=${process.env.API42_SECRET}&code=${req}&redirect_uri=${process.env.API42_URI}`,
       });
-      //console.log("Status code:", response.status);
+      console.log("Status code:", response.status);
       const responseText = await response.text();
-      //console.log("AccessToken(Response text):", responseText);
+      //console.log("AccessToken(Response text):!!!!!!!!!", responseText);
       const data = JSON.parse(responseText);
       //const data = await response.json();      
       if (!data) {
@@ -56,9 +56,9 @@ export class Auth42Service {
         const data = await response.json();
         return data;
       }
-      else {
-        console.log("Received a non-ok response");
-      }
+      //else {
+      //  console.log("Received a non-ok response");
+     // }
     }
     catch (error) {
       console.log("Fetch42 user error", error);
@@ -72,6 +72,7 @@ export class Auth42Service {
     name: string,
     isRegistered: boolean
   ) {
+    console.log("Received token:", token);
     try {
       //check if user is already logged or not
       let userAlreadyRegisterd = await this.prisma.user.findUnique({
@@ -96,7 +97,6 @@ export class Auth42Service {
         return userAlreadyRegisterd;
       }
       else {
-        console.log("user not exist");
         const user = await this.prisma.user.create({
           data: {
             achievements: [],

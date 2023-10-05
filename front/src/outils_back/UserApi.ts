@@ -1,14 +1,14 @@
 const requestConfig : RequestInit = {
     headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json, text/plain,',
+        Accept: 'application/json, text/plain,',
     },
 };
 
 export const UserApi = {
     async get(url: string) {
         try {
-            return await fetch(`${process.env.REACT_APP_SERVER_HOST}${url}`, requestConfig);
+            return await fetch(`${process.env.REACT_APP_SERVER_HOST}${url}`, {...requestConfig, method: 'GET'});
         } catch (error) {
             console.error("Fetch failed:", error);
             throw error;

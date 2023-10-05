@@ -44,10 +44,11 @@ async createDataBase42User(
 
   async handleDataBaseCreation(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
     const token: string = req.cookies.token;
+    console.log("token", token);
     const user42infos = await this.Auth42.access42UserInformation(token);
     if (user42infos)
       {
-        const finalUser = await this.Auth42.createDataBase42User(    user42infos,
+        const finalUser = await this.Auth42.createDataBase42User(user42infos,
         token,
         req.body.name,
         req.body.isRegistered);
@@ -62,7 +63,8 @@ async createDataBase42User(
 
   async checkIfTokenValid(@Req() req: Request, @Res() res: Response) {
     const token: string = req.cookies.token;
-
+    console.log("token", token);
+    console.log("req!!!!!!!!!!!!!!!!!!!!!!", req.cookies);
     const token42Valid = await this.Auth42.access42UserInformation(token); // check token from user if user is from 42
     if (!token42Valid) {
       throw new BadRequestException("InvalidToken", {
@@ -79,15 +81,16 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    //console.log("request : getUserbyToken", req.cookies.accessToken);
+    console.log("request : getUserbyToken: ", req.cookies);
     try {
-      const accessToken = req.cookies.accessToken;
-      //console.log("req.cookies.accessToken", req.cookies.accessToken);
+      const accessToken = req.cookies.access_token;
+      console.log("req.cookies.access_token", req.cookies.access_token);
       const user = await this.prisma.user.findFirst({
         where: {
           accessToken: accessToken,
         },
       });
+      //console.log("user", user);
       if (!user)
       {
         throw new HttpException(
@@ -98,12 +101,14 @@ async createDataBase42User(
           };
       return user;
     } catch (error) {
-      //console.error("Error getUserbyToken", error); 
+      console.error("Error getUserbyToken", error);
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: "Error to get the user by token"},
-         HttpStatus.BAD_REQUEST);
+          error: error.response ? error.response.error : "Error to get the user by token"
+        },
+         HttpStatus.BAD_REQUEST
+         );
         };
   }
 
@@ -119,16 +124,20 @@ async createDataBase42User(
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000), 
         httpOnly: true,
       });
-
   }
 
   async updateCookies(@Res() res: Response, token: any, userInfos: any) {
     try {
       if (userInfos)
       { const name = userInfos.name;
-        const user = await this.prisma.user.update({where: {name: name,},
-        data: {  accessToken: token.accessToken,},
+        const user = await this.prisma.user.update({
+          where: {name: name,},
+          data: {  accessToken: token.accessToken,},
         });
+        //res.cookie("token", token.accessToken, {
+        //expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
+        //  httpOnly: true,
+        //});
         return user;
       }
       else
@@ -137,7 +146,7 @@ async createDataBase42User(
     {
         throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
-        error: "Error to update the cookes"},
+        error: "Error to update the cookies"},
         HttpStatus.BAD_REQUEST);
     }
     }

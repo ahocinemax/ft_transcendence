@@ -15,6 +15,7 @@ model User {
   login42       String?
 
   name          String?   @unique @default("")
+  nickName      String?   @unique @default("")
   email         String?   @unique @default("")
   image         String?   @default("https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png")
   status        String?   @default("offline")
