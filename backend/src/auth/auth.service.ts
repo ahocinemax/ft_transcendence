@@ -81,10 +81,10 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    console.log("request : getUserbyToken: ", req.cookies);
+    //console.log("request : getUserbyToken: ", req);
     try {
       const accessToken = req.cookies.access_token;
-      console.log("req.cookies.access_token", req.cookies.access_token);
+      //console.log("req.cookies.access_token(controller)", req.cookies.access_token);
       const user = await this.prisma.user.findFirst({
         where: {
           accessToken: accessToken,

@@ -21,8 +21,10 @@ export class AuthController {
   
   @Get("getuserbytoken")
   async getUserByToken(@Req() req: Request) {
+    console.log("req.cookies(controller!!!!!!)", req.cookies);
     return await this.authService.getUserByToken(req);
   }
+
   @Post("Oauth42")
   async userOauthCreationInDataBase(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
    await this.authService.handleDataBaseCreation(req, res, UserDto);
@@ -41,10 +43,10 @@ export class AuthController {
       // Use the information from the 42API to create the user in the database.
       const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, true);
         //this.authService.createCookies(res, token);
-      res.cookie("access_token", token,
+      res.cookie("access_token", token.access_token,
       {
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
-        httpOnly: true,
+        httpOnly: false,
       });
       console.log("Set-Cookie header:", res.get('Set-Cookie'));
         const userAlreadyRegisterd = await this.authService.getUserByEmail(user42infos.email);
