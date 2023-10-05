@@ -5,7 +5,7 @@
  }
 
 .BackgroundImage{
-  background-image: url("../../public/SpaceWithPlanet.png");
+  background-image: url("../../../public/SpaceWithPlanet.png");
   background-position: center center;
   width: 100vw;
   height: 100vh;
@@ -14,7 +14,7 @@
  .logo_42pong{
   width: 100%;
   height: 15%;
-  background-image: url("../../public/42PongWhiteTransparent.png");
+  background-image: url("../../../public/42PongWhiteTransparent.png");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: contain;

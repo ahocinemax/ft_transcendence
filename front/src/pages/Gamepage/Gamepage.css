@@ -1,5 +1,5 @@
 .Gamebackground {
-    background-image: url(../../public/SpaceWithPlanet.png);
+    background-image: url(../../../public/SpaceWithPlanet.png);
     height: 100vh;
     display: flex;
     justify-content: center;

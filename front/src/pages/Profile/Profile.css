@@ -14,7 +14,7 @@
     justify-content: center;
     height: 25vh;
     padding: 2.5vh 10vw;
-    background-image: url(../../public/alliance_background.jpg);
+    background-image: url(../../../public/alliance_background.jpg);
     background-size: cover;
     background-position: center;
     box-shadow: 0 5px 4px rgba(0, 0, 0, 0.2);
@@ -25,7 +25,7 @@
     height: 192px;
     width: 192px;
     border-radius: 50%;
-    background-image: url(../../public/profile_img/avatar.png);
+    background-image: url(../../../public/profile_img/avatar.png);
     background-size: cover;
     background-position: center;
     flex-grow: 0;

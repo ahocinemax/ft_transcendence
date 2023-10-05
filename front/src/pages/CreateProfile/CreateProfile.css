@@ -32,7 +32,7 @@
     width: 150px;
     border-radius: 50%;
     background-color: red;
-    background-image: url(../../public/profile_img/avatar.png);
+    background-image: url(../../../public/profile_img/avatar.png);
     background-size: cover;
     background-position: center;
     margin-bottom: 10%;
