@@ -9,11 +9,12 @@ import { GoogleAuthModule } from './google-auth/google-auth.module';
 import { GoogleAuthService } from "./google-auth/google-auth.service";
 import { GameModule } from "src/game/game.module";
 import { JwtModule } from '@nestjs/jwt';
-import { jwtStrategy, RtStrategy, FortyTwoStrategy } from './strategy';
+import { jwtStrategy, FortyTwoStrategy } from './strategy';
 
 @Module({
-  imports: [PrismaModule, Auth42Module, UserModule, GoogleAuthModule, GameModule],
+  imports: [PrismaModule, Auth42Module, UserModule, GoogleAuthModule, GameModule, JwtModule.register({}),],
   controllers: [AuthController],
-  providers: [AuthService, UserService, GoogleAuthService],
+  providers: [AuthService, UserService, GoogleAuthService, jwtStrategy, FortyTwoStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {} 

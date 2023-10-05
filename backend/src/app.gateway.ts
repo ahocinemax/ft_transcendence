@@ -44,7 +44,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect, OnG
      */
     async handleConnection(client: Socket, ...args: any[]) {
         try {
-            client.setMaxListeners(10);
+            client.setMaxListeners(42);
             const userId: number = this.jwtService.verify(String(client.handshake.headers.token), { secret: process.env.JWT_SECRET }).sub;
             const user = await this.userService.getUser(userId);
             client.data.id = userId;

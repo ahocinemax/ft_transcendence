@@ -4,28 +4,25 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
 import { AuthService } from '../auth.service';
 
-import { Profile_42 } from '../interfaces/42.interface';
+import { Profile42 } from '../interface/42.interface';
 
 @Injectable()
-export class FortyTwoStrategy extends PassportStrategy(Strategy, '42auth') {
-	/**
-	 * 42 API Auth strategy object constructor
-	 */
+export class FortyTwoStrategy extends PassportStrategy(Strategy, 'auth42') {
 	constructor(private readonly authService: AuthService) {
 		super({
-			clientID: process.env.FORTYTWO_ID,
-			clientSecret: process.env.FORTYTWO_SECRET,
-			callbackURL: process.env.FORTYTWO_CALLBACK,
+			clientID: process.env.API42_ID,
+			clientSecret: process.env.API42_SECRET,
+			callbackURL: process.env.API42_URI,
 			profileFields: {
 				id: 'id',
-				username: 'login',
+				username: 'login42',
 				email: 'email',
-				avatar: 'image_url',
+				avatar: 'image',
 			},
 		});
 	}
 
-	validate(accessToken: string, refreshToken: string, profile: Profile_42) {
+	validate(accessToken: string, refreshToken: string, profile: Profile42) { // are refresh tokens mandatory ?
 		return profile;
 	}
 }
