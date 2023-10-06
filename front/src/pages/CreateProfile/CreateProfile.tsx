@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CreateProfile.css';
 import { useNavigate } from 'react-router-dom';
-import { backFunctions } from '../outils_back/BackFunctions';
+import { backFunctions } from '../../outils_back/BackFunctions';
 
 const Settings = () => {
   const navigate = useNavigate();

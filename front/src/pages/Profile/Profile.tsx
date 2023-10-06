@@ -1,8 +1,8 @@
 import React from 'react';
 import './Profile.css'; 
 import { useState, useEffect } from 'react';
-import { backFunctions } from '../outils_back/BackFunctions';
-import { User } from '../interface/BackInterface';
+import { backFunctions } from '../../outils_back/BackFunctions';
+import { User } from '../../interface/BackInterface';
 
 const Profile = () => {
     const [userData, setUserData] = useState<User | null>(null);

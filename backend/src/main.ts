@@ -15,9 +15,6 @@ config();
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {cors: true});
   app.use(cookieParser());
-  //cors for http requests
-
-
   const server = await app.listen(4000);
   //cors for websocket
   const io = new Server(server, {

@@ -64,7 +64,7 @@ export default Chat;
 */
 import React, { useState, useEffect, useCallback }  from 'react';
 import './Chat.css'; 
-import SearchComponent from './components/SearchComponent';
+import SearchComponent from '../../components/SearchComponent/SearchComponent';
 import io from 'socket.io-client';
 
 const socket = io('http://localhost:4000'); 
