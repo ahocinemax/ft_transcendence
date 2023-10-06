@@ -77,12 +77,14 @@
 }
 
 .channel_title {
-  margin-right: 10px;
-  color: rgb(255, 255, 255);
-  font: bold;
-  font-size: 1.25em;
-  font-family: 'Press Start 2P', cursive;
-  text-shadow: 2.5px 2.5px 2.5px rgba(0, 0, 0, 0.767);
+    max-width: 80%;
+    margin-right: 10px;
+    color: rgb(255, 255, 255);
+    font: bold;
+    font-size: 1.25em;
+    font-family: 'Press Start 2P', cursive;
+    text-shadow: 2.5px 2.5px 2.5px rgba(0, 0, 0, 0.767);
+    white-space: nowrap;
 }
 
 /* Style for Webkit (Chrome, Safari) */

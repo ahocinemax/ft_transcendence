@@ -13,7 +13,7 @@ const Chat = () => {
     { name: 'Channel 1', isPrivate: false },
     { name: 'Channel 2', isPrivate: true },
     { name: 'Channel 3', isPrivate: false },
-    { name: 'Chaaaaaaannel 4', isPrivate: false },
+    { name: 'Channel 4', isPrivate: false },
     { name: 'Channel 5', isPrivate: true },
     { name: 'Channel 6', isPrivate: true },
     { name: 'Channel 7', isPrivate: false },
