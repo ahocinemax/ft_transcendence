@@ -13,14 +13,13 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({ isOpen, onClose
   };
 
   const handleSubmit = () => {
-    // Vous pouvez ajouter ici la logique pour vérifier le code et activer le 2FA.
-    // Une fois le traitement terminé, vous pouvez fermer la boîte modale en appelant onClose.
+    {/* ... */}
     onClose();
   };
 
   return (
     <div className={`modal ${isOpen ? 'open' : ''}`}>
-      <div className="modal-content">
+      {/* <div className="modal-content">
         <h2>Activer le 2FA</h2>
         <p>Entrez le code reçu par e-mail pour activer le 2FA :</p>
         <input
@@ -31,7 +30,7 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({ isOpen, onClose
         />
         <button onClick={handleSubmit}>Activer</button>
         <button onClick={onClose}>Fermer</button>
-      </div>
+      </div> */}
     </div>
   );
 };

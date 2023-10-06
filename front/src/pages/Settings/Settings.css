@@ -14,7 +14,7 @@
     font: bold;
     font-size: 2.5em;
     font-family: 'Press Start 2P', cursive;
-    text-shadow: 3px 3px 3px rgba(69, 87, 191, 0.816);
+    text-shadow: 3px 3px 3px rgba(191, 138, 69, 0.816);
     padding-bottom: 5%;
 }
 
@@ -32,7 +32,7 @@
     width: 150px;
     border-radius: 50%;
     background-color: red;
-    background-image: url(../../public/profile_img/avatar.png);
+    background-image: url(../../../public/profile_img/avatar.png);
     background-size: cover;
     background-position: center;
     margin-bottom: 10%;

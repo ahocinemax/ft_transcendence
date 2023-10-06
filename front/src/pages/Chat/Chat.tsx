@@ -5,7 +5,7 @@
 /*
 import React from 'react';
 import './Chat.css'; 
-import SearchComponent from './components/SearchComponent';
+import SearchComponent from '../../components/SearchComponent/SearchComponent';
 
 const Chat = () => {
 

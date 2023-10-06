@@ -1,15 +1,15 @@
 import React from 'react';
 import { Routes, Route, Router } from 'react-router-dom';
-import Start from './Start';
-import Login from './Login';
-import Homepage from './Homepage';
-import Sidebar from './Sidebar';
-import Leaderboard from './Leaderboard';
-import Chat from './Chat';
-import Profile from './Profile';
-import Settings from './Settings';
-import Gamepage from './Gamepage';
-import CreateProfile from './CreateProfile';
+import Start from './Start/Start';
+import Login from './Login/Login';
+import Homepage from './Homepage/Homepage';
+import Sidebar from './Sidebar/Sidebar';
+import Leaderboard from './Leaderboard/Leaderboard';
+import Chat from './Chat/Chat';
+import Profile from './Profile/Profile';
+import Settings from './Settings/Settings';
+import Gamepage from './Gamepage/Gamepage';
+import CreateProfile from './CreateProfile/CreateProfile';
 
 function App() {
     return (

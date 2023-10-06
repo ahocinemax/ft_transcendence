@@ -14,7 +14,7 @@
     align-items: center;
     justify-content: center;
     
-    background-image: url(../../public/login_space2.gif);
+    background-image: url(../../../public/login_space2.gif);
     background-size: cover;
     background-position: center;
 }
@@ -51,7 +51,7 @@
     height: 130px;
     width: 130px;
     border-radius: 50%;
-    background-image: url(../../public/profile_img/avatar.png);
+    background-image: url(../../../public/profile_img/avatar.png);
     background-size: cover;
     background-position: center;
     position: absolute;

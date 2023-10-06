@@ -14,7 +14,7 @@
     align-items: center;
     justify-content: center;
     
-    background-image: url(../../public/login_space2.gif);
+    background-image: url(../../../public/login_space2.gif);
     background-size: cover;
     background-position: center;
   }
@@ -68,7 +68,7 @@
     flex: 0 0 calc(50% - 10px); /* Calculate width for two equal columns with padding */
     height: 100%; /* Set the desired height */
     padding: 10px; /* Add padding inside each child element */
-    background-image: url(../../public/GooglePixel.png);
+    background-image: url(../../../public/GooglePixel.png);
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
@@ -78,7 +78,7 @@
     flex: 0 0 calc(50% - 10px); /* Calculate width for two equal columns with padding */
     height: 100%; /* Set the desired height */
     padding: 10px; /* Add padding inside each child element */
-    background-image: url(../../public/42PixelWhite.png);
+    background-image: url(../../../public/42PixelWhite.png);
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center center;
@@ -88,7 +88,7 @@
     width: 100%;
     height: 100%; /* Set the desired height */
     padding: 10px; /* Add padding inside each child element */
-    background-image: url(../../public/sphere2.gif);
+    background-image: url(../../../public/sphere2.gif);
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center center;
