@@ -38,11 +38,12 @@ const Chat = () => {
   const closePopup = () => 
   {
     // Close the pop-up
-    setIsPopupOpen(false);
+    if (isPopupOpen)
+      setIsPopupOpen(false);
   };
 
   return (
-    <div className="chat">
+    <div className="chat" onClick={closePopup}>
       <div className="channel_part">
         <div className="searchbar_div">
           <SearchComponent onSearch={handleSearch} />
