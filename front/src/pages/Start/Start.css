@@ -1,0 +1,47 @@
+.Start {}
+
+.Start {
+    background-image: url(../../../public/login_space3.gif);
+    background-size: cover;
+    background-position: center;
+    width: 100vw;
+    height: 100vh; /* Ajuste la hauteur selon tes besoins */
+
+      /* Centrer les enfants horizontalement et verticalement */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .shadowbox {
+    background-color: #8b8a8aee;
+    position: absolute;
+    z-index: 3;
+    width: 30vw;
+    height: 40vh;
+  }
+
+.invis-box {
+    width: 30vw;
+    height: 40vh;
+  }
+
+.heading {
+    color: rgb(107, 2, 236);
+    font: bold;
+    font-size: 4.5em;
+    text-shadow:
+      2px 2px 2px rgb(249, 249, 249),
+      5px 5px 5px rgba(242, 238, 7, 0.924),
+      6px 6px 6px rgba(234, 170, 53, 0.997);
+    font-family: 'Press Start 2P', sans-serif;
+    text-align: center;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center horizontally on the screen */
+    align-items: center; /* Center vertically on the screen */
+    height: 100vh; /* Set container height to full viewport height */
+  }

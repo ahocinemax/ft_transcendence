@@ -1,0 +1,162 @@
+.profile {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: rgba(0, 0, 0, 0.889);
+    background-image: url(../../../public/SpaceWithPlanet.png);
+    padding-top: 10vh;
+    overflow: hidden;
+  }
+  
+  .bande {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 23vh;
+    padding: 2.5vh 10vw;
+    margin-top: -5vh;
+    border-top: 0.6vh solid #000000;
+    border-bottom: 0.6vh solid #000000;
+    background-image: url(../../../public/SpaceWithPlanet.png);
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 5px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .profile_img {
+    background-color: black;
+    height: 18vh;
+    width: 18vh;
+    border-radius: 50%;
+    background-image: url(../../../public/profile_img/avatar.png);
+    background-size: cover;
+    background-position: center;
+    border: 0.6vh solid rgb(0, 0, 0);
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-right: 5%;
+  }
+  
+  .profile_info {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .info {
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    font-size: 1em;
+    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
+    font-family: 'Press Start 2P', sans-serif;
+    margin: 0;
+    margin: 0 10px;
+  }
+  
+  .stat
+  {
+    color: rgba(0, 0, 0);
+    font-weight: bold;
+    font-size: 3em;
+    text-shadow: 0.5px.5px.5px rgba(200, 200, 200, 0.781);
+    font-family: 'Press Start 2P', sans-serif;
+    margin: 0;
+    margin: 0 10px;
+  }
+  
+  /* Pour les écrans de petite taille */
+  @media (max-width: 768px) 
+  {
+    .bande 
+    {
+      flex-direction: column;
+      height: auto;
+      padding: 5vh 10vw;
+    }
+  
+    .profile_img 
+    {
+      margin-bottom: 5vh;
+      margin-right: 0;
+    }
+  
+    .profile_info 
+    {
+      text-align: center;
+      padding-left: 0;
+    }
+  
+    .info 
+    {
+      font-size: 1.2em;
+    }
+  }
+  
+.centered_div_container
+{
+    height: 65vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5vh 2.5vw;
+}
+
+.scores_div 
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 70%;
+    width: 20%;
+    /* box-shadow: 0 3px 2px rgba(45, 215, 11, 0.608); */
+    box-shadow: 0 5px 4px rgba(0, 0, 0, 0.2);
+    border: 0.6vh solid rgb(0, 0, 0);
+    margin-right: 3vw;
+    border-radius: 10%;
+    background-color: rgba(100, 100, 100, 0.25);
+}
+
+.scores_div_top 
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 20%;
+    width: 100%;
+}
+
+.scores_round_div
+{
+    height: 4vw;
+    width: 4vw;
+    border-radius: 50%;
+    background-image: url("/public/fireball.png");
+    background-size: cover;
+    background-position: center;
+}
+
+.scores_div_bottom 
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 70%;
+    width: 100%;
+    padding-top: 10%;
+}
+
+.scores_div:nth-child(2) .scores_round_div
+{
+    height: 8vw;
+    width: 8vw;
+    background-image: url("/public/crown.png");
+}
+
+.scores_div:nth-child(3) .scores_round_div
+{
+    background-image: url("/public/south_park.png");
+}
