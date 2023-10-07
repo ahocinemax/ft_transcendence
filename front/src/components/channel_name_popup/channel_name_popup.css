@@ -41,6 +41,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-bottom: 10px;
+    font-family: 'Press Start 2P', sans-serif;
   }
   
 .channel_button 
@@ -51,6 +52,7 @@
     border-radius: 5px;
     padding: 10px 20px;
     cursor: pointer;
+    font-family: 'Press Start 2P', sans-serif;
   }
   
 .channel_button:hover {

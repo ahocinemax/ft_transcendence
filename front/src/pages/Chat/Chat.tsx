@@ -38,18 +38,17 @@ const Chat = () => {
   const closePopup = () => 
   {
     // Close the pop-up
-    if (isPopupOpen)
-      setIsPopupOpen(false);
+    setIsPopupOpen(false);
   };
 
   return (
-    <div className="chat" onClick={closePopup}>
+    <div className="chat">
       <div className="channel_part">
         <div className="searchbar_div">
           <SearchComponent onSearch={handleSearch} />
         </div>
         <div className="channel_top_div">
-          <h1 className="h1">#Channels ([nb])</h1>
+          <h1 className="h1_channel">#Channels([nb])</h1>
           <h1 className="createchan" onClick={createChannel}>+</h1>
           {isPopupOpen && <ChannelNamePopup onClose={closePopup} />} {/* Render the ChannelNamePopup component when isPopupOpen is true */}
         </div>

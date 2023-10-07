@@ -34,6 +34,7 @@
 
 .channel_top_div {
   display: flex;
+  position: relative;
   justify-content: space-between;
   height: 10vh;
   width: 24vw;
@@ -58,8 +59,18 @@
   color: rgb(255, 255, 255);
   font: bold;
   font-size: 1.75em;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Press Start 2P', sans-serif;
   text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
+}
+
+.h1_channel {
+  color: rgb(255, 255, 255);
+  font: bold;
+  font-size: 1.25em;
+  font-family: 'Press Start 2P', sans-serif;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
+  white-space: nowrap;
+
 }
 
 .createchan {
@@ -67,8 +78,8 @@
   color: rgb(255, 255, 255);
   margin-left: auto; /* Add this line */
   font: bold;
-  font-size: 3em;
-  font-family: 'Press Start 2P', cursive;
+  font-size: 1.5em;
+  font-family: 'Press Start 2P', sans-serif;
   text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
 }
 
@@ -81,8 +92,8 @@
     margin-right: 10px;
     color: rgb(255, 255, 255);
     font: bold;
-    font-size: 1.25em;
-    font-family: 'Press Start 2P', cursive;
+    font-size: 1em;
+    font-family: 'Press Start 2P', sans-serif;
     text-shadow: 2.5px 2.5px 2.5px rgba(0, 0, 0, 0.767);
     white-space: nowrap;
 }
@@ -111,9 +122,9 @@
     position: relative;
     display: flex;
     align-items: center;
-    height: 10vh;
+    height: 7.5vh;
     width: 100%;
-    box-shadow: 0px 0px 5px rgba(21, 1, 17, 0.2);
+    box-shadow: -10px -10px 5px rgba(187, 19, 153, 0.8);
     transition: background-color 0.8s ease;
     padding-left: 25%;
     padding-right: 30px; /* Add this line */
