@@ -41,7 +41,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect, OnG
      */
     async handleConnection(client: Socket, ...args: any[]) {
         try {
-            const user = await this.userService.getUser(userId);
+            client.setMaxListeners(42);
+            const user = await this.userService.getUser(args[0]);
+            const userId = user.id;
             client.data.id = userId;
             if (!user)
                 throw new WsException('Invalid token');
