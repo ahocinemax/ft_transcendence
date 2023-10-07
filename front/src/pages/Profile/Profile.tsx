@@ -20,7 +20,7 @@ const Profile = () => {
                 </div>
                 <div className="scores_div_bottom">
                     <h1 className="info">Games</h1>
-                    <h1 className="stat">'42'</h1>
+                    <h1 className="stat">42</h1>
                 </div>
             </div>
             <div className="scores_div">
@@ -29,7 +29,7 @@ const Profile = () => {
                 </div>
                 <div className="scores_div_bottom">
                     <h1 className="info">Wins</h1>
-                    <h1 className="stat">'42'</h1>
+                    <h1 className="stat">42</h1>
                 </div>
             </div>
             <div className="scores_div">
@@ -38,7 +38,7 @@ const Profile = () => {
                 </div>
                 <div className="scores_div_bottom">
                     <h1 className="info">Winrate</h1>
-                    <h1 className="stat">'100%'</h1>
+                    <h1 className="stat">100%</h1>
                 </div>
             </div>
         </div>
