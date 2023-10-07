@@ -66,7 +66,8 @@ export class AuthController {
   @Get("OAuth")
   @UseGuards(AuthGuard('google'))
   async getGoogleAuthToken(@Req() req: Request, @Res() res: Response){
-    //console.log("Request query (code from GoogleOAuth):", req.query);
+    console.log("callback google");
+    console.log("Request query (code from GoogleOAuth):", req.query);
   }
 
   @Get('google/callback')
@@ -87,12 +88,12 @@ export class AuthController {
     true
     );
 
-  //console.log("auth.controller(GoogleAuth-callback)")
-  if (process.env.NODE_ENV === 'development') {
-    res.redirect("/user");
+    //console.log("auth.controller(GoogleAuth-callback)")
+    if (process.env.NODE_ENV === 'development') {
+      res.redirect("/user");
+    }
+    else if (process.env.NODE_ENV === 'production') {
+      res.status(301).redirect(process.env.CLIENT_HOST);
+    } 
   }
-  else if (process.env.NODE_ENV === 'production') {
-    res.status(301).redirect(process.env.CLIENT_HOST);
-  } 
-}
 }
