@@ -3,7 +3,10 @@ import './Profile.css';
 import { useState, useEffect } from 'react';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import { User } from '../../interface/BackInterface';
-
+import { useUserInfos } from '../../outils_back/UserContext';
+interface ProfileProps {
+	user: User;
+}
 const Profile = () => {
     const [userData, setUserData] = useState<User | null>(null);
 
@@ -14,8 +17,10 @@ const Profile = () => {
       };
       fetchData();
     }, []);
-  return (
-    <div className="profile">
+//    const { userName } = useUserInfos();
+//    console.log("TESSSSSSSSSSSSSSSSSSSSSST", useUserInfos());
+    return (     
+        <div className="profile">
 		<div className="bande">
             <div className="profile_img" style={{ backgroundImage: `url(${userData?.image})` }}></div>
             <div className="profile_info">

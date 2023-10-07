@@ -129,7 +129,7 @@ async createDataBase42User(
     console.log("token.access_token(Google)", token.accessToken);
       res.cookie("access_token", token.accessToken,
       {
-        expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000), 
+        expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
         httpOnly: true,
       });
   }
