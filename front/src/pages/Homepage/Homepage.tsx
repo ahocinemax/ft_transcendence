@@ -1,6 +1,6 @@
 import React from 'react';
 import './Homepage.css';
-import Sidebar from './Sidebar';
+import Sidebar from '../Sidebar/Sidebar';
 
 interface HomepageProps {
   onClose: () => void;

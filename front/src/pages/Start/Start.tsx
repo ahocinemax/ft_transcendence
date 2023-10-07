@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import './Start.css';
-import Login from './Login'
+import Login from '../Login/Login'
 
 
 function Start() {

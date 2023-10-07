@@ -3,6 +3,7 @@
     flex-direction: column;
     min-height: 100vh;
     background-color: rgba(0, 0, 0, 0.889);
+    background-image: url(../../../public/SpaceWithPlanet.png);
     padding-top: 10vh;
     overflow: hidden;
   }
@@ -12,9 +13,12 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    height: 25vh;
+    height: 23vh;
     padding: 2.5vh 10vw;
-    background-image: url(../../public/alliance_background.jpg);
+    margin-top: -5vh;
+    border-top: 0.6vh solid #000000;
+    border-bottom: 0.6vh solid #000000;
+    background-image: url(../../../public/SpaceWithPlanet.png);
     background-size: cover;
     background-position: center;
     box-shadow: 0 5px 4px rgba(0, 0, 0, 0.2);
@@ -22,12 +26,13 @@
   
   .profile_img {
     background-color: black;
-    height: 192px;
-    width: 192px;
+    height: 18vh;
+    width: 18vh;
     border-radius: 50%;
-    background-image: url(../../public/profile_img/avatar.png);
+    background-image: url(../../../public/profile_img/avatar.png);
     background-size: cover;
     background-position: center;
+    border: 0.6vh solid rgb(0, 0, 0);
     flex-grow: 0;
     flex-shrink: 0;
     margin-right: 5%;
@@ -41,20 +46,20 @@
   .info {
     color: rgb(255, 255, 255);
     font-weight: bold;
-    font-size: 1.5em;
+    font-size: 1em;
     text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: 'Press Start 2P', sans-serif;
     margin: 0;
     margin: 0 10px;
   }
   
   .stat
   {
-    color: rgba(45, 215, 11, 0.776);
+    color: rgba(0, 0, 0);
     font-weight: bold;
     font-size: 3em;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.781);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-shadow: 0.5px.5px.5px rgba(200, 200, 200, 0.781);
+    font-family: 'Press Start 2P', sans-serif;
     margin: 0;
     margin: 0 10px;
   }
@@ -106,10 +111,12 @@
     justify-content: center;
     height: 70%;
     width: 20%;
-    box-shadow: 0 3px 2px rgba(45, 215, 11, 0.608);
-    margin-right: 5vw;
+    /* box-shadow: 0 3px 2px rgba(45, 215, 11, 0.608); */
+    box-shadow: 0 5px 4px rgba(0, 0, 0, 0.2);
+    border: 0.6vh solid rgb(0, 0, 0);
+    margin-right: 3vw;
     border-radius: 10%;
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: rgba(100, 100, 100, 0.25);
 }
 
 .scores_div_top 
@@ -118,7 +125,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 30%;
+    height: 20%;
     width: 100%;
 }
 

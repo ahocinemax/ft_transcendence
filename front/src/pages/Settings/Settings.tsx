@@ -51,8 +51,8 @@ const Settings = () => {
       <h1 className="Settingsh1">Settings</h1>
       <div className="settings_container">
         <div className="round_div_settings_img"></div>
-        <p className="info">{pseudo}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
-        <p className="info">#Rank</p>
+        <p className="info_settings">{pseudo}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
+        <p className="info_settings">#Rank</p>
         <div className="twofa_container">
           <span
             className={`twoFA_status ${!is2FAEnabled ? 'clickable' : ''}`}
