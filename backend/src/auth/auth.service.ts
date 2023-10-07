@@ -3,7 +3,7 @@ import { UserService } from "src/user/user.service";
 import { Request, Response, request } from "express";
 import { Auth42Service } from "src/auth/auth42/auth42.service";
 import { PrismaService } from "../../prisma/prisma.service";
-import { UserDto } from "./dto/user.dto";
+import * as UserDTO from "./dto/user.dto";
 
 @Injectable({})
 export class AuthService {
@@ -42,7 +42,7 @@ async createDataBase42User(
     };
 }
 
-  async handleDataBaseCreation(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
+  async handleDataBaseCreation(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDTO.UserDto) {
     const token: string = req.cookies.token;
     const user42infos = await this.Auth42.access42UserInformation(token);
     if (user42infos)

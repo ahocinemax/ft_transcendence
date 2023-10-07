@@ -10,7 +10,6 @@ import { UserModule } from './user/user.module';
 // CONFIG
 import configuration from './config/configuration';
 // AUTH
-import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { Auth42Module } from './auth/auth42/auth42.module';
 // CLOUDINARY
@@ -46,7 +45,6 @@ import { AppGateway } from './app.gateway';
         CloudinaryModule,
         GameModule,
         Auth2faModule,
-        JwtModule.register({ secret: process.env.JWT_SECRET }),
         FriendModule,
         BlockModule,
         PendingModule,

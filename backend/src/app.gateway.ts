@@ -5,7 +5,6 @@ import { GameService } from './game/game.service';
 import { UserService } from './user/user.service';
 import { ChatService } from './chat/chat.service';
 import { ChatGateway } from './chat/chat.gateway';
-import { JwtService } from '@nestjs/jwt';
 import { WebSocketGateway,
          WsException,
          OnGatewayConnection,
@@ -23,8 +22,6 @@ from '@nestjs/websockets';
 @WebSocketGateway({ cors: { origin: process.env.FRONT_URL}})
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     constructor(
-        private readonly jwtService: JwtService,
-        private readonly chatService: ChatService,
         private readonly chatGateway: ChatGateway,
         private readonly userService: UserService,
     ) {}
@@ -44,8 +41,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect, OnG
      */
     async handleConnection(client: Socket, ...args: any[]) {
         try {
-            client.setMaxListeners(42);
-            const userId: number = this.jwtService.verify(String(client.handshake.headers.token), { secret: process.env.JWT_SECRET }).sub;
             const user = await this.userService.getUser(userId);
             client.data.id = userId;
             if (!user)

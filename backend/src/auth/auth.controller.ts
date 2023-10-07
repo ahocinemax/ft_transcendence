@@ -14,7 +14,6 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private Auth42: Auth42Service,
-    private userService: UserService,
     private googleAuthService: GoogleAuthService,
   ) {}
   
@@ -70,8 +69,9 @@ export class AuthController {
     //console.log("Request query (code from GoogleOAuth):", req.query);
   }
 
-   @Get('google/callback')
-   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
   const code = req.query.code as string;
   //console.log("code", code);
 
