@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Chat.css'; 
 import SearchComponent from '../../components/SearchComponent/SearchComponent';
+import ChannelNamePopup from '../../components/channel_name_popup/channel_name_popup'; // Import your ChannelNamePopup component
+
 
 const Chat = () => {
-  const handleSearch = (query: string) => {
-    // Insérez votre logique de recherche ici
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    const handleSearch = (query: string) => 
+    {
+    // Insérer logique de recherche ici
     console.log(`Recherche en cours pour : ${query}`);
   };
 
@@ -22,12 +27,19 @@ const Chat = () => {
     { name: 'Channel 10', isPrivate: false },
     { name: 'Channel 11', isPrivate: false },
     { name: 'Channel 12', isPrivate: false }
-    // Add more channels with isPrivate property
   ];
 
-  function createChannel() {
+  const createChannel = () => 
+  {
     /* Fonction back pour créer un channel */
+    setIsPopupOpen(true);
   }
+
+  const closePopup = () => 
+  {
+    // Close the pop-up
+    setIsPopupOpen(false);
+  };
 
   return (
     <div className="chat">
@@ -38,6 +50,7 @@ const Chat = () => {
         <div className="channel_top_div">
           <h1 className="h1">#Channels ([nb])</h1>
           <h1 className="createchan" onClick={createChannel}>+</h1>
+          {isPopupOpen && <ChannelNamePopup onClose={closePopup} />} {/* Render the ChannelNamePopup component when isPopupOpen is true */}
         </div>
         <div className="channel_div_container">
           {channels.map((channel, index) => (
