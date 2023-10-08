@@ -25,6 +25,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		if (!name) return setLoading(false);
 		socket.io.opts.query!.name = name;
 		socket.connect();
+		console.log('socketConnected');
 		SocketDispatch({type: 'update_socket', payload: socket});
 		StartListeners();
 		SendHandshake();
