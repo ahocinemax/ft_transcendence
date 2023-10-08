@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Chat.css'; 
 import SearchComponent from '../../components/SearchComponent/SearchComponent';
-import ChannelNamePopup from '../../components/channel_name_popup/channel_name_popup'; // Import your ChannelNamePopup component
+import ChannelNamePopup from '../../components/channel_name_popup/channel_name_popup';
 
 
 const Chat = () => {
@@ -42,15 +42,15 @@ const Chat = () => {
   };
 
   return (
-    <div className="chat">
+    <div className="chat" >
       <div className="channel_part">
         <div className="searchbar_div">
           <SearchComponent onSearch={handleSearch} />
         </div>
         <div className="channel_top_div">
-          <h1 className="h1_channel">#Channels([nb])</h1>
+          <h1 className="h1_channel">#Channels (42)</h1>
           <h1 className="createchan" onClick={createChannel}>+</h1>
-          {isPopupOpen && <ChannelNamePopup onClose={closePopup} />} {/* Render the ChannelNamePopup component when isPopupOpen is true */}
+          {isPopupOpen && <ChannelNamePopup onClose={closePopup} />}
         </div>
         <div className="channel_div_container">
           {channels.map((channel, index) => (
