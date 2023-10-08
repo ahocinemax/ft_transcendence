@@ -50,6 +50,15 @@ model User {
   gamesWon      Int       @default(0)
   gamesPlayed   Int       @default(0)
   gameHistory   Int[]
+
+  owner         Channel[] @relation("owner")
+  admin         Channel[] @relation("admin")
+  member        Channel[] @relation("member")
+  invited       Channel[] @relation("invited")
+  chanBanned    Channel[] @relation("banned")
+
+  muted         Mute[]
+  messages      Message[]
 }
 
 model Game {
@@ -64,4 +73,50 @@ model Game {
   endTime      DateTime
   duration     Int?
 
+}
+
+model Channel {
+  id            Int       @id @default(autoincrement())
+  name          String    @unique @default(uuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  dm            Boolean   @default(false)
+  private       Boolean   @default(false)
+  isProtected   Boolean   @default(false)
+  password      String?
+
+  owners         User[]   @relation("owner")
+  admins         User[]   @relation("admin")
+  members        User[]   @relation("member")
+  invited       User[]    @relation("invited")
+  banned        User[]    @relation("banned")
+
+  muted         Mute[]
+  messages      Message[]
+
+  @@unique([id])
+}
+
+model Mute {
+  id            Int       @id @default(autoincrement())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  userId        Int
+  muted         User      @relation(fields: [userId], references: [id])
+  channel       Channel   @relation(fields: [channelId], references: [id])
+  channelId     Int
+}
+
+model Message {
+  id            Int       @id @default(autoincrement())
+  owner         User      @relation(fields: [userId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  content       String
+  userId        Int
+  channel       Channel   @relation(fields: [channelId], references: [id])
+  channelId     Int
+  history       String[]
+  unsent        Boolean   @default(false)
 }
