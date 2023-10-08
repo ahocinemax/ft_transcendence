@@ -25,26 +25,14 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
-  app.use(
-    session({
-      secret: 'pass',
-      resave: false,
-      saveUninitialized: false,
-      cookie: { maxAge: oneWeek}
-    })
-  );
+  app.use(session({
+    secret: 'pass',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: oneWeek}
+  }));
   app.use(passport.initialize());
   app.use(passport.session());
-  
-  // //for test environement = NODE_ENV === development
-  // if (process.env.NODE_ENV === 'development') {
-  //   app.use(express.json({ limit: '50mb' }));
-  //   app.use(express.urlencoded({ limit: '50mb', extended: true }));
-  //   console.log('NODE_ENV:', process.env.NODE_ENV);
-    // app.setBaseViewsDir('/usr/src/app/views');
-    // app.setViewEngine('ejs');
-    // app.useStaticAssets(join(__dirname, '..', '..', 'views'));
-  // }
   await app.listen(4000);
 }
 bootstrap();

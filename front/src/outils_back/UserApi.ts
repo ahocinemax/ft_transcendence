@@ -1,9 +1,7 @@
-const requestConfig : RequestInit = {
-    headers: {
+const requestConfig : RequestInit = { headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json, text/plain,',
-    },
-};
+        Accept: 'application/json, text/plain,'
+}};
 
 export const UserApi = {
     async get(url: string) {
@@ -22,5 +20,4 @@ export const UserApi = {
             body: JSON.stringify(data),
             });
     }
-
 };

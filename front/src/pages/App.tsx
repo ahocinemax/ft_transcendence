@@ -14,7 +14,6 @@ import { UserContextProvider } from '../context/userContent';
 import SocketContextComponent from '../context/socket';
 
 function App() {
-
 	return (
 	<UserContextProvider>
 		<SocketContextComponent>

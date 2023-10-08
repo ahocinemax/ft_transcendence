@@ -4,12 +4,12 @@ import { UseFilters,
     Logger }
 from '@nestjs/common';
 
-import { 
-ConnectedSocket,
-MessageBody,
-SubscribeMessage, 
-WebSocketGateway,
-WebSocketServer,
+import {
+    ConnectedSocket,
+    MessageBody,
+    SubscribeMessage, 
+    WebSocketGateway,
+    WebSocketServer,
 } from '@nestjs/websockets';
 
 import { HttpToWsFilter, ProperWsFilter } from './filter/chat.filter';
@@ -24,7 +24,7 @@ import { ChannelDTO } from './dto/chat.dto';
 
 @WebSocketGateway()
 export class ChatGateway {
-@WebSocketServer()
+@WebSocketServer() 
 server: Server;
 
 private logger: Logger = new Logger('ChatGateway');

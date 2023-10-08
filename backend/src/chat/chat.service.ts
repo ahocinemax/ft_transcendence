@@ -1,6 +1,6 @@
 import { PrismaService } from 'prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
-import { WsException } from '@nestjs/websockets';
+import { ConnectedSocket, WsException } from '@nestjs/websockets';
 import { Injectable } from '@nestjs/common';
 import { MessageDTO, ChannelDTO } from './dto/chat.dto';
 import { chatPreview, oneMessage } from './type/chat.type';

@@ -28,7 +28,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		SocketDispatch({type: 'update_socket', payload: socket});
 		StartListeners();
 		SendHandshake();
-	}, [name]);
+	}, [name, socket]);
 
 	const StartListeners = () => {
 		socket.io.on('reconnect', (attempt) => {
@@ -82,7 +82,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 			socket.off('user_disconnected');
 			socket.off('error');
 		};
-	}, []);
+	}, [socket]);
 
 	return loading ? (<p>"Loading socket IO..."</p>) :
 		(<SocketContextProvider value={{SocketState, SocketDispatch}}>
