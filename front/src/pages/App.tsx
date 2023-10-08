@@ -10,37 +10,33 @@ import Profile from './Profile/Profile';
 import Settings from './Settings/Settings';
 import Gamepage from './Gamepage/Gamepage';
 import CreateProfile from './CreateProfile/CreateProfile';
-import { UserContextProvider } from './../context/userContent';
-import SocketContextComponent from '../context/socketContext';
+import { UserContextProvider } from '../context/userContent';
+import SocketContextComponent from '../context/socket';
 
 function App() {
 
-	function navBar() {
-	return(
-		<div className='app'>
-			<Sidebar />
-			<div className='content'>
-				<Routes>
-					<Route path="/" element={<Start />} />
-					<Route path="/login" element={<Login />} />
-					<Route path="/homepage" element={<Homepage />} />
-					<Route path="/leaderboard" element={<Leaderboard />} />
-					<Route path="/chat" element={<Chat />} />
-					<Route path="/profile" element={<Profile />} />
-					<Route path="/settings" element={<Settings />} />
-					<Route path="/gamepage" element={<Gamepage />} />
-					<Route path="/create" element={<CreateProfile />} />
-				</Routes>
-			</div>
-		</div>);
-	}
-
 	return (
-		<UserContextProvider>
-			<SocketContextComponent>
-				{/* {navBar()} */}
-			</SocketContextComponent>
-		</UserContextProvider>
+	<UserContextProvider>
+		<SocketContextComponent>
+			{/* Vos composants ici */}
+			<div className='app'>
+			  <Sidebar />
+			  <div className='content'>
+				<Routes>
+				<Route path="/" element={<Start />} />
+						<Route path="/login" element={<Login />} />
+						<Route path="/homepage" element={<Homepage />} />
+						<Route path="/leaderboard" element={<Leaderboard />} />
+						<Route path="/chat" element={<Chat />} />
+						<Route path="/profile" element={<Profile />} />
+						<Route path="/settings" element={<Settings />} />
+						<Route path="/gamepage" element={<Gamepage />} />
+						<Route path="/create" element={<CreateProfile />} />
+				</Routes>
+			  </div>
+			</div>
+		</SocketContextComponent>
+	</UserContextProvider>
 	);
 }
 

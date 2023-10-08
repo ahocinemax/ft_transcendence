@@ -65,7 +65,7 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 			setVerified2FA({verified2FA: rhs.otp_validated});
 			setEmail({email: rhs.email});
 		});
-	}, []);
+	}, [navigate]);
 	return (
         <UserContext.Provider value={{
 			userName,

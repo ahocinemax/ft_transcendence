@@ -1,6 +1,5 @@
 import { defaultSocketContextState, SocketContextProvider, SocketReducer } from './socketContext';
-import React, { useRef, PropsWithChildren, useEffect, useReducer, useState } from 'react';
-import io, {ManagerOptions, Socket, SocketOptions} from 'socket.io-client';
+import React, { PropsWithChildren, useEffect, useReducer, useState } from 'react';
 import { useUserContext } from './userContent';
 import { useSocket } from './useSocket';
 
@@ -85,12 +84,10 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		};
 	}, []);
 
-	return loading ?
-        <p>"Loading socket IO..."</p>
-    :   <SocketContextProvider value={{SocketState, SocketDispatch}}>
+	return loading ? (<p>"Loading socket IO..."</p>) :
+		(<SocketContextProvider value={{SocketState, SocketDispatch}}>
 			{children}
-		</SocketContextProvider>
-	;
+		</SocketContextProvider>);
 };
 
 export default SocketContextComponent;
