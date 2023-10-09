@@ -2,7 +2,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { WsException } from '@nestjs/websockets';
 import { Injectable } from '@nestjs/common';
-import { MessageDTO, ChannelDTO } from 'src/chat/dto/chat.dto';
+import { MessageDTO, ChannelDTO } from './dto/chat.dto';
 import { chatPreview, oneMessage } from './type/chat.type';
 import * as argon from 'argon2';
 
@@ -30,6 +30,36 @@ export class ChatService {
 		}
 		console.log(`Total channels: ${count}`);
 		return ;
+	}
+
+	async	getUsersChannels(id: number) {
+		try {
+			const userData = await this.prisma.user.findUnique({
+				where: { id, },
+				select: {
+					owner: { where: { dm: true, }, },
+					admin: true,
+					member: true,
+					invited: true,
+				},
+			});
+			const availableChannels = [];
+			for (const [index, channel] of userData.owner.entries()) {
+				availableChannels.push(channel.id);
+			}
+			for (const [index, channel] of userData.admin.entries()) {
+				availableChannels.push(channel.id);
+			}
+			for (const [index, channel] of userData.member.entries()) {
+				availableChannels.push(channel.id);
+			}
+			for (const [index, channel] of userData.invited.entries()) {
+				availableChannels.push(channel.id);
+			}
+			return availableChannels;
+		} catch (error) {
+			throw new WsException(error.message);
+		}
 	}
 
 	async	get_message_by_id(id: number) {

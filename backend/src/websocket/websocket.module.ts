@@ -1,12 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { WebsocketGateway } from './websocket.gateway';
-import { WebsocketService } from './websocket.service';
 import { PrismaModule } from 'prisma/prisma.module';
-import { BlockService } from 'src/block/block.service';
+import { WebsocketService } from './websocket.service';
 
+@Global()
 @Module({
   imports: [PrismaModule],
-  providers: [WebsocketGateway, WebsocketService, BlockService],
-  exports: [WebsocketGateway]
+  providers: [WebsocketGateway, WebsocketService],
+  exports: [WebsocketGateway, WebsocketService],
 })
+
 export class WebsocketModule {}

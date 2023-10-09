@@ -14,7 +14,7 @@ function Leaderboard() {
                         <div className="user_info">
                             <p>Parties jouées: #Parties</p>
                             <p>Victoires: #Victoires</p>
-                            <p>Winrate: #Winrate</p>
+                            <p>100: #100</p>
                         </div>
                     </div>
                 </div>
@@ -27,13 +27,13 @@ function Leaderboard() {
                             <h1 className="h1">#Pseudo</h1>
                         </div>
                         <div className="games_div">
-                            <h1 className="h1">#Games</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Wins</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Winrate%</h1>
+                            <h1 className="h1">#100%</h1>
                         </div>
                     </div>
                     <div className="rank_div_silver">
@@ -44,13 +44,13 @@ function Leaderboard() {
                             <h1 className="h1">#Pseudo</h1>
                         </div>
                         <div className="games_div">
-                            <h1 className="h1">#Games</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Wins</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Winrate%</h1>
+                            <h1 className="h1">#100%</h1>
                         </div>
                     </div>
                     <div className="rank_div_bronze">
@@ -61,13 +61,13 @@ function Leaderboard() {
                             <h1 className="h1">#Pseudo</h1>
                         </div>
                         <div className="games_div">
-                            <h1 className="h1">#Games</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Wins</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Winrate%</h1>
+                            <h1 className="h1">#100%</h1>
                         </div>
                     </div>
                     <div className="rank_div">
@@ -75,16 +75,16 @@ function Leaderboard() {
                             <h1 className="h1">#4</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Pseudo</h1>
+                            <h1 className="h1">#Pseudoooooo</h1>
                         </div>
                         <div className="games_div">
-                            <h1 className="h1">#Games</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Wins</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Winrate%</h1>
+                            <h1 className="h1">#100%</h1>
                         </div>
                     </div>
                     <div className="rank_div">
@@ -95,13 +95,13 @@ function Leaderboard() {
                             <h1 className="h1">#Pseudo</h1>
                         </div>
                         <div className="games_div">
-                            <h1 className="h1">#Games</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Wins</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Winrate%</h1>
+                            <h1 className="h1">#100%</h1>
                         </div>
                     </div>
                     <div className="rank_div">
@@ -112,13 +112,13 @@ function Leaderboard() {
                             <h1 className="h1">#Pseudo</h1>
                         </div>
                         <div className="games_div">
-                            <h1 className="h1">#Games</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Wins</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Winrate%</h1>
+                            <h1 className="h1">#100%</h1>
                         </div>
                     </div>
                     <div className="rank_div">
@@ -129,13 +129,13 @@ function Leaderboard() {
                             <h1 className="h1">#Pseudo</h1>
                         </div>
                         <div className="games_div">
-                            <h1 className="h1">#Games</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Wins</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Winrate%</h1>
+                            <h1 className="h1">#100%</h1>
                         </div>
                     </div>
                     <div className="rank_div">
@@ -146,13 +146,13 @@ function Leaderboard() {
                             <h1 className="h1">#Pseudo</h1>
                         </div>
                         <div className="games_div">
-                            <h1 className="h1">#Games</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Wins</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Winrate%</h1>
+                            <h1 className="h1">#100%</h1>
                         </div>
                     </div>
                     <div className="rank_div">
@@ -163,13 +163,13 @@ function Leaderboard() {
                             <h1 className="h1">#Pseudo</h1>
                         </div>
                         <div className="games_div">
-                            <h1 className="h1">#Games</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Wins</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Winrate%</h1>
+                            <h1 className="h1">#100%</h1>
                         </div>
                     </div>
                     <div className="rank_div">
@@ -180,13 +180,13 @@ function Leaderboard() {
                             <h1 className="h1">#Pseudo</h1>
                         </div>
                         <div className="games_div">
-                            <h1 className="h1">#Games</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Wins</h1>
+                            <h1 className="h1">42</h1>
                         </div>
                         <div className="pseudo_div">
-                            <h1 className="h1">#Winrate%</h1>
+                            <h1 className="h1">#100%</h1>
                         </div>
                     </div>
                 </div>

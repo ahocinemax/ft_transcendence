@@ -1,87 +1,150 @@
-.chat{
-    display: flex;
+.chat {
+  display: flex;
 }
 
-.main_part{
-    width: 80vw;
-    height: 100vh;
-    background-color: black;
-    background-image: url(../../../public/pixelartchat.gif);
+.main_part {
+  width: 80vw;
+  height: 100vh;
+  background-color: black;
+  background-image: url(../../../public/pixelartchat.gif);
+  background-size: cover;
 }
 
-.channel_part{
-    width: 20vw;
-    height: 100vh;
-    background-color: rgba(7, 39, 112, 0.85);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.channel_part {
+  width: 20%;
+  height: 100%;
+  background-color: rgba(7, 39, 112, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 100vh; /* Set a maximum height to limit scrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 .Overlay {
-    position: absolute;
-    top: 0;
-    left: 100vw;
-    width: 76vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3);
-    z-index: 1;
-  }
-
-.channel_top_div{
-    display: flex;
-    justify-content: center;
-    height: 10vh;
-    width: 24vw;
-    display : flex;
-    align-items: center;
-    flex-direction: row;
-    padding-left: 3vw;
-    box-shadow: 0px 0px 5px rgba(233, 14, 189, 0.2);
+  position: absolute;
+  top: 0;
+  left: 19vw;
+  width: 81vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1;
 }
 
-.searchbar_div{
-    display: flex;
-    justify-content: center;
-    height: 10vh;
-    width: 24vw;
-    display : flex;
-    align-items: center;
-    flex-direction: row;
-    box-shadow: 0px 0px 5px rgba(21, 1, 17, 0.2);
+.channel_top_div {
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+  height: 10vh;
+  width: 24vw;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  box-shadow: 0px 0px 5px rgba(233, 14, 189, 0.2);
+  padding: 0 20%; /* Padding for the distance Channel(nb) & the + of createchan */
 }
 
-.channel_div{
-    display: flex;
-    justify-content: center;
-    height: 10vh;
-    width: 24vw;
-    display : flex;
-    align-items: center;
-    flex-direction: row;
-    box-shadow: 0px 0px 5px rgba(21, 1, 17, 0.2);
-    transition: background-color 1.15s ease;
+.searchbar_div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 10%;
+  width: 100%;
+  box-shadow: 0px 0px 5px rgba(21, 1, 17, 0.2);
+  padding: 5% 5%;
 }
 
-.h1{
+.h1 {
+  color: rgb(255, 255, 255);
+  font: bold;
+  font-size: 1.75em;
+  font-family: 'Press Start 2P', sans-serif;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
+}
+
+.h1_channel {
+  color: rgb(255, 255, 255);
+  font: bold;
+  font-size: 1.25em;
+  font-family: 'Press Start 2P', sans-serif;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
+  white-space: nowrap;
+
+}
+
+.createchan {
+  position: relative;
+  color: rgb(255, 255, 255);
+  margin-left: auto; /* Add this line */
+  font: bold;
+  font-size: 1.5em;
+  font-family: 'Press Start 2P', sans-serif;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
+}
+
+.createchan:hover {
+  cursor: pointer;
+}
+
+.channel_title {
+    max-width: 80%;
+    margin-right: 10px;
     color: rgb(255, 255, 255);
     font: bold;
-    font-size: 2em;
-    font-family: 'Press Start 2P', cursive;
-    text-shadow:
-      2px 2px 2px rgba(158, 8, 145, 0.767);
+    font-size: 1em;
+    font-family: 'Press Start 2P', sans-serif;
+    text-shadow: 2.5px 2.5px 2.5px rgba(0, 0, 0, 0.767);
+    white-space: nowrap;
 }
 
-.channel_title{
-    color: rgb(0, 0, 0);
-    font: bold;
-    font-size: 1.25em;
-    font-family: 'Press Start 2P', cursive;
-    text-shadow:
-      0.35px 0.35px 0.35px rgb(158, 8, 145, 0.767);
+/* Style for Webkit (Chrome, Safari) */
+.channel_part::-webkit-scrollbar {
+  width: 7.5px; /* Set the width of the scrollbar */
 }
-  
+
+/* Draggable part color */
+.channel_part::-webkit-scrollbar-thumb {
+  background: #4a095787;
+  border-radius: 5px;
+}
+
+/* Draggable part color on hover*/
+.channel_part::-webkit-scrollbar-thumb:hover {
+  background: #691c7887;
+}
+
+.channel_div_container {
+    width: 100%;
+}
+
+.channel_div {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 7.5vh;
+    width: 100%;
+    box-shadow: -10px -10px 5px rgba(187, 19, 153, 0.8);
+    transition: background-color 0.8s ease;
+    padding-left: 25%;
+    padding-right: 30px; /* Add this line */
+}
+
 .channel_div:hover {
-    background-color: rgba(77, 103, 165, 0.85);
-    cursor: pointer;
+  background-color: rgba(77, 103, 165, 0.85);
+  cursor: pointer;
+}
+
+.channel_content {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+  }  
+
+/* CSS for the lock icon */
+.lock_icon {
+    width: 30px;
+    height: auto;
+    position: absolute;
+    right: 5px;
   }

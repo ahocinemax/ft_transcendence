@@ -13,7 +13,7 @@ export class AppController {
   @Get()
   @Render('index.ejs')
   root() {
-    return {
+    return  {
       API42_ID: process.env.API42_ID, 
       API42_URI: process.env.API42_URI 
     };
