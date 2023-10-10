@@ -30,7 +30,7 @@ export const SocketReducer = (
 		case 'remove_user':
 			return {
 				...state,
-				users: state.users.filter((name) => name != (action.payload as string)),
+				users: state.users.filter((name) => name !== (action.payload as string)),
 			};
 		case 'update_name':
 			return {...state, name: action.payload as string};

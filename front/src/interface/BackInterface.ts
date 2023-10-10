@@ -8,5 +8,4 @@ export interface User {
     wins:           number; 
     status:         String;
     winRate:        Float32Array;
-    achievements:   String[];
 }

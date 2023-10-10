@@ -1,33 +1,109 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Profile.css'; 
-import { useState, useEffect } from 'react';
-import { backFunctions } from '../../outils_back/BackFunctions';
-import { User } from '../../interface/BackInterface';
 import { useUserContext } from '../../context/userContent';
-interface ProfileProps {
-	user: User;
-}
+import { userModel } from '../../interface/global';
+import { useParams, useNavigate } from 'react-router-dom';
+import { backFunctions } from '../../outils_back/BackFunctions';
+
+const userInfoInit: userModel = {
+    id: 0,
+    name: "",
+    image: "",
+    friends: [],
+    gamesLost: 0,
+    gamesPlayed: 0,
+    gamesWon: 0,
+    rank: 0,
+    score: 0,
+    winRate: 0,
+  };
+  
+  const initializeUser = (result: any, setUserInfo: any) => {
+    userInfoInit.id = result.id;
+    userInfoInit.name = result.name;
+    userInfoInit.image = result.image;
+    userInfoInit.friends = result.frirends;
+    userInfoInit.gamesLost = result.gamesLost;
+    userInfoInit.gamesPlayed = result.gamesPlayed;
+    userInfoInit.gamesWon = result.gamesWon;
+    userInfoInit.rank = result.rank;
+    userInfoInit.score = result.score;
+    userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
+    setUserInfo(userInfoInit);
+  };
+
+  export const authHeader = () => {
+    let token = "Bearer " + localStorage.getItem("userToken");
+    let myHeaders = new Headers();
+    myHeaders.append("Authorization", token);
+    return myHeaders;
+  };
+
+  export const authContentHeader = () => {
+    let token = "bearer " + localStorage.getItem("userToken");
+    let myHeaders = new Headers();
+    myHeaders.append("Authorization", token);
+    myHeaders.append("Content-Type", "application/json");
+    return myHeaders;
+  };
+
+  export const getOtherUser = (otherUsername: number) => {
+    let body = JSON.stringify({
+      otherId: otherUsername,
+    });
+    return fetchGetOtherUser("get_user", body);
+  };
+
+  const fetchGetOtherUser = async (url: string, body: any) => {
+    let fetchUrl = process.env.REACT_APP_BACKEND_URL + "/users/" + url;
+    try {
+      const response = await fetch(fetchUrl, {
+        method: "POST",
+        headers: authContentHeader(),
+        body: body,
+        redirect: "follow",
+      });
+      const result_1 = await response.json();
+      if (!response.ok) return "error";
+      return result_1;
+    } catch (error) {
+      return console.log("error", error);
+    }
+  };
+  
 const Profile = () => {
-    const [userData, setUserData] = useState<User | null>(null);
-    
+    const userData = useUserContext();
+    const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
+    const [isFetched, setIsFetched] = useState(false);
+    const [isUser, setIsUser] = useState(true);
+    let params = useParams();
+
+    // console.log("userName: ", userData);
+    // console.log("name:     ", userInfo.name);
+
     useEffect(() => {
-      const fetchData = async () => {
-        const user = await backFunctions.getUserByToken();//your name~
-        setUserData(user);
-      };
-      fetchData();
-    }, []);
-    const { userName, nickName, game, image, } = useUserContext()
-    console.log("TEST", useUserContext());
-    return (     
-        <div className="profile">
+        const fetchIsUser = async () => {
+          let result;
+          if (!isFetched && params.userName !== undefined) {
+            result = await backFunctions.getUserByToken();
+            console.log("result: ", result);
+            initializeUser(result, setUserInfo);
+            setIsFetched(true);
+            setIsUser(false);
+          }
+        };
+        fetchIsUser();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [isFetched, userData]);
+  return (
+    <div className="profile">
 		<div className="bande">
             <div className="profile_img" style={{ backgroundImage: `url(${image.image})` }}></div>
             <div className="profile_info">
-                <h1 className="info">playerPseudo</h1>
-                <h1 className="info">{userName.userName}</h1>
-                <h1 className="info">whichPosition?</h1>
-                <h1 className="info">whichTeamPosition?</h1>
+                <h1 className="info">{userData.userName.userName}</h1>
+                <h1 className="info">#whichTeam?</h1>
+                <h1 className="info">#Score?</h1>
+                <h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "unranked"}</h1>
             </div>
         </div>
         <div className="centered_div_container">

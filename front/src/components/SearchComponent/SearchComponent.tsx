@@ -8,9 +8,9 @@ interface SearchProps {
 const SearchComponent: React.FC<SearchProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearch = () => {
-    onSearch(searchQuery);
-  };
+  // const handleSearch = () => {
+  //   onSearch(searchQuery);
+  // };
 
   return (
     <div className="searchbar_component_div">

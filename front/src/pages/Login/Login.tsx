@@ -1,13 +1,9 @@
 import React from 'react';
 import './Login.css';
 
-interface LoginProps {
-  onClose: () => void;
-}
-
 function Login() {
-  const googleAuthUrl = process.env.REACT_APP_GOOGLE_AUTH_URL;
-  const fortytwoAuthUrl = process.env.REACT_APP_AUTH42_URL;
+  const googleAuthUrl = `${process.env.REACT_APP_GOOGLE_AUTH_URL}`;
+  const fortytwoAuthUrl = `${process.env.REACT_APP_AUTH42_URL}`;
   return (
     <div className="Login">
       <div className="VideoContainer">{/* 

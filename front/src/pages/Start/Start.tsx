@@ -1,6 +1,8 @@
+// eslint-disable-next-line
 import React, { useState } from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import './Start.css';
+// eslint-disable-next-line
 import Login from '../Login/Login'
 
 
@@ -12,7 +14,7 @@ function Start() {
         navigate("/login");
         return;
     }
-
+ 
     const navigate_to_homepage = () => {
       navigate("/homepage");
       return;

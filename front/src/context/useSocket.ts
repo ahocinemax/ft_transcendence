@@ -1,7 +1,5 @@
 import {useEffect, useRef} from 'react';
 import io, {ManagerOptions, Socket, SocketOptions} from 'socket.io-client';
-import { backFunctions } from '../outils_back/BackFunctions';
-import { NavigateFunction } from 'react-router-dom';
 
 export const useSocket = (
 	uri: string,

@@ -16,35 +16,23 @@ async function bootstrap() {
   app.use(bodyParser.json({limit: '50mb'}));
   app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:4000'],
+    origin: [`${process.env.REACT_APP_SERVER_HOST}`, `${process.env.REACT_APP_CLIENT_HOST}`],
     allowedHeaders: ['content-type'],
     methods: 'GET, HEAD, PATCH, POST',
-    preflightContinue: false,
+    preflightContinue: true,
     optionsSuccessStatus: 204,
     credentials: true,
   });
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
-  app.use(
-    session({
-      secret: 'pass',
-      resave: false,
-      saveUninitialized: false,
-      cookie: { maxAge: oneWeek}
-    })
-  );
+  app.use(session({
+    secret: 'pass',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: oneWeek}
+  }));
   app.use(passport.initialize());
   app.use(passport.session());
-  
-  // //for test environement = NODE_ENV === development
-  // if (process.env.NODE_ENV === 'development') {
-  //   app.use(express.json({ limit: '50mb' }));
-  //   app.use(express.urlencoded({ limit: '50mb', extended: true }));
-  //   console.log('NODE_ENV:', process.env.NODE_ENV);
-    // app.setBaseViewsDir('/usr/src/app/views');
-    // app.setViewEngine('ejs');
-    // app.useStaticAssets(join(__dirname, '..', '..', 'views'));
-  // }
   await app.listen(4000);
 }
 bootstrap();

@@ -93,21 +93,15 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 	const [rate, setRate] = useState<Rate>({rate: 0});
 
 	useEffect(() => {
-		const userInfos = getUserInfo(navigate);
-		//console.log('userInfos::', userInfos);
-		userInfos.then((res) => {
-			setUserName({userName: res.name});
-			setImage({image: res.image});
-			setNickName({nickName: res.nickName});
-			setAchievements({achievements: res.achievements});
-			setDoubleAuth({doubleAuth: res.otp_enabled});
-			setVerified2FA({verified2FA: res.otp_validated});
-			setEmail({email: res.email});
-			setGame({game: res.games});
-			setWins({wins: res.wins});
-			setRate({rate: res.rate});
+		const userInfos = getInfosFromDB(navigate);
+		userInfos.then((rhs) => {
+			setUserName({userName: rhs.name});
+			setImage({image: rhs.image});
+			setDoubleAuth({doubleAuth: rhs.otp_enabled});
+			setVerified2FA({verified2FA: rhs.otp_validated});
+			setEmail({email: rhs.email});
 		});
-	}, []);
+	}, [navigate]);
 	return (
 		<UserContext.Provider
 			value={{

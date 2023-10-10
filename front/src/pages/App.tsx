@@ -11,40 +11,40 @@ import Settings from './Settings/Settings';
 import Gamepage from './Gamepage/Gamepage';
 import CreateProfile from './CreateProfile/CreateProfile';
 import { UserContextProvider } from '../context/userContent';
-import SocketContextComponent from '../context/socketContext';
+import SocketContextComponent from '../context/socket';
+import { io } from 'socket.io-client';
+
+const socketOptions = {
+    transportOptions: { polling: { extraHeaders: { token: localStorage.getItem("userToken"), }, }, },
+};
+
+export const socket = io(`${process.env.REACT_APP_BACK_URL}`, socketOptions);
+console.log("url: ", `${process.env.REACT_APP_BACK_URL}`);
 
 function App() {
-
-	//function navBar() {
-	return(
-		<UserContextProvider>
-		<div className='app'>
-			<Sidebar />
-			<div className='content'>
+	return (
+	<UserContextProvider>
+		<SocketContextComponent>
+			{/* Vos composants ici */}
+			<div className='app'>
+			  <Sidebar />
+			  <div className='content'>
 				<Routes>
-					<Route path="/" element={<Start />} />
-					<Route path="/login" element={<Login />} />
-					<Route path="/homepage" element={<Homepage />} />
-					<Route path="/leaderboard" element={<Leaderboard />} />
-					<Route path="/chat" element={<Chat />} />
-					<Route path="/profile" element={<Profile />} />
-					<Route path="/settings" element={<Settings />} />
-					<Route path="/gamepage" element={<Gamepage />} />
-					<Route path="/create" element={<CreateProfile />} />
+				<Route path="/" element={<Start />} />
+						<Route path="/login" element={<Login />} />
+						<Route path="/homepage" element={<Homepage />} />
+						<Route path="/leaderboard" element={<Leaderboard />} />
+						<Route path="/chat" element={<Chat />} />
+						<Route path="/profile" element={<Profile />} />
+						<Route path="/settings" element={<Settings />} />
+						<Route path="/gamepage" element={<Gamepage />} />
+						<Route path="/create" element={<CreateProfile />} />
 				</Routes>
+			  </div>
 			</div>
-		</div>
-		</UserContextProvider>
-		);
-	}
-
-	// return (
-	// 	<UserContextProvider>
-	// 		<SocketContextComponent>
-	// 			{/* {navBar()} */}
-	// 		</SocketContextComponent>
-	// 	</UserContextProvider>
-	// );
-//}
+		</SocketContextComponent>
+	</UserContextProvider>
+	);
+}
 
 export default App;

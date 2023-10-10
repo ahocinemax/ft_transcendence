@@ -6,6 +6,7 @@ function Gamepage() {
 	const [playerBar2Y, setPlayerBar2Y] = useState(150);
 	const [ballX, setBallX] = useState(0); // Position horizontale de la balle
   	const [ballY, setBallY] = useState(0); // Position verticale de la balle
+	// eslint-disable-next-line
 	const [ballSpeedX, setBallSpeedX] = useState(50); // Vitesse horizontale de la balle
 	const [ballSpeedY, setBallSpeedY] = useState(50); // Vitesse verticale de la balle
 

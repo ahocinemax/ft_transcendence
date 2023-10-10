@@ -1,5 +1,6 @@
 import React from 'react';
 import './Homepage.css';
+// eslint-disable-next-line
 import Sidebar from '../Sidebar/Sidebar';
 
 interface HomepageProps {

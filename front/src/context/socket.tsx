@@ -1,6 +1,5 @@
 import { defaultSocketContextState, SocketContextProvider, SocketReducer } from './socketContext';
-import React, { useRef, PropsWithChildren, useEffect, useReducer, useState } from 'react';
-import io, {ManagerOptions, Socket, SocketOptions} from 'socket.io-client';
+import React, { PropsWithChildren, useEffect, useReducer, useState } from 'react';
 import { useUserContext } from './userContent';
 import { useSocket } from './useSocket';
 
@@ -26,10 +25,11 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		if (!name) return setLoading(false);
 		socket.io.opts.query!.name = name;
 		socket.connect();
+		console.log('socketConnected');
 		SocketDispatch({type: 'update_socket', payload: socket});
 		StartListeners();
 		SendHandshake();
-	}, [name]);
+	}, [name, socket]);
 
 	const StartListeners = () => {
 		socket.io.on('reconnect', (attempt) => {
@@ -83,14 +83,12 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 			socket.off('user_disconnected');
 			socket.off('error');
 		};
-	}, []);
+	}, [socket]);
 
-	return loading ?
-        <p>"Loading socket IO..."</p>
-    :   <SocketContextProvider value={{SocketState, SocketDispatch}}>
+	return loading ? (<p>"Loading socket IO..."</p>) :
+		(<SocketContextProvider value={{SocketState, SocketDispatch}}>
 			{children}
-		</SocketContextProvider>
-	;
+		</SocketContextProvider>);
 };
 
 export default SocketContextComponent;
