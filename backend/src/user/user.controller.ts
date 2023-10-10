@@ -16,8 +16,8 @@ import { Request, Response } from 'express';
 const express = require('express');
 const app = express();
 
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit: '50mb', extended: true}));
+app.use(express.json({limit: '50kb'}));
+app.use(express.urlencoded({limit: '50kb', extended: true}));
 
 @Controller('user')
 export class UserController {
@@ -28,14 +28,14 @@ export class UserController {
 	private logger: Logger = new Logger('User Controller');
 
 	@Get()
-	async getUsers(@Res() res: Response) {
-		const users = await this.userService.getAllUsers();
-		if (process.env.NODE_ENV === 'development') {
-	  		res.render('users.ejs', { users });
-		} // users is a .ejs file under the views directory
-		else {
-			return users;	
-		}
+	async getUsers(@Req() req: Request) {
+		//if (process.env.NODE_ENV === 'development') {
+	  	//	const users = await this.userService.getAllUsers();
+	  	//	res.render('users.ejs', { users });
+		//} // users is a .ejs file under the views directory
+		//else {
+			return this.userService.getAllUsers();	
+		//}
 	}
 	
 	@Get(':name')

@@ -17,7 +17,7 @@ async function bootstrap() {
   app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
   app.enableCors({
     origin: [`${process.env.REACT_APP_SERVER_HOST}`, `${process.env.REACT_APP_CLIENT_HOST}`],
-    allowedHeaders: ['content-type'],
+    allowedHeaders: ['content-type','Authorization', 'Accept'],
     methods: 'GET, HEAD, PATCH, POST',
     preflightContinue: true,
     optionsSuccessStatus: 204,

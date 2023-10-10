@@ -4,6 +4,7 @@ import { Request, Response, request } from "express";
 import { Auth42Service } from "src/auth/auth42/auth42.service";
 import { PrismaService } from "../../prisma/prisma.service";
 import { UserDto } from "./dto/user.dto";
+import { GoogleAuthService } from "./google-auth/google-auth.service";
 
 @Injectable({})
 export class AuthService {
@@ -11,6 +12,7 @@ export class AuthService {
     private prisma: PrismaService,
     private userService: UserService,
     private Auth42: Auth42Service,
+    private googleAuthService: GoogleAuthService,
   ) {}
 
 /* DATABASE Creation function */
@@ -43,10 +45,11 @@ async createDataBase42User(
 
   async handleDataBaseCreation(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
     const token: string = req.cookies.token;
+    console.log("token", token);
     const user42infos = await this.Auth42.access42UserInformation(token);
     if (user42infos)
       {
-        const finalUser = await this.Auth42.createDataBase42User(    user42infos,
+        const finalUser = await this.Auth42.createDataBase42User(user42infos,
         token,
         req.body.name,
         req.body.isRegistered);
@@ -57,22 +60,15 @@ async createDataBase42User(
     }
   }
 
-  async RedirectConnectingUser(
-    @Req() req: Request,
-    @Res() res: Response,
-    email: string | null | undefined
-  ) {
-    if (!email) res.redirect(301, `http://e1r2p7.clusters.42paris.fr:5173/registration`);
-    else res.redirect(301, `http://e1r2p7.clusters.42paris.fr:5173/`);
-  }
-
 /* CHECK FUNCTIONS */
 
   async checkIfTokenValid(@Req() req: Request, @Res() res: Response) {
-    const token: string = req.cookies.token;
-
+    const token: string = req.cookies.access_token;
+    console.log("token", token);
+    console.log("req!!!!!!!!!!!!!!!!!!!!!!", req.cookies);
     const token42Valid = await this.Auth42.access42UserInformation(token); // check token from user if user is from 42
-    if (!token42Valid) {
+    const tokenGoogleValid = await this.googleAuthService.getUserInfoFromAccessToken(token); // check token from user if user is from Google
+    if (!tokenGoogleValid && !token42Valid) {
       throw new BadRequestException("InvalidToken", {
         cause: new Error(),
         description: "Json empty, the token is invalid",
@@ -87,15 +83,16 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    //console.log(req.cookies, "request : getUserbyToken");
+    console.log("request : getUserbyToken: ", req.cookies);
     try {
-      const accessToken = req.cookies.accessToken;
-      //console.log("req.cookies.accessToken", req.cookies.accessToken);
+      const accessToken = req.cookies.access_token;
+      //console.log("req.cookies.access_token(controller)", req.cookies.access_token);
       const user = await this.prisma.user.findFirst({
         where: {
           accessToken: accessToken,
         },
       });
+      //console.log("user", user);
       if (!user)
       {
         throw new HttpException(
@@ -106,36 +103,53 @@ async createDataBase42User(
           };
       return user;
     } catch (error) {
-      //console.error("Error getUserbyToken", error); 
+      console.error("Error getUserbyToken", error);
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: "Error to get the user by token"},
-         HttpStatus.BAD_REQUEST);
+          error: error.response ? error.response.error : "Error to get the user by token"
+        },
+         HttpStatus.BAD_REQUEST
+         );
         };
   }
 
 //COOKIES
-  async createCookies(@Res() res: Response, token: any) {
-    const cookies = res.cookie("token", token.accessToken,
+  async createCookiesFortyTwo(@Res() res: Response, token: any) {
+    console.log("token.access_token(42API)", token.access_token);
+    res.cookie("access_token", token.access_token,
       {
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
         httpOnly: true,
+        secure: true,
+        sameSite: "lax",
       });
-      const Googlecookies = res.cookie("FullToken", token,
-      {
-        expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000), 
-        httpOnly: true,
-      });
+  }
 
+  async createCookiesGoogle(@Res() res: Response, token: any) {
+    console.log("token.access_token(Google)", token.accessToken);
+      res.cookie("access_token", token.accessToken,
+      {
+        expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+      });
   }
 
   async updateCookies(@Res() res: Response, token: any, userInfos: any) {
     try {
       if (userInfos)
-      { const name = userInfos.name;
-        const user = await this.prisma.user.update({where: {name: name,},
-        data: {  accessToken: token.accessToken,},
+      { console.log("userInfos", userInfos);
+        console.log("token(updatecookies)", token.access_token);
+        const name = userInfos.name;
+        const user = await this.prisma.user.update({
+          where: {name: name,},
+          data: {  accessToken: token.access_token,},
+        });
+        res.cookie("access_token", token.access_token, {
+        expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
+          httpOnly: true,
         });
         return user;
       }
@@ -143,9 +157,10 @@ async createDataBase42User(
         return (null);
     } catch (error)
     {
+        console.log("error", error);
         throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
-        error: "Error to update the cookes"},
+        error: "Error to update the cookies"},
         HttpStatus.BAD_REQUEST);
     }
     }

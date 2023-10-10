@@ -74,7 +74,7 @@ export class GoogleAuthService {
             email: response.email,
             userName: response.name,
             accessToken: accessToken,
-            isRegistered: true
+            isRegistered: false
         };
         return googleUser;
     }

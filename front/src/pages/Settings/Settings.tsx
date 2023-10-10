@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import './Settings.css';
+import { backFunctions } from '../../outils_back/BackFunctions';
+import { useUserContext } from '../../context/userContent';
 
 const Settings = () => {
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pseudo, setPseudo] = useState('#PlayerPseudo'); // État pour stocker le pseudo
   const [newPseudo, setNewPseudo] = useState(''); // État pour stocker le nouveau pseudo
+  const { setUserName } = useUserContext(); 
 
   const toggle2FA = () => {
     if (!is2FAEnabled) {
@@ -46,6 +49,7 @@ const Settings = () => {
     setNewPseudo(''); // Réinitialiser le champ de saisie
   };
 
+  const { userName, games, image, } = useUserContext()
   return (
     <div className="settings" onClick={closeModal}>
       <h1 className="Settingsh1">Settings</h1>

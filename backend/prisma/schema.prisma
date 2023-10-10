@@ -17,7 +17,6 @@ model User {
   name          String?   @unique @default("")
   email         String?   @unique @default("")
   image         String?   @default("https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png")
-
   status        String?   @default("offline")
 
   accessToken   String    @default("noToken")
@@ -59,7 +58,7 @@ model User {
 }
 
 model Game {
-  id            Int       @id @unique
+  id            Int       @id @default(autoincrement())
 
   player1       Int
   ScorePlayer1  Int
