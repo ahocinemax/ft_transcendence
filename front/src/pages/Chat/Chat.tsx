@@ -9,6 +9,8 @@ const Chat = () => {
     const [activeChannel, setActiveChannel] = useState('');
     const [messageInput, setMessageInput] = useState(''); // État pour stocker le message en cours de frappe
     const [messagesData, setMessagesData] = useState<MessageData>({});
+    const [selectedUser, setSelectedUser] = useState('');
+    const [isUserPopupVisible, setIsUserPopupVisible] = useState(false);
 
     const handleSearch = (query: string) => 
     {
@@ -43,6 +45,18 @@ const Chat = () => {
         }
       };
 
+      const handleUserClick = (userName: string) => 
+      {
+        setSelectedUser(userName);
+        setIsUserPopupVisible(true);
+      };
+
+      const closeUserPopup = () => 
+      {
+        setSelectedUser('');
+        setIsUserPopupVisible(false);
+      };
+
 
   /* Récupérer ici tous les channels de notre base de données sous forme d'array*/
   const channels = [
@@ -59,24 +73,6 @@ const Chat = () => {
     { name: 'Channel 11', isPrivate: false },
     { name: 'Channel 12', isPrivate: false }
   ];
-
-    /* const messagesData: MessageData = 
-    {
-      "Channel 1": [
-        { sender: "Utilisateur 1", time: "10:00", content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." },
-        { sender: "Utilisateur 2", time: "10:05", content: "Message 2" },
-        { sender: "Utilisateur 2", time: "10:05", content: "test" },
-        { sender: "Utilisateur 2", time: "10:05", content: "ça va tabasser transcendence" },
-        { sender: "Utilisateur 2", time: "10:05", content: "ça va tabasser transcendence test" },
-        // Autres messages pour le canal 1
-      ],
-      "Channel 2": [
-        { sender: "Utilisateur 3", time: "11:00", content: "Message 1" },
-        { sender: "Utilisateur 4", time: "11:05", content: "Message 2" },
-        // Autres messages pour le canal 2
-      ],
-      // Autres canaux et leurs messages
-    }; */
 
     interface MessageData 
     {
@@ -101,12 +97,12 @@ const Chat = () => {
 
   return (
     <div className="chat" >
-      <div className="channel_part">
+      <div className="channel_part" onClick={closeUserPopup}>
         <div className="searchbar_div">
           <SearchComponent onSearch={handleSearch} />
         </div>
         <div className="channel_top_div">
-          <h1 className="h1_channel">#Channels (42)</h1>
+          <h1 className="h1_channel">#Channels(42)</h1>
           <h1 className="createchan" onClick={createChannel}>+</h1>
           {isPopupOpen && <ChannelNamePopup onClose={closePopup} />}
         </div>
@@ -128,20 +124,26 @@ const Chat = () => {
             <div className="message_list">
             <h1 className="channel_title active_channel_title">#{activeChannel}</h1>
             <ul>
-              {messagesData[activeChannel]?.map((message, index) => (
+            {messagesData[activeChannel]?.map((message, index) => (
                 <li key={index}>
-                <div
-                  className={`message_bubble ${
-                    message.sender === 'Utilisateur 1' ? 'user' : 'not_user'
-                  }`}
-                  style={{
-                    width: `${Math.min(100, message.content.length)}%`, // Adjust the maximum width as needed
-                  }}
-                >
-                  <strong>{message.sender}</strong> ({message.time}): {message.content}
-                </div>
-              </li>
-              ))}
+                  <div
+                    className={`message_bubble ${
+                      message.sender === 'Utilisateur 1' ? 'user' : 'not_user'
+                    }`}
+                    style={{
+                      width: `${Math.min(100, message.content.length)}%`, // Adjust the maximum width as needed
+                    }}
+                  >
+                    <span
+                      className="message_sender"
+                      onClick={() => handleUserClick(message.sender)} // Gérer le clic sur le nom de l'utilisateur
+                    >
+                      <strong>{message.sender}</strong>
+                    </span>
+                    ({message.time}): {message.content}
+                  </div>
+                </li>
+))}
             </ul>
           </div>
           )}
@@ -156,11 +158,17 @@ const Chat = () => {
                     onChange={(e) => setMessageInput(e.target.value)}
                     className="send_msg"
                   />
-                  <button type="submit">Envoyer</button>
                 </form>
 )}
         </div>
+        <div className="user_popup">
+            <div className="popup_content">
+              <p>{selectedUser}</p>
+              <img src="./avatar.png"/>
+            </div>
+        </div>
     </div>
+    
   );
 }
 
