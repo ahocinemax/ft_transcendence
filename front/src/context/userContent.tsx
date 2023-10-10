@@ -55,7 +55,9 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 	const [email, setEmail] = useState<Email>({email: ''});
 
 	useEffect(() => {
-		const userInfos = getInfosFromDB(navigate);
+		// console.log('user context hook');
+
+		const userInfos = getInfosFromDB(navigate); // can't use async/await here
 		userInfos.then((rhs) => {
 			setUserName({userName: rhs.name});
 			setImage({image: rhs.image});

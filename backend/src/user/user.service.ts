@@ -136,7 +136,7 @@ export class UserService
 				rank: true,
 				winRate: true,
 				gamesPlayed: true,
-				wins: true,
+				gamesWon: true,
 				gamesLost: true,
 			},
 			orderBy: {rank: 'asc'},

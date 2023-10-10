@@ -65,7 +65,8 @@ export class WebsocketService {
 				break;
 			default:
 				break;
-		}
+			}
+		console.log(`${client.data.name} is now ${type}`);
 	}
 
     private async setOnline(@ConnectedSocket() client: AuthenticatedSocket) {

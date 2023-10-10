@@ -38,7 +38,6 @@ export class GoogleAuthService {
                         email: email,
                     },
                     data: {
-                        achievements: userAlreadyRegisterd.achievements || [], // すでにある成果を保持する
                         accessToken: token,
                         name: name,
                         login42: "google account",
@@ -50,7 +49,6 @@ export class GoogleAuthService {
                 // create new user
                 const user = await this.prisma.user.create({
                     data: {
-                        achievements: [],
                         email: email,
                         accessToken: token,
                         name: name,

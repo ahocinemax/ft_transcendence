@@ -1,8 +1,8 @@
 import { 
-    ForbiddenException,
-    forwardRef,
-    Inject,
-    Injectable } from '@nestjs/common';
+	ForbiddenException,
+	forwardRef,
+	Inject,
+	Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { Server } from 'socket.io';
 import { UserService } from '../user/user.service';
@@ -11,38 +11,42 @@ import { Mutex } from 'async-mutex';
 import { Room } from './interface/room.interface';
 import { GameData } from './interface/game-data.interface';
 
+const paddleSpeed = 1;
 @Injectable()
 export class GameService {
-    ballSpeed = 0.25;
+	ballSpeed = 0.25;
 
-    constructor(
-    private readonly prisma: PrismaService,
-    @Inject(forwardRef(() => UserService))
-    private readonly userService: UserService,
-    ) {}
+	constructor(
+	private readonly prisma: PrismaService,
+	@Inject(forwardRef(() => UserService))
+	private readonly userService: UserService,
+	) {}
 
-    static rooms: Room[] = [];
+	static rooms: Room[] = [];
 
-    async saveGame(
-        id: number,
-        IdPlayer1: number,
-        IdPlayer2: number,
-        ScorePlayer1: number,
-        ScorePlayer2: number,
-        startTime: Date,
-        endTime: Date,
-    ) {
-        const game = await this.prisma.game.create({
-            data: {
-                id: id,
-                player1: IdPlayer1,
-                player2: IdPlayer2,
-                ScorePlayer1: ScorePlayer1,
-                ScorePlayer2: ScorePlayer2,
-                startTime: startTime,
-                endTime: endTime,
-            },
-        });
+	/**
+	* Call this method when the game is over to save infos in the database
+	*/
+	async saveGame(
+		id: number,
+		NamePlayer1: number,
+		NamePlayer2: number,
+		ScorePlayer1: number,
+		ScorePlayer2: number,
+		startTime: Date,
+		endTime: Date,
+	) {
+		const game = await this.prisma.game.create({
+			data: {
+				id: id,
+				player1: NamePlayer1,
+				player2: NamePlayer2,
+				ScorePlayer1: ScorePlayer1,
+				ScorePlayer2: ScorePlayer2,
+				startTime: startTime,
+				endTime: endTime,
+			},
+		});
 
 		const duration = Math.abs(game.endTime.getTime() - game.startTime.getTime());
 		await this.prisma.game.update({
@@ -51,10 +55,10 @@ export class GameService {
 		});
 
 		
-        return game;
-    }
+		return game;
+	}
 
-    initBall(roomId: number) {
+	initBall(roomId: number) {
 		GameService.rooms.find((room) => room.id === roomId).xball = 50;
 		GameService.rooms.find((room) => room.id === roomId).yball = 50;
 		GameService.rooms.find((room) => room.id === roomId).ballSpeed =
@@ -158,7 +162,7 @@ export class GameService {
 		) {
 			GameService.rooms.find(
 				(room) => room.id === roomId,
-			).player1Score += 1;
+			).ScorePlayer1 += 1;
 			this.initBall(
 				GameService.rooms.find((room) => room.id === roomId).id,
 			);
@@ -169,7 +173,7 @@ export class GameService {
 		) {
 			GameService.rooms.find(
 				(room) => room.id === roomId,
-			).player2Score += 1;
+			).ScorePlayer2 += 1;
 			this.initBall(
 				GameService.rooms.find((room) => room.id === roomId).id,
 			);
@@ -251,33 +255,30 @@ export class GameService {
 		}
 	}
 
-    async getGame(id: number)
-	{
-		const game = await this.prisma.game.findUniqueOrThrow({ where: { id: id, }, });
-		return game;
+	async getGame(id: number)
+	{ return await this.prisma.game.findUniqueOrThrow({ where: { id: id, }, });	}
+
+	async startGame(roomID: number, server: Server){
+		const gameData = {
+			paddleLeft: 0,
+			paddleRight: 0,
+			ballX: 0,
+			ballY: 0,
+			ScorePlayer1: 0,
+			ScorePlayer2: 0,
+			NamePlayer1: GameService.rooms.find((room) => room.id === roomID).NamePlayer1,
+			NamePlayer2: GameService.rooms.find((room) => room.id === roomID).NamePlayer2,
+			AvatarPlayer1: GameService.rooms.find((room) => room.id === roomID).AvatarPlayer1,
+			AvatarPlayer2: GameService.rooms.find((room) => room.id === roomID).AvatarPlayer2,
+			startTime: new Date(),
+		};
+		const mutex = new Mutex();
+		// init ball (roomID)
+		// create game loop
+		return gameData;
 	}
 
-    async startGame(roomID: number, server: Server){
-        const gameData = {
-            paddleLeft: 0,
-            paddleRight: 0,
-            ballX: 0,
-            ballY: 0,
-            ScorePlayer1: 0,
-            ScorePlayer2: 0,
-            NamePlayer1: GameService.rooms.find((room) => room.id === roomID).NamePlayer1,
-            NamePlayer2: GameService.rooms.find((room) => room.id === roomID).NamePlayer2,
-            AvatarPlayer1: GameService.rooms.find((room) => room.id === roomID).AvatarPlayer1,
-            AvatarPlayer2: GameService.rooms.find((room) => room.id === roomID).AvatarPlayer2,
-            startTime: new Date(),
-        };
-        const mutex = new Mutex();
-        // init ball (roomID)
-        // create game loop
-        return gameData;
-    }
-
-    async getLastGames() {
+	async getLastGames() {
 		//returns a record of all the users, ordered by endTime in descending order
 		const games = await this.prisma.game.findMany({
 			orderBy: { endTime: 'desc' },

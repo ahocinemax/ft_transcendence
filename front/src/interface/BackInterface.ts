@@ -4,8 +4,8 @@ export interface User {
     name:           String;
     email:          String;
     image:          String;
-    games:          number;  
-    wins:           number; 
+    gamesPlayed:          number;  
+    gamesWon:           number; 
     status:         String;
     winRate:        Float32Array;
 }

@@ -39,6 +39,6 @@ export class GameController {
 
     @Get('/getLastGame')
     getLastGame() {
-        return (this.gameService.getLastGame());
+        return (this.gameService.getLastGames());
     }
 }
