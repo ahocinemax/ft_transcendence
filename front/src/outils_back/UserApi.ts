@@ -8,7 +8,15 @@ const requestConfig : RequestInit = {
 export const UserApi = {
     async get(url: string) {
         try {
-            return await fetch(`${process.env.REACT_APP_SERVER_HOST}${url}`, {...requestConfig, method: 'GET'});
+            const response = await fetch(`${process.env.REACT_APP_SERVER_HOST}${url}`, {
+              ...requestConfig,
+              method: 'GET',
+              //'credentials': 'include', 
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response;
         } catch (error) {
             console.error("Fetch failed:", error);
             throw error;

@@ -10,13 +10,14 @@ import Profile from './Profile/Profile';
 import Settings from './Settings/Settings';
 import Gamepage from './Gamepage/Gamepage';
 import CreateProfile from './CreateProfile/CreateProfile';
-import { UserContextProvider } from './../context/userContent';
+import { UserContextProvider } from '../context/userContent';
 import SocketContextComponent from '../context/socketContext';
 
 function App() {
 
-	function navBar() {
+	//function navBar() {
 	return(
+		<UserContextProvider>
 		<div className='app'>
 			<Sidebar />
 			<div className='content'>
@@ -32,16 +33,18 @@ function App() {
 					<Route path="/create" element={<CreateProfile />} />
 				</Routes>
 			</div>
-		</div>);
+		</div>
+		</UserContextProvider>
+		);
 	}
 
-	return (
-		<UserContextProvider>
-			<SocketContextComponent>
-				{/* {navBar()} */}
-			</SocketContextComponent>
-		</UserContextProvider>
-	);
-}
+	// return (
+	// 	<UserContextProvider>
+	// 		<SocketContextComponent>
+	// 			{/* {navBar()} */}
+	// 		</SocketContextComponent>
+	// 	</UserContextProvider>
+	// );
+//}
 
 export default App;

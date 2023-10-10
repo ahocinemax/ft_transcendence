@@ -3,13 +3,13 @@ import './Profile.css';
 import { useState, useEffect } from 'react';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import { User } from '../../interface/BackInterface';
-import { useUserInfos } from '../../outils_back/UserContext';
+import { useUserContext } from '../../context/userContent';
 interface ProfileProps {
 	user: User;
 }
 const Profile = () => {
     const [userData, setUserData] = useState<User | null>(null);
-
+    
     useEffect(() => {
       const fetchData = async () => {
         const user = await backFunctions.getUserByToken();//your name~
@@ -17,15 +17,15 @@ const Profile = () => {
       };
       fetchData();
     }, []);
-//    const { userName } = useUserInfos();
-//    console.log("TESSSSSSSSSSSSSSSSSSSSSST", useUserInfos());
+    const { userName, nickName, game, image, } = useUserContext()
+    console.log("TEST", useUserContext());
     return (     
         <div className="profile">
 		<div className="bande">
-            <div className="profile_img" style={{ backgroundImage: `url(${userData?.image})` }}></div>
+            <div className="profile_img" style={{ backgroundImage: `url(${image.image})` }}></div>
             <div className="profile_info">
                 <h1 className="info">playerPseudo</h1>
-                <h1 className="info">{userData?.name}</h1>
+                <h1 className="info">{userName.userName}</h1>
                 <h1 className="info">whichPosition?</h1>
                 <h1 className="info">whichTeamPosition?</h1>
             </div>
@@ -37,7 +37,7 @@ const Profile = () => {
                 </div>
                 <div className="scores_div_bottom">
                     <h1 className="info">Games</h1>
-                    <h1 className="stat">{userData?.games}</h1>
+                    <h1 className="stat">{game.game}</h1>
                 </div>
             </div>
             <div className="scores_div">

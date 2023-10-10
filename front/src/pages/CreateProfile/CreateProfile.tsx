@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './CreateProfile.css';
 import { useNavigate } from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
+import { useUserInfos } from '../../outils_back/UserContext';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -74,12 +75,12 @@ const Settings = () => {
     //checkUserToken();
   }, []);
   
-
+  const { userName, nickName, game, image, } = useUserInfos()
   return (
     <div className="settings">
       <h1 className="Settingsh1">Create profile</h1>
       <div className="settings_container">
-        <div className="round_div_settings_img"></div>
+        <div className="round_div_settings_img" style={{ backgroundImage: `url(${image.image})` }}></div>
       </div>
 
       {/* Swap nickname */}
