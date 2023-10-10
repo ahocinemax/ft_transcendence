@@ -12,6 +12,7 @@ const Settings = () => {
   const [pseudo, setPseudo] = useState('#PlayerPseudo'); // État pour stocker le pseudo
   const [newPseudo, setNewPseudo] = useState(''); // État pour stocker le nouveau pseudo
   const [tokenExists, setTokenExists] = useState(false);
+  const { setNickName } = useUserContext(); 
   async function checkCreateUser () {
     const user = await backFunctions.getUserByToken();
     if (user && user.nickName){
@@ -63,10 +64,19 @@ const Settings = () => {
     setNewPseudo(event.target.value);
   };
 
-  const updatePseudo = () => {
+  const updatePseudo = async () => {
     // Mettre à jour le pseudo avec le nouveau pseudo saisi
     if (newPseudo.length >= 3 && newPseudo.length <= 12 && isAlphanum(newPseudo))
         setPseudo(newPseudo);
+    try {
+          const updatedUser = await backFunctions.updateUser("Mariko Tsuji", { nickName: newPseudo });
+          if (updatedUser) {
+            console.log("User updated successfully:", updatedUser);
+            setNickName({nickName: newPseudo});
+          }
+        } catch (error) {
+          console.error("Failed to update user:", error);
+        }
     setNewPseudo(''); // Réinitialiser le champ de saisie
   };
 
@@ -78,7 +88,7 @@ const Settings = () => {
 
 
 
-  const { userName, nickName, game, image, } = useUserContext()
+  const { userName, nickName, games, image, } = useUserContext()
   return (
     <div className="settings">
       <h1 className="Settingsh1">Create profile</h1>

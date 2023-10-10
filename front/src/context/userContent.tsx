@@ -36,8 +36,8 @@ export type Email = {
 	email: string;
 };
 
-export type Game = {
-	game: number;
+export type Games = {
+	games: number;
 };
 
 export type Rate = {
@@ -64,8 +64,8 @@ type UserContextType = {
 	setVerified2FA: React.Dispatch<React.SetStateAction<DoubleAuthVerified>>;
 	email: Email;
 	setEmail: React.Dispatch<React.SetStateAction<Email>>;
-	game: Game;
-	setGame: React.Dispatch<React.SetStateAction<Game>>;
+	games: Games;
+	setGames: React.Dispatch<React.SetStateAction<Games>>;
 	wins: Wins;
 	setWins: React.Dispatch<React.SetStateAction<Wins>>;
 	rate: Rate;
@@ -88,7 +88,7 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 		verified2FA: false,
 	});
 	const [email, setEmail] = useState<Email>({email: ''});
-	const [game, setGame] = useState<Game>({game: 0});
+	const [games, setGames] = useState<Games>({games: 0});
 	const [wins, setWins] = useState<Wins>({wins: 0});
 	const [rate, setRate] = useState<Rate>({rate: 0});
 
@@ -100,7 +100,7 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 			setDoubleAuth({doubleAuth: rhs.otp_enabled});
 			setVerified2FA({verified2FA: rhs.otp_validated});
 			setEmail({email: rhs.email});
-			setGame({game: rhs.game});
+			setGames({games: rhs.games});
 			setWins({wins: rhs.wins});
 			setRate({rate: rhs.winRate});
 		});
@@ -122,8 +122,8 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 				setVerified2FA,
 				email,
 				setEmail,
-				game,
-				setGame,
+				games,
+				setGames,
 				wins,
 				setWins,
 				rate,

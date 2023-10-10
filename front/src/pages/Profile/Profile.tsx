@@ -78,7 +78,8 @@ const Profile = () => {
     const [isUser, setIsUser] = useState(true);
     let params = useParams();
 
-    //console.log("userData.image.image: ", userData.image.image);
+    console.log("userData.nickName.nickName: ", userData.nickName);
+    console.log("userData.userName.userName: ", userData.userName);
     //console.log("name:     ", userInfo.name);
 
     useEffect(() => {
@@ -92,16 +93,29 @@ const Profile = () => {
             setIsUser(false);
           }
         };
+        
+        const fetchLatestUserContext = async () => {
+          const latestData = await backFunctions.getUserByToken();
+          userData.setUserName({userName: latestData.userName});
+          userData.setNickName({nickName: latestData.nickName});
+          userData.setImage({image: latestData.image});
+          userData.setGames({games: latestData.games});
+          userData.setWins({wins: latestData.wins});
+          userData.setRate({rate: latestData.rate});
+        };
+
         fetchIsUser();
+        fetchLatestUserContext();
+        setIsFetched(true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [isFetched, userData]);
+      }, []);
   return (
     <div className="profile">
 		<div className="bande">
             <div className="profile_img" style={{ backgroundImage: `url(${userData?.image.image})` }}></div>
             <div className="profile_info">
-                <h1 className="info">{userData.userName.userName}</h1>
-                <h1 className="info">#whichTeam?</h1>
+                <h1 className="info">{userData?.userName.userName}</h1>
+                <h1 className="info">{userData?.nickName.nickName}</h1>
                 <h1 className="info">#Score?</h1>
                 <h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "unranked"}</h1>
             </div>
@@ -113,7 +127,7 @@ const Profile = () => {
                 </div>
                 <div className="scores_div_bottom">
                     <h1 className="info">Games</h1>
-                    <h1 className="stat">{userData?.game.game}</h1>
+                    <h1 className="stat">{userData?.games.games}</h1>
                 </div>
             </div>
             <div className="scores_div">

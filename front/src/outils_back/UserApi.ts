@@ -27,7 +27,7 @@ export const UserApi = {
     async patch(url: string, data: unknown) {
         try {
                 console.log("Fetch [PATCH]:", `${process.env.REACT_APP_SERVER_HOST}${url}`);
-                return await fetch(url, {
+                return await fetch(`${process.env.REACT_APP_SERVER_HOST}${url}`, {
                 ...requestConfig,
                 method: 'PATCH',
                 body: JSON.stringify(data),
