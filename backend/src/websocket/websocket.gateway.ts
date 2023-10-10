@@ -38,8 +38,8 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   userStatusMap = new Map<number, Status>();
   clientSocket = new Map<number, Socket>();
 
-
   onlineFromService(id: number) {
+    console.log("onlineFromService");
     this.userStatusMap.set(id, Status.online);
     const serializedMap = [...this.userStatusMap.entries()];
     this.server.emit('update-status', serializedMap);

@@ -95,7 +95,7 @@ export class Auth42Service {
         return userAlreadyRegisterd;
       }
       else {
-        console.log("user not exist");
+        // console.log("user not exist");
         const user = await this.prisma.user.create({
           data: {
             accessToken: token,

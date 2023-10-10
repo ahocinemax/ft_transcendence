@@ -39,7 +39,7 @@ export class AuthController {
 		const token = await this.Auth42.getAccessToken(codeFromApi);
 		const user42infos = await this.Auth42.access42UserInformation(
 			token.access_token
-		);
+		); 
 		let user;
 		if (user42infos) {
 			// Use the information from the 42API to create the user in the database.
@@ -58,7 +58,6 @@ export class AuthController {
 			// Handle the error when we do not get the user info from the 42API.
 			res.status(400).json({ error: 'Unable to get the user information from the 42API.' });
 		}
-		this.WebsocketGateway.onlineFromService(user.id);
 	}
 
 	@Get("logout")

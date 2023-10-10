@@ -13,6 +13,7 @@ export const backFunctions = {
 
     async getUserByToken(): Promise<any> {
 		const response = await UserApi.fetchGet('/auth/getuserbytoken', getUserCallback);
+        localStorage.setItem("userToken", response.accessToken);
         // console.log("Response: ", response); 
 		return response;
 	},

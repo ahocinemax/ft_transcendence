@@ -70,7 +70,7 @@ const Profile = () => {
 					</div>
 					<div className="scores_div_bottom">
 						<h1 className="info">Games</h1>
-						<h1 className="stat">{userInfo.gamesLost}</h1>
+						<h1 className="stat">{userInfo.gamesPlayed}</h1>
 					</div>
 				</div>
 				<div className="scores_div">

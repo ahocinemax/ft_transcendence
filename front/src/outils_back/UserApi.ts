@@ -26,6 +26,7 @@ export const UserApi = {
 
     async authHeader() {
         let token = "Bearer " + localStorage.getItem("userToken");
+        console.log("Fetch TOKEN [GET]:", token);
         let myHeaders = new Headers();
         myHeaders.append("Authorization", token);
         // myHeaders.append("Allow-Control-Allow-Origin", "*");
@@ -42,7 +43,6 @@ export const UserApi = {
 
     async fetchGet(url: string, callback: any) {
         let fetchUrl = process.env.REACT_APP_SERVER_HOST + url;
-        // console.log("Fetch [GET]:", fetchUrl);
         const headers = await this.authHeader();
         try {
             const response = await fetch(fetchUrl, {
