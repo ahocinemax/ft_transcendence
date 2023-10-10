@@ -93,13 +93,16 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 	const [rate, setRate] = useState<Rate>({rate: 0});
 
 	useEffect(() => {
-		const userInfos = getInfosFromDB(navigate);
+		const userInfos = getUserInfo(navigate);
 		userInfos.then((rhs) => {
 			setUserName({userName: rhs.name});
 			setImage({image: rhs.image});
 			setDoubleAuth({doubleAuth: rhs.otp_enabled});
 			setVerified2FA({verified2FA: rhs.otp_validated});
 			setEmail({email: rhs.email});
+			setGame({game: rhs.game});
+			setWins({wins: rhs.wins});
+			setRate({rate: rhs.winRate});
 		});
 	}, [navigate]);
 	return (
@@ -134,7 +137,7 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 
 export function useUserContext(): UserContextType {
   const context = useContext(UserContext);
-  console.log('context', context);
+  //console.log('context', context);
   if (!context) {
     throw new Error('useUserContext doit être utilisé à l\'intérieur d\'un composant UserContextProvider');
   }

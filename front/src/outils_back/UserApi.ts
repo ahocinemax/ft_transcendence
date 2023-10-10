@@ -22,5 +22,20 @@ export const UserApi = {
             method: 'POST',
             body: JSON.stringify(data),
             });
+    },
+
+    async patch(url: string, data: unknown) {
+        try {
+                console.log("Fetch [PATCH]:", `${process.env.REACT_APP_SERVER_HOST}${url}`);
+                return await fetch(url, {
+                ...requestConfig,
+                method: 'PATCH',
+                body: JSON.stringify(data),
+                });
+            }
+        catch (error) {
+            console.error("Fetch failed:", error);
+            throw error;
+        }
     }
 };

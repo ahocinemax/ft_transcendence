@@ -16,7 +16,7 @@ export const backFunctions = {
     async getUserByToken(): Promise<any> {
 		const response = await UserApi.get('/auth/getuserbytoken');
         const res = await response.json();
-        console.log("Response: ", res); 
+        //console.log("Response: ", res); 
 		return res;
 	},
  
@@ -28,6 +28,12 @@ export const backFunctions = {
     async getLeaderBoard(): Promise<any> {
         console.log("fetching getLeaderboard...");
         return await UserApi.get('/user/getLeaderboard');
+    },
+    
+    async updateUser(username: string, UpdateUser: unknown): Promise<User | null> {
+        const response = await UserApi.patch('/user/' + username, UpdateUser);
+        return await response.json();
     }
+
     
 };

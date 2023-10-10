@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './CreateProfile.css';
 import { useNavigate } from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
-import { useUserInfos } from '../../outils_back/UserContext';
+import { useUserContext } from '../../context/userContent';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -74,8 +74,11 @@ const Settings = () => {
     checkCreateUser();
     //checkUserToken();
   }, []);
-  
-  const { userName, nickName, game, image, } = useUserInfos()
+
+
+
+
+  const { userName, nickName, game, image, } = useUserContext()
   return (
     <div className="settings">
       <h1 className="Settingsh1">Create profile</h1>

@@ -78,8 +78,8 @@ const Profile = () => {
     const [isUser, setIsUser] = useState(true);
     let params = useParams();
 
-    // console.log("userName: ", userData);
-    // console.log("name:     ", userInfo.name);
+    //console.log("userData.image.image: ", userData.image.image);
+    //console.log("name:     ", userInfo.name);
 
     useEffect(() => {
         const fetchIsUser = async () => {
@@ -98,7 +98,7 @@ const Profile = () => {
   return (
     <div className="profile">
 		<div className="bande">
-            <div className="profile_img" style={{ backgroundImage: `url(${image.image})` }}></div>
+            <div className="profile_img" style={{ backgroundImage: `url(${userData?.image.image})` }}></div>
             <div className="profile_info">
                 <h1 className="info">{userData.userName.userName}</h1>
                 <h1 className="info">#whichTeam?</h1>
@@ -113,7 +113,7 @@ const Profile = () => {
                 </div>
                 <div className="scores_div_bottom">
                     <h1 className="info">Games</h1>
-                    <h1 className="stat">{game.game}</h1>
+                    <h1 className="stat">{userData?.game.game}</h1>
                 </div>
             </div>
             <div className="scores_div">
@@ -122,7 +122,7 @@ const Profile = () => {
                 </div>
                 <div className="scores_div_bottom">
                     <h1 className="info">Wins</h1>
-                    <h1 className="stat">{userData?.wins}</h1>
+                    <h1 className="stat">{userData?.wins.wins}</h1>
                 </div>
             </div>
             <div className="scores_div">
@@ -131,7 +131,7 @@ const Profile = () => {
                 </div>
                 <div className="scores_div_bottom">
                     <h1 className="info">Winrate</h1>
-                    <h1 className="stat">{userData?.winRate}</h1>
+                    <h1 className="stat">{userData?.rate.rate}</h1>
                 </div>
             </div>
         </div>
