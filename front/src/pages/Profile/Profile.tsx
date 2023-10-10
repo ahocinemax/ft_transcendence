@@ -12,7 +12,7 @@ const userInfoInit: userModel = {
     friends: [],
     gamesLost: 0,
     gamesPlayed: 0,
-    gamesWon: 0,
+    wins: 0,
     rank: 0,
     score: 0,
     winRate: 0,
@@ -25,7 +25,7 @@ const userInfoInit: userModel = {
     userInfoInit.friends = result.frirends;
     userInfoInit.gamesLost = result.gamesLost;
     userInfoInit.gamesPlayed = result.gamesPlayed;
-    userInfoInit.gamesWon = result.gamesWon;
+    userInfoInit.wins = result.wins;
     userInfoInit.rank = result.rank;
     userInfoInit.score = result.score;
     userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
@@ -113,7 +113,7 @@ const Profile = () => {
                 </div>
                 <div className="scores_div_bottom">
                     <h1 className="info">Games</h1>
-                    <h1 className="stat">42</h1>
+                    <h1 className="stat">{userInfo.gamesPlayed}</h1>
                 </div>
             </div>
             <div className="scores_div">
@@ -122,7 +122,7 @@ const Profile = () => {
                 </div>
                 <div className="scores_div_bottom">
                     <h1 className="info">Wins</h1>
-                    <h1 className="stat">42</h1>
+                    <h1 className="stat">{userInfo.wins}</h1>
                 </div>
             </div>
             <div className="scores_div">
@@ -131,7 +131,7 @@ const Profile = () => {
                 </div>
                 <div className="scores_div_bottom">
                     <h1 className="info">Winrate</h1>
-                    <h1 className="stat">100%</h1>
+                    <h1 className="stat">{userInfo.winRate ? userInfo.winRate + "%" : "(none)"}</h1>
                 </div>
             </div>
         </div>

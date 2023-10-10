@@ -5,7 +5,7 @@ export interface userModel {
     friends: Array<userModel>;
     gamesLost: number;
     gamesPlayed: number;
-    gamesWon: number;
+    wins: number;
     rank: number;
     score: number;
     winRate: number;

@@ -27,7 +27,7 @@ export class UserDto {
 
 	@IsNumber()
 	@IsNotEmpty()
-	gamesWon: number;
+	wins: number;
 
 	@IsNumber()
 	@IsNotEmpty()

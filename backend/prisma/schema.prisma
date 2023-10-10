@@ -19,10 +19,8 @@ model User {
   image         String?   @default("https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png")
 
   status        String?   @default("offline")
-  games         Int?      @default(0)
   wins          Int?      @default(0)
   winRate       Float?
-  achievements  String[]
   score         Int?      @default(0)
   rank          Int?      @default(0)
 
@@ -47,7 +45,6 @@ model User {
   otp_code      String?   @default("")
 
   gamesLost     Int       @default(0)
-  gamesWon      Int       @default(0)
   gamesPlayed   Int       @default(0)
   gameHistory   Int[]
 
