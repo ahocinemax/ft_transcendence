@@ -12,6 +12,14 @@ import Gamepage from './Gamepage/Gamepage';
 import CreateProfile from './CreateProfile/CreateProfile';
 import { UserContextProvider } from '../context/userContent';
 import SocketContextComponent from '../context/socket';
+import { io } from 'socket.io-client';
+
+const socketOptions = {
+    transportOptions: { polling: { extraHeaders: { token: localStorage.getItem("userToken"), }, }, },
+};
+
+export const socket = io(`${process.env.REACT_APP_BACK_URL}`, socketOptions);
+console.log("url: ", `${process.env.REACT_APP_BACK_URL}`);
 
 function App() {
 	return (

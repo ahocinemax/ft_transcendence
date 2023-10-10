@@ -41,9 +41,7 @@ type UserContextType = {
 
 export const UserContext = createContext({} as UserContextType);
 
-console.log(UserContext);
-
-const getInfosFromDB = async (navigate: NavigateFunction) => {
+export const getInfosFromDB = async (navigate: NavigateFunction) => {
 	const response = await backFunctions.getUserByToken();
 	return response;
 };

@@ -15,12 +15,19 @@ export const backFunctions = {
 
     async getUserByToken(): Promise<any> {
 		const response = await UserApi.get('/auth/getuserbytoken');
-		return await response.json();
+        const res = await response.json();
+        console.log("Response: ", res); 
+		return res;
 	},
  
     async checkIfTokenValid(): Promise<any> {
 		const response = await UserApi.get('/auth/token');
 		return await response.json();
-	},    
+	},
+
+    async getLeaderBoard(): Promise<any> {
+        console.log("fetching getLeaderboard...");
+        return await UserApi.get('/user/getLeaderboard');
+    }
     
 };

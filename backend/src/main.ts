@@ -11,15 +11,15 @@ config();
 const oneWeek = 1000 * 60 * 60 * 24 * 7;
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {cors: true});
   app.use(cookieParser());
   app.use(bodyParser.json({limit: '50mb'}));
   app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:4000'],
+    origin: [`${process.env.REACT_APP_SERVER_HOST}`, `${process.env.REACT_APP_CLIENT_HOST}`],
     allowedHeaders: ['content-type'],
     methods: 'GET, HEAD, PATCH, POST',
-    preflightContinue: false,
+    preflightContinue: true,
     optionsSuccessStatus: 204,
     credentials: true,
   });

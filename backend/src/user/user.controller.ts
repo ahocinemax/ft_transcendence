@@ -6,6 +6,7 @@ import {
 	Patch,
 	Req,
 	Res,
+	Logger
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
@@ -24,6 +25,7 @@ export class UserController {
 		private userService: UserService,
 		private cloudinaryService: CloudinaryService,
 	) {}
+	private logger: Logger = new Logger('User Controller');
 
 	@Get()
 	async getUsers(@Res() res: Response) {
@@ -54,5 +56,17 @@ export class UserController {
 	@Delete('deleteall')
 	async DeleteAllUsers() {
 		return this.userService.deleteAllUsers();
+	}
+
+	@Get('getLeaderboard')
+	async getLeaderboard() {
+		console.log('getLeaderboard log message');
+		return this.userService.getLeaderBoard();
+	}
+
+	@Get('getGameHistory')
+	async getGameHistory(@Req() req: Request) {
+		this.logger.log('getLeaderboard log message');
+		return this.userService.getGameHistory(req.body.id);
 	}
 }

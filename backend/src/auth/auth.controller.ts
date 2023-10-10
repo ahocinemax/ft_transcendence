@@ -21,7 +21,10 @@ export class AuthController {
   
   @Get("getuserbytoken")
   async getUserByToken(@Req() req: Request) {
-    return await this.authService.getUserByToken(req);
+    console.log("auth.controller.ts: getUserByToken");
+    const user = await this.authService.getUserByToken(req);
+    console.log("user", user);
+    return user;
   }
   @Post("Oauth")
   async userOauthCreationInDataBase(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
