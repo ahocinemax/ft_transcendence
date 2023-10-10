@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { GameService } from './game.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Game')
 @Controller('Game')
 export class GameController {
     constructor(private gameService: GameService) {}
@@ -33,5 +35,10 @@ export class GameController {
     getGame(@Body('pairID') pairID: number) {
         const game = this.gameService.getGame(pairID);
         return game;
+    }
+
+    @Get('/getLastGame')
+    getLastGame() {
+        return (this.gameService.getLastGame());
     }
 }
