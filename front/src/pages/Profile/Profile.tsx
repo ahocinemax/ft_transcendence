@@ -33,24 +33,31 @@ const userInfoInit: userModel = {
 	};
 
 const Profile = () => {
-		const userData = useUserContext();
-		const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
-		const [isFetched, setIsFetched] = useState(false);
-		const [isUser, setIsUser] = useState(true);
+	const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
+    const userData = useUserContext();
+    const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
+    const [isFetched, setIsFetched] = useState(false);
+    const [isUser, setIsUser] = useState(true);
+    let params = useParams();
+
+    console.log("userData.userName.userName: ", userData.userName.userName);
+    //console.log("name:     ", userInfo.name);
 
 		useEffect(() => {
 			const fetchIsUser = async () => {
 				let result;
 				if (!isFetched && userData.userName.userName !== undefined) {
 					result = await backFunctions.getUserByToken();
+					console.log("userData.userName.userName: ", userData.userName.userName);
 					initializeUser(result, setUserInfo);
 					setIsFetched(true);
 					setIsUser(false);
+					setIsUserDataUpdated(false);
 				}
 			};
 			fetchIsUser();
 			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [isFetched, userData]);
+		}, [isFetched, userData, isUserDataUpdated]);
 
 		return (
 		<div className="profile">

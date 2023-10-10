@@ -28,31 +28,33 @@ export class AuthController {
 		// console.log("user", user);
 		return user;
 	}
-	@Post("Oauth")
+	@Post("Oauth42")
 	async userOauthCreationInDataBase(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
 	 await this.authService.handleDataBaseCreation(req, res, UserDto);
 	}
 
 	@Get("callback")
 	async getToken(@Req() req: Request, @Res() res: Response) {
-		const codeFromApi = req.query.code as string;
-		const token = await this.Auth42.getAccessToken(codeFromApi);
-		const user42infos = await this.Auth42.access42UserInformation(
-			token.access_token
-		); 
-		let user;
-		if (user42infos) {
-			// Use the information from the 42API to create the user in the database.
-			user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, true);
-			this.authService.createCookies(res, token);
-			const userAlreadyRegisterd = await this.authService.getUserByEmail(user.email);
-			this.authService.updateCookies(res, token, userAlreadyRegisterd);
-			if (process.env.NODE_ENV === 'development') {
-				res.redirect("/user");
-			}
-			else if (process.env.NODE_ENV === 'production') {
-				res.json(user);
-			} 
+	  const codeFromApi = req.query.code as string;
+	  const token = await this.Auth42.getAccessToken(codeFromApi);
+	  console.log("token", token);
+	  const user42infos = await this.Auth42.access42UserInformation(
+		token.access_token
+	  );
+	  if (user42infos) {
+		// Use the information from the 42API to create the user in the database.
+		const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, false);
+		this.authService.createCookiesFortyTwo(res, token);
+		//const userAlreadyRegisterd = await this.authService.getUserByEmail(user42infos.email);
+		//this.authService.updateCookies(res, token, userAlreadyRegisterd);
+		console.log("Set-Cookie header(42API):\n", res.get('Set-Cookie'));
+		  //this.authService.updateCookies(res, token, userAlreadyRegisterd);
+		  if (process.env.NODE_ENV === 'development') {
+			res.redirect("/user");
+		  }
+		  else if (process.env.NODE_ENV === 'production') {
+			res.status(301).redirect(process.env.CLIENT_CREATE);
+		  } 
 		}
 		else {
 			// Handle the error when we do not get the user info from the 42API.
@@ -83,23 +85,24 @@ export class AuthController {
 		//console.log("code", code);
 
 		const googleUser = await this.googleAuthService.getGoogleUser(code);
-		this.authService.createCookies(res, googleUser);
-		const userAlreadyRegisterd = await this.authService.getUserByEmail(googleUser.email);
-		this.authService.updateCookies(res, googleUser.accessToken, userAlreadyRegisterd);
+		this.authService.createCookiesGoogle(res, googleUser);
+		//const userAlreadyRegisterd = await this.authService.getUserByEmail(googleUser.email);
+		//this.authService.updateCookies(res, googleUser.accessToken, userAlreadyRegisterd);
 		//console.log("googleUser", googleUser);
 		const user = await this.googleAuthService.createDataBaseGoogleAuth(
 			googleUser.email,
 			googleUser.accessToken,
 			googleUser.userName,
-			true
+			false
 		);
 
 		//console.log("auth.controller(GoogleAuth-callback)")
 		if (process.env.NODE_ENV === 'development') {
 			res.redirect("/user");
 		}
-		else if (process.env.NODE_ENV === 'production')
-			res.json(user);
+		else if (process.env.NODE_ENV === 'production') {
+			res.status(301).redirect(process.env.CLIENT_CREATE);
+		}
 		this.WebsocketGateway.onlineFromService(user.id);
 	}	
 }

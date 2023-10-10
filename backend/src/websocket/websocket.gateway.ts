@@ -3,10 +3,10 @@ import {
   WebSocketGateway,
   MessageBody,
   WebSocketServer,
-	ConnectedSocket,
   OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';

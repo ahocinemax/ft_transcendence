@@ -24,7 +24,23 @@ export const UserApi = {
             });
     },
 
+    async patch(url: string, data: unknown) {
+        try {
+                console.log("Fetch [PATCH]:", `${process.env.REACT_APP_SERVER_HOST}${url}`);
+                return await fetch(`${process.env.REACT_APP_SERVER_HOST}${url}`, {
+                ...requestConfig,
+                method: 'PATCH',
+                body: JSON.stringify(data),
+                });
+            }
+        catch (error) {
+            console.error("Fetch failed:", error);
+            throw error;
+        }
+    },
+
     async authHeader() {
+        console.log(localStorage.getItem("userToken"));  
         let token = "Bearer " + localStorage.getItem("userToken");
         console.log("Fetch TOKEN [GET]:", token);
         let myHeaders = new Headers();
@@ -34,7 +50,7 @@ export const UserApi = {
     },
 
     async authContentHeader() {
-      let token = "bearer " + localStorage.getItem("userToken");
+      let token = "bearer " + localStorage.getItem("userToken"); // affiche "null"
       let myHeaders = new Headers();
       myHeaders.append("Authorization", token);
       myHeaders.append("Content-Type", "application/json");
@@ -43,6 +59,7 @@ export const UserApi = {
 
     async fetchGet(url: string, callback: any) {
         let fetchUrl = process.env.REACT_APP_SERVER_HOST + url;
+        //console.log("Fetch [GET]:", fetchUrl);
         const headers = await this.authHeader();
         try {
             const response = await fetch(fetchUrl, {
@@ -50,7 +67,9 @@ export const UserApi = {
             headers,
             body: null,
             redirect: "follow",
+            //credentials: "include",
             });
+            //console.log("response", response);
             const result_1 = await response.json();
             return (!response.ok) ? "error" : callback(result_1);
         } catch (error) { return console.log("error", error); }
