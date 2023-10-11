@@ -219,54 +219,96 @@
     }
 
     .user_popup {
-        display: flex;
+        display: none;
         justify-content: center;
         align-items: center;
         position: absolute;
-        width: 20vw;
+        width: 20%;
         top: 20px;
         right: 20px;
-        height: 20%;
         background-color: hsla(222, 59%, 30%, 0.85);
         z-index: 100;
         border-radius: 5%;
       }
-
-    .user_popup p {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 0; /* Pour supprimer la marge par défaut du paragraphe */
-        width: 100%;
-        height: 100%;
-        font-size: 0.7em;
-        font-family: 'Press Start 2P', sans-serif;
-        color: rgb(255, 255, 255);
-        text-shadow: 0.9px 0.9px 0.9px rgb(0, 0, 0);
-      }
       
-    .user_popup.visible 
-    {
-     display: block; /* Afficher la fenêtre contextuelle lorsque c'est nécessaire */
-    }
+      .user_popup.visible 
+      {
+       display: block;
+      }
 
     .message_sender:hover
     {
         cursor: pointer;
     }
 
-    .popup_content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+    .popup_content 
+    {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
   
-  .popup_content img {
-    max-width: 50%;
+  .img_popup1
+  {
+    width: 20%;
     height: auto;
+    max-width: 50%;
+    max-height: 50%;
     margin-bottom: 10px;
+    margin-top: 10px;
     border-radius: 50%;
-    background-size: cover;
-    background-position: center;
+    background-image: url(../../../public/avatar.png);
   }
-      
+
+  .close_button
+  {
+    position: absolute; /* Position absolue à l'intérieur de .user_popup */
+    top: 10px; /* Définissez la distance par rapport au haut de .user_popup */
+    right: 10px; /* Définissez la distance par rapport à la droite de .user_popup */
+    font-style: bold;
+    font-size: 1.5em;
+    font-family: 'Press Start 2P', sans-serif;
+    color: rgb(255, 255, 255);
+    text-shadow: 1.5px 1.5px 1.5px rgb(0, 0, 0);
+  }
+
+  .close_button:hover
+  {
+    cursor: pointer;
+  }
+
+  .chat_button_container
+  {
+    width: 80%;
+    height: 4vh;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .user_popup_name 
+  {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 0.7em;
+    font-family: 'Press Start 2P', sans-serif;
+    color: rgb(255, 255, 255);
+    text-shadow: 0.9px 0.9px 0.9px rgb(0, 0, 0);
+  }
+
+  .chat_buttons
+  {
+    background-color: yellow;
+    flex: 1;
+    height: 100%;
+    margin: 5px;
+  }

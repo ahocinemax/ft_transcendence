@@ -96,7 +96,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="chat" >
+    <div className="chat">
       <div className="channel_part" onClick={closeUserPopup}>
         <div className="searchbar_div">
           <SearchComponent onSearch={handleSearch} />
@@ -161,10 +161,20 @@ const Chat = () => {
                 </form>
 )}
         </div>
-        <div className="user_popup">
+        <div className={`user_popup ${isUserPopupVisible && selectedUser ? 'visible' : ''}`}>
+            <div className="close_button" onClick={closeUserPopup}>
+                X
+            </div>
             <div className="popup_content">
-              <p>{selectedUser}</p>
-              <img src="./avatar.png"/>
+                <p className="user_popup_name">{selectedUser}</p>
+                <img src="./avatar.png" alt="User Avatar" className="img_popup1"/>
+                <div className="chat_button_container">
+                    <div className="chat_buttons DUEL"></div>
+                    <div className="chat_buttons BLOCK"></div>
+                    <div className="chat_buttons MUTE"></div>
+                    <div className="chat_buttons KICK"></div>
+                    <div className="chat_buttons BAN"></div>
+                </div>
             </div>
         </div>
     </div>
