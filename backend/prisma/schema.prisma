@@ -19,14 +19,6 @@ model User {
   email         String?   @unique @default("")
   image         String?   @default("https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png")
   status        String?   @default("offline")
-  games         Int?      @default(0)
-  wins          Int?      @default(0)
-  winRate       Float?    @default(0)
-  achievements  String[]
-  score         Int?      @default(0)
-  rank          Int?      @default(0)
-  playTime		  Int?	    @default(0)
-
 
   accessToken   String    @default("noToken")
   isRegistered  Boolean   @default(false)
@@ -40,16 +32,19 @@ model User {
   blockedOf     User[]    @relation("blocked")
 
   //friend request
-  pending       User[]    @relation("pending")
-  pendingOf     User[]    @relation("pending")
+  pending        User[]   @relation("pending")
+  pendingOf      User[]   @relation("pending")
   
   otp_enabled   Boolean   @default(false) //for one time pass
   otp_verified  Boolean   @default(false) // for one time pass
   otp_validated Boolean   @default(false) // for one time pass
   otp_code      String?   @default("")
 
+  winRate       Float?
+  score         Int?      @default(0)
+  rank          Int?      @default(0)
   gamesLost     Int       @default(0)
-  gamesWon      Int       @default(0)
+  gamesWon      Int?      @default(0)
   gamesPlayed   Int       @default(0)
   gameHistory   Int[]
 
@@ -71,9 +66,9 @@ model Game {
   player2       Int
   ScorePlayer2  Int
 
-  startTime    DateTime @default(now())
-  endTime      DateTime
-  duration     Int?
+  startTime     DateTime @default(now())
+  endTime       DateTime
+  duration      Int?
 
 }
 
@@ -88,9 +83,9 @@ model Channel {
   isProtected   Boolean   @default(false)
   password      String?
 
-  owners         User[]   @relation("owner")
-  admins         User[]   @relation("admin")
-  members        User[]   @relation("member")
+  owners        User[]    @relation("owner")
+  admins        User[]    @relation("admin")
+  members       User[]    @relation("member")
   invited       User[]    @relation("invited")
   banned        User[]    @relation("banned")
 

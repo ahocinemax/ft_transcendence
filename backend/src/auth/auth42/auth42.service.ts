@@ -87,7 +87,6 @@ export class Auth42Service {
             email: user42.email
           },
           data: {
-            achievements: userAlreadyRegisterd.achievements || [], 
             accessToken: token,
             isRegistered: isRegistered,
             login42: user42.login,
@@ -99,7 +98,6 @@ export class Auth42Service {
       else {
         const user = await this.prisma.user.create({
           data: {
-            achievements: [],
             accessToken: token,
             isRegistered: isRegistered,
             login42: user42.login,

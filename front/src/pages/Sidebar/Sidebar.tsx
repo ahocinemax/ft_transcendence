@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 import './Sidebar.css';
-import PlayIcon from '../../PlayIcon.png';
-import LeaderboardIcon from '../../LeaderboardIcon.png';
-import ProfileIcon from '../../ProfileIcon.png';
-import ChatIcon from '../../ChatIcon.png';
-import SettingsIcon from '../../SettingsIcon5.png';
-import LogoutIcon from '../../exit.png';
+import PlayIcon from '../../Play_Icon.png';
+import LeaderboardIcon from '../../Leaderboard_Icon.png';
+import ProfileIcon from '../../Profile_Icon.png';
+import ChatIcon from '../../Chat_Icon.png';
+import SettingsIcon from '../../Settings_Icon.png';
+import LogoutIcon from '../../Exit_icon.png';
 
 const Sidebar = () => {
   const sidebarRef = useRef<HTMLDivElement | null>(null);
