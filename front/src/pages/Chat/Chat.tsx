@@ -138,7 +138,7 @@ const Chat = () => {
                       className="message_sender"
                       onClick={() => handleUserClick(message.sender)} // Gérer le clic sur le nom de l'utilisateur
                     >
-                      <strong>{message.sender}</strong>
+                      <strong>{message.sender} </strong>
                     </span>
                     ({message.time}): {message.content}
                   </div>
@@ -171,6 +171,8 @@ const Chat = () => {
                 <div className="chat_button_container">
                     <div className="chat_buttons DUEL"></div>
                     <div className="chat_buttons BLOCK"></div>
+                </div>
+                <div className="chat_button_container">
                     <div className="chat_buttons MUTE"></div>
                     <div className="chat_buttons KICK"></div>
                     <div className="chat_buttons BAN"></div>
