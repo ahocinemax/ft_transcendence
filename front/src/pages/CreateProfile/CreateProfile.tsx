@@ -12,12 +12,11 @@ const Settings = () => {
   const [pseudo, setPseudo] = useState('#PlayerPseudo'); // État pour stocker le pseudo
   const [newPseudo, setNewPseudo] = useState(''); // État pour stocker le nouveau pseudo
   const [tokenExists, setTokenExists] = useState(false);
-  const { setNickName } = useUserContext(); 
+  const { setUserName } = useUserContext(); 
   async function checkCreateUser () {
     const user = await backFunctions.getUserByToken();
-    if (user && user.nickName){
+    if (user && user.isRegistered == true){
       console.log('User already created');
-      console.log(user.nickNname);
       navigate('/');
       return;
     }
@@ -69,10 +68,11 @@ const Settings = () => {
     if (newPseudo.length >= 3 && newPseudo.length <= 12 && isAlphanum(newPseudo))
         setPseudo(newPseudo);
     try {
-          const updatedUser = await backFunctions.updateUser("Mariko Tsuji", { nickName: newPseudo });
+          const updatedUser = await backFunctions.updateUser(userName.userName, { name: newPseudo, isRegistered: true });
           if (updatedUser) {
             console.log("User updated successfully:", updatedUser);
-            setNickName({nickName: newPseudo});
+            setUserName({userName: newPseudo});
+            navigate('/');
           }
         } catch (error) {
           console.error("Failed to update user:", error);
@@ -88,7 +88,7 @@ const Settings = () => {
 
 
 
-  const { userName, nickName, games, image, } = useUserContext()
+  const { userName, games, image, } = useUserContext()
   return (
     <div className="settings">
       <h1 className="Settingsh1">Create profile</h1>

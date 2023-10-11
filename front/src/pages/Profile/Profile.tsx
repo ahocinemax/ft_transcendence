@@ -33,14 +33,14 @@ const userInfoInit: userModel = {
 	};
 
 const Profile = () => {
+	const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
     const userData = useUserContext();
     const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
     const [isFetched, setIsFetched] = useState(false);
     const [isUser, setIsUser] = useState(true);
     let params = useParams();
 
-    console.log("userData.nickName.nickName: ", userData.nickName);
-    console.log("userData.userName.userName: ", userData.userName);
+    console.log("userData.userName.userName: ", userData.userName.userName);
     //console.log("name:     ", userInfo.name);
 
 		useEffect(() => {
@@ -48,14 +48,16 @@ const Profile = () => {
 				let result;
 				if (!isFetched && userData.userName.userName !== undefined) {
 					result = await backFunctions.getUserByToken();
+					console.log("userData.userName.userName: ", userData.userName.userName);
 					initializeUser(result, setUserInfo);
 					setIsFetched(true);
 					setIsUser(false);
+					setIsUserDataUpdated(false);
 				}
 			};
 			fetchIsUser();
 			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [isFetched, userData]);
+		}, [isFetched, userData, isUserDataUpdated]);
 
 		return (
 		<div className="profile">

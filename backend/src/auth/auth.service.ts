@@ -83,7 +83,7 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    //console.log("request : getUserbyToken: ", req);
+    console.log("request : getUserbyToken: ", req.cookies);
     try {
       const accessToken = req.cookies.access_token;
       //console.log("req.cookies.access_token(controller)", req.cookies.access_token);
@@ -117,10 +117,12 @@ async createDataBase42User(
 //COOKIES
   async createCookiesFortyTwo(@Res() res: Response, token: any) {
     console.log("token.access_token(42API)", token.access_token);
-    const cookies = res.cookie("access_token", token.access_token,
+    res.cookie("access_token", token.access_token,
       {
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
         httpOnly: true,
+        secure: true,
+        sameSite: "lax",
       });
   }
 
@@ -130,6 +132,8 @@ async createDataBase42User(
       {
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
         httpOnly: true,
+        secure: true,
+        sameSite: "lax",
       });
   }
 

@@ -28,13 +28,14 @@ export const backFunctions = {
     },
     
     async updateUser(username: string, UpdateUser: unknown): Promise<User | null> {
+        console.log("fetching updateUser...: ", username);
         const response = await UserApi.patch('/user/' + username, UpdateUser);
         return await response.json();
     }
 };
 
 export const getUserCallback = (result: any) => {
-    // console.log("getUserCallback: ", result);
+    console.log("getUserCallback: ", result);
     return result;
 }
 

@@ -43,7 +43,7 @@ export class AuthController {
 	  );
 	  if (user42infos) {
 		// Use the information from the 42API to create the user in the database.
-		const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, true);
+		const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, false);
 		this.authService.createCookiesFortyTwo(res, token);
 		//const userAlreadyRegisterd = await this.authService.getUserByEmail(user42infos.email);
 		//this.authService.updateCookies(res, token, userAlreadyRegisterd);
@@ -93,15 +93,16 @@ export class AuthController {
 			googleUser.email,
 			googleUser.accessToken,
 			googleUser.userName,
-			true
+			false
 		);
 
 		//console.log("auth.controller(GoogleAuth-callback)")
 		if (process.env.NODE_ENV === 'development') {
 			res.redirect("/user");
 		}
-		else if (process.env.NODE_ENV === 'production')
-			res.json(user);
+		else if (process.env.NODE_ENV === 'production') {
+			res.status(301).redirect(process.env.CLIENT_CREATE);
+		}
 		this.WebsocketGateway.onlineFromService(user.id);
 	}	
 }

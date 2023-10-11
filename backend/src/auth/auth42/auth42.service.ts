@@ -82,15 +82,14 @@ export class Auth42Service {
       });
       //if user exists alredy, do update db
       if (userAlreadyRegisterd) {
+        console.log('userAlreadyRegisterd: auth42 controller!!!!!!!!!');
         userAlreadyRegisterd = await this.prisma.user.update({
           where: {
             email: user42.email
           },
           data: {
             accessToken: token,
-            isRegistered: isRegistered,
             login42: user42.login,
-            name: user42.displayname,
           }
         });
         return userAlreadyRegisterd;

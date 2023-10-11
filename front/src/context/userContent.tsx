@@ -24,9 +24,6 @@ export type UserName = {
 	userName: string;
 };
 
-export type NickName = {
-	nickName: string;
-};
 
 export type AuthImage = {
 	image: string;
@@ -52,8 +49,6 @@ export type Wins = {
 type UserContextType = {
 	userName: UserName;
 	setUserName: React.Dispatch<React.SetStateAction<UserName>>;
-	nickName: NickName;
-	setNickName: React.Dispatch<React.SetStateAction<NickName>>;
 	image: AuthImage;
 	setImage: React.Dispatch<React.SetStateAction<AuthImage>>;
 	achievements: Achievements;
@@ -77,7 +72,6 @@ export const UserContext = createContext({} as UserContextType);
 export const UserContextProvider = ({children}: UserContextProviderProps) => {
 	const navigate = useNavigate();
 	const [userName, setUserName] = useState<UserName>({userName: ''});
-	const [nickName, setNickName] = useState<NickName>({nickName: ''});
 	const [image, setImage] = useState<AuthImage>({image: ''});
 	const [achievements, setAchievements] = useState<Achievements>({
 		achievements: [],
@@ -110,8 +104,6 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 			value={{
 				userName,
 				setUserName,
-				nickName,
-				setNickName,
 				image,
 				setImage,
 				achievements,
