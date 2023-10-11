@@ -1,209 +1,357 @@
 .chat {
-  display: flex;
-}
-
-.main_part {
-  width: 80vw;
-  height: 100vh;
-  background-color: black;
-  background-image: url(../../../public/pixelartchat.gif);
-  background-size: cover;
-}
-
-.channel_part {
-  width: 20%;
-  height: 100%;
-  background-color: rgba(7, 39, 112, 0.85);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow-y: auto; /* Enable vertical scrolling */
-  max-height: 100vh; /* Set a maximum height to limit scrolling */
-  overflow-x: hidden; /* Prevent horizontal scrolling */
-}
-
-.Overlay {
-  position: absolute;
-  top: 0;
-  left: 19vw;
-  width: 81vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.3);
-  z-index: 1;
-}
-
-.channel_top_div {
     display: flex;
-    position: relative;
-    justify-content: space-between;
-    align-items: center;
-    height: 10vh;
-    width: 24vw;
+  }
+  
+  .main_part {
+    width: 80vw;
+    height: 100vh;
+    background-color: black;
+    background-image: url(../../../public/pixelartchat.gif);
+    background-size: cover;
+  }
+  
+  .channel_part {
+    width: 20%;
+    height: 100%;
+    background-color: rgba(7, 39, 112, 0.85);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    flex-direction: row;
-    box-shadow: 0px 0px 5px rgba(233, 14, 189, 0.2);
-    padding: 0 20%; /* Padding for the distance Channel(nb) & the + of createchan */
-}
-
-.h1_channel {
-    color: rgb(143, 7, 234);
-    font: bold;
-    font-size: 1.25em;
-    font-family: 'Press Start 2P', sans-serif;
-    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
-    white-space: nowrap;
-    height: 10vh;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 100vh; /* Set a maximum height to limit scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
+  
+  .Overlay {
+    position: absolute;
+    top: 0;
+    left: 19vw;
+    width: 81vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+  }
+  
+  .channel_top_div {
+      display: flex;
+      position: relative;
+      justify-content: space-between;
+      align-items: center;
+      height: 10vh;
+      width: 24vw;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      box-shadow: 0px 0px 5px rgba(233, 14, 189, 0.2);
+      padding: 0 20%; /* Padding for the distance Channel(nb) & the + of createchan */
+  }
+  
+  .h1_channel {
+      color: rgb(143, 7, 234);
+      font: bold;
+      font-size: 1.25em;
+      font-family: 'Press Start 2P', sans-serif;
+      text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
+      white-space: nowrap;
+      height: 10vh;
+      display: flex;
+      align-items: center;
+  }
+  
+  .searchbar_div {
     display: flex;
+    justify-content: center;
     align-items: center;
-}
-
-.searchbar_div {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 10%;
-  width: 100%;
-  box-shadow: 0px 0px 5px rgba(21, 1, 17, 0.2);
-  padding: 5% 5%;
-}
-
-.h1 {
-  color: rgb(255, 255, 255);
-  font: bold;
-  font-size: 1.75em;
-  font-family: 'Press Start 2P', sans-serif;
-  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
-}
-
-.createchan {
-  position: relative;
-  color: rgb(255, 255, 255);
-  margin-left: auto;
-  font: bold;
-  font-size: 1.5em;
-  font-family: 'Press Start 2P', sans-serif;
-  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
-}
-
-.createchan:hover {
-  cursor: pointer;
-}
-
-.channel_title {
-    max-width: 80%;
-    margin-right: 10px;
+    height: 10%;
+    width: 100%;
+    box-shadow: 0px 0px 5px rgba(21, 1, 17, 0.2);
+    padding: 5% 5%;
+  }
+  
+  .h1 {
     color: rgb(255, 255, 255);
     font: bold;
-    font-size: 1em;
+    font-size: 1.75em;
     font-family: 'Press Start 2P', sans-serif;
-    text-shadow: 2.5px 2.5px 2.5px rgba(0, 0, 0, 0.767);
-    white-space: nowrap;
-}
-
-/* Style for Webkit (Chrome, Safari), draggable bar / scrlling bar*/
-.channel_part::-webkit-scrollbar {
-  width: 7.5px;
-}
-
-/* Draggable part color */
-.channel_part::-webkit-scrollbar-thumb {
-  background: #4a095787;
-  border-radius: 5px;
-}
-
-/* Draggable part color on hover*/
-.channel_part::-webkit-scrollbar-thumb:hover {
-  background: #691c7887;
-}
-
-.channel_div_container {
-    width: 100%;
-}
-
-.channel_div {
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
+  }
+  
+  .createchan {
     position: relative;
-    display: flex;
-    align-items: center;
-    height: 7.5vh;
-    width: 100%;
-    box-shadow: 0px -5px 10px rgba(135, 117, 141, 0.376);
-    transition: background-color 0.8s ease;
-    padding-left: 25%;
-    padding-right: 30px; /* Add this line */
-}
+    color: rgb(255, 255, 255);
+    margin-left: auto;
+    font: bold;
+    font-size: 1.5em;
+    font-family: 'Press Start 2P', sans-serif;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
+  }
+  
+  .createchan:hover {
+    cursor: pointer;
+  }
+  
+  .channel_title {
+      max-width: 80%;
+      margin-right: 10px;
+      color: rgb(255, 255, 255);
+      font: bold;
+      font-size: 1em;
+      font-family: 'Press Start 2P', sans-serif;
+      text-shadow: 2.5px 2.5px 2.5px rgba(0, 0, 0, 0.767);
+      white-space: nowrap;
+  }
+  
+  /* Style for Webkit (Chrome, Safari), draggable bar / scrlling bar*/
+  .channel_part::-webkit-scrollbar {
+    width: 7.5px;
+  }
+  
+  /* Draggable part color */
+  .channel_part::-webkit-scrollbar-thumb {
+    background: #4a095787;
+    border-radius: 5px;
+  }
+  
+  /* Draggable part color on hover*/
+  .channel_part::-webkit-scrollbar-thumb:hover {
+    background: #691c7887;
+  }
+  
+  .channel_div_container {
+      width: 100%;
+  }
+  
+  .channel_div {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 7.5vh;
+      width: 100%;
+      box-shadow: 0px -5px 10px rgba(135, 117, 141, 0.376);
+      transition: background-color 0.8s ease;
+      padding-left: 25%;
+      padding-right: 30px; /* Add this line */
+  }
+  
+  .channel_div:hover {
+    background-color: rgba(77, 103, 165, 0.85);
+    cursor: pointer;
+  }
+  
+  .channel_content {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+    }  
+  
+  /* CSS for the lock icon */
+  .lock_icon {
+      width: 30px;
+      height: auto;
+      position: absolute;
+      right: 5px;
+    }
+  
+  
+  
+  
+  /* CHAT PART */
+  
+  .message_list {
+      width: 100%;
+      height: 100%;
+      color: white;
+  }
+  
+  .message_bubble {
+      padding: 8px;
+      margin: 8px;
+      border-radius: 10px;
+      max-width: 90%; /* Limite la largeur des bulles de messages */
+      word-wrap: break-word; /* Permet aux mots longs de se diviser sur plusieurs lignes */
+      min-width: 30%; /* Taille minimale en pourcentage */
+      margin-left: 2%;
+    }
+    
+    /* Styles pour les messages de l'utilisateur 1 */
+    .user {
+      background-color: rgba(44, 76, 151, 0.85); /* Couleur de fond pour l'utilisateur 1 */
+      color: white; /* Couleur du texte pour l'utilisateur 1 */
+      align-self: flex-start; /* Alignement à gauche pour l'utilisateur 1 */
+      text-shadow: 2px 2px 2px rgb(0, 0, 0);
+      font-size: 0.7em;
+      font-family: 'Press Start 2P', sans-serif;
+    }
+    
+    /* Styles pour les messages de l'utilisateur 2 */
+    .not_user {
+      background-color: rgba(87, 21, 157, 0.85); /* Couleur de fond pour l'utilisateur 2 */
+      color: white; /* Couleur du texte pour l'utilisateur 2 */
+      align-self: flex-end; /* Alignement à droite pour l'utilisateur 2 */
+      text-shadow: 2px 2px 2px rgb(0, 0, 0);
+      font-size: 0.7em;
+      font-family: 'Press Start 2P', sans-serif;
+    }
+  
+    .send_msg 
+    {
+      position: absolute;
+      bottom: 1%;
+      width: 50%;
+      height: 5%;
+      display: flex;
+      justify-content: center; /* Center horizontally */
+      align-items: center; /* Center vertically */
+      left: 50%; /* Move to the horizontal center */
+      transform: translateX(-30%); /* Adjust to center horizontally */
+      font-size: 0.7em;
+      font-family: 'Press Start 2P', sans-serif;
+      color: rgb(255, 255, 255);
+      text-shadow: 0.9px 0.9px 0.9px rgb(0, 0, 0);
+      background-color: rgba(35, 83, 151, 0.205);
+      box-shadow: 0.6px 0.6px 0.6px rgb(117, 6, 132);
+      transition: bottom 0.3s ease;
+    }
+    
+    .active_channel_title 
+    {
+      padding: 2% 2%;
+    }
 
-.channel_div:hover {
-  background-color: rgba(77, 103, 165, 0.85);
-  cursor: pointer;
-}
+    .user_popup {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        width: 20%;
+        top: 20px;
+        right: 20px;
+        background-color: hsla(222, 59%, 30%, 0.85);
+        z-index: 100;
+        border-radius: 5%;
+      }
+      
+      .user_popup.visible 
+      {
+       display: block;
+      }
 
-.channel_content {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-  }  
+    .message_sender:hover
+    {
+        cursor: pointer;
+    }
 
-/* CSS for the lock icon */
-.lock_icon {
-    width: 30px;
+    .popup_content 
+    {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+  
+  .img_popup1
+  {
+    width: 20%;
     height: auto;
-    position: absolute;
-    right: 5px;
+    max-width: 50%;
+    max-height: 50%;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    border-radius: 50%;
+    background-image: url(../../../public/avatar.png);
   }
 
-
-
-
-/* CHAT PART */
-
-.message_list {
-    width: 100%;
-    height: 100%;
-    color: white;
-}
-
-.message_bubble {
-    padding: 8px;
-    margin: 8px;
-    border-radius: 10px;
-    max-width: 90%; /* Limite la largeur des bulles de messages */
-    word-wrap: break-word; /* Permet aux mots longs de se diviser sur plusieurs lignes */
-    min-width: 20%; /* Taille minimale en pourcentage */
-  }
-  
-  /* Styles pour les messages de l'utilisateur 1 */
-  .user {
-    background-color: rgba(44, 76, 151, 0.85); /* Couleur de fond pour l'utilisateur 1 */
-    color: white; /* Couleur du texte pour l'utilisateur 1 */
-    align-self: flex-start; /* Alignement à gauche pour l'utilisateur 1 */
-    text-shadow: 2px 2px 2px rgb(0, 0, 0);
-    /* font-size: 0.7em;
-    font-family: 'Press Start 2P', sans-serif; */
-  }
-  
-  /* Styles pour les messages de l'utilisateur 2 */
-  .not_user {
-    background-color: rgba(87, 21, 157, 0.85); /* Couleur de fond pour l'utilisateur 2 */
-    color: white; /* Couleur du texte pour l'utilisateur 2 */
-    align-self: flex-end; /* Alignement à droite pour l'utilisateur 2 */
-    text-shadow: 2px 2px 2px rgb(0, 0, 0);
-    /* font-size: 0.7em;
-    font-family: 'Press Start 2P', sans-serif; */
+  .close_button
+  {
+    position: absolute; /* Position absolue à l'intérieur de .user_popup */
+    top: 10px; /* Définissez la distance par rapport au haut de .user_popup */
+    right: 10px; /* Définissez la distance par rapport à la droite de .user_popup */
+    font-style: bold;
+    font-size: 1.5em;
+    font-family: 'Press Start 2P', sans-serif;
+    color: rgb(255, 255, 255);
+    text-shadow: 1.5px 1.5px 1.5px rgb(0, 0, 0);
   }
 
-  .send_msg {
-    position: absolute;
-    bottom: 1%;
-    width: 50%;
-    height: 5%;
+  .close_button:hover
+  {
+    cursor: pointer;
+  }
+
+  .chat_button_container
+  {
+    width: 80%;
+    height: 4vh;
+    margin-bottom: 10px;
     display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    left: 50%; /* Move to the horizontal center */
-    transform: translateX(-30%); /* Adjust to center horizontally */
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
   }
-  
-  .active_channel_title {
-    padding: 2% 2%;
+
+  .user_popup_name 
+  {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5%;
+    font-size: 0.7em;
+    font-family: 'Press Start 2P', sans-serif;
+    color: rgb(255, 255, 255);
+    text-shadow: 0.9px 0.9px 0.9px rgb(0, 0, 0);
+  }
+
+  .chat_buttons
+  {
+    flex: 1;
+    height: 100%;
+    margin: 5px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .chat_buttons:hover
+  {
+    cursor: pointer;
+  }
+
+  .chat_buttons.DUEL
+  {
+    background-image: url(../../../public/pong_icon1.png);
+    transform: translateY(-10%);
+    height: 125%;
+  }
+
+  .chat_buttons.BLOCK
+  {
+    background-image: url(../../../public/block_player_icon.png);
+  }
+
+  .chat_buttons.BLOCK
+  {
+    background-image: url(../../../public/block_player_icon.png);
+  }
+
+  .chat_buttons.MUTE
+  {
+    background-image: url(../../../public/mute_player_icon.png);
+    height: 125%;
+  }
+
+  .chat_buttons.KICK
+  {
+    background-image: url(../../../public/kick_icon.png);
+    height: 150%;
+  }
+
+  .chat_buttons.BAN
+  {
+    background-image: url(../../../public/ban_icon1.png);
+    background-size: cover;
+    height: 175%;
   }
