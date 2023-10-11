@@ -28,8 +28,6 @@ import { PendingController } from './pending/pending.controller';
 import { PendingModule } from './pending/pending.module';
 //chat
 import { WebsocketModule } from './websocket/websocket.module';
-import { ChatModule } from './chat/chat.module';
-import { ChatService } from './chat/chat.service';
 
 @Module({
   imports: [
@@ -49,9 +47,8 @@ import { ChatService } from './chat/chat.service';
         BlockModule,
         PendingModule,
         WebsocketModule,
-        ChatModule,
       ],
   controllers: [AppController, FriendController, PendingController],
-  providers: [AppService, CloudinaryService, FriendService, PendingService, ChatService],
+  providers: [AppService, CloudinaryService, FriendService, PendingService],
 })
 export class AppModule {}

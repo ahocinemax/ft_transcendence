@@ -50,12 +50,10 @@ export class GameService {
 
 		const duration = Math.abs(game.endTime.getTime() - game.startTime.getTime());
 		await this.prisma.game.update({
-			where: { id: id, }, // bad id selected: show log of updatePlayTime
+			where: { id: id, },
 			data: { duration: duration, },
 		});
 
-		this.userService.updatePlayTime(IdPlayer1, duration);
-		this.userService.updatePlayTime(IdPlayer2, duration);
 		
 		return game;
 	}

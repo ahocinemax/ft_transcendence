@@ -3,6 +3,7 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "login42" TEXT,
     "name" TEXT DEFAULT '',
+    "nickName" TEXT DEFAULT '',
     "email" TEXT DEFAULT '',
     "image" TEXT DEFAULT 'https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png',
     "status" TEXT DEFAULT 'offline',
@@ -25,7 +26,7 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Game" (
-    "id" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "player1" INTEGER NOT NULL,
     "ScorePlayer1" INTEGER NOT NULL,
     "player2" INTEGER NOT NULL,
@@ -128,10 +129,10 @@ CREATE TABLE "_banned" (
 CREATE UNIQUE INDEX "User_name_key" ON "User"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "User_nickName_key" ON "User"("nickName");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Game_id_key" ON "Game"("id");
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Channel_name_key" ON "Channel"("name");
