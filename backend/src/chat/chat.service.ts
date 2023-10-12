@@ -32,6 +32,70 @@ export class ChatService {
 		return ;
 	}
 
+	async fetch_messages(channelId: number): Promise<oneMessage[]> {
+		try {
+			const source = await this.getAllMessages(channelId);
+			const data = await this.loadMessages(source);
+			return data;
+		} catch (error) {
+			console.log('fetch_messages error:', error);
+			throw new WsException(error);
+		}
+	}
+
+	async getAllMessages(channelId: number) {
+		try {
+			const source = this.prisma.channel.findUnique({
+				where: { id: channelId },
+				select: {
+					messages: {
+						where: { unsent: false },
+						orderBy: { createdAt: 'asc' },
+						select: {
+							id: true,
+							msg: true,
+							createdAt: true,
+							owner: { select: {
+								id: true,
+								email: true,
+								username: true
+							}}
+						}
+					}
+				}
+			});
+			return source;
+		} catch (error) {
+			console.log('getAllMessages error:', error);
+			throw new WsException(error);
+		}
+	}
+
+	async loadMessages(source: any): Promise<oneMessage[]> {
+		try {
+			const data = [];
+			if (source.messages)
+				for (let index = 0; index < source.messages.length; index++) {
+					const element: oneMessage = {
+						msgId: source.messages[index].id,
+						id: source.messages[index].owner.id,
+						channelId: source.messages[index].channelId,
+						email: source.messages[index].owner.email,
+						username: source.messages[index].owner.username,
+						msg: source.messages[index].msg,
+						createAt: source.messages[index].createdAt,
+						updateAt: source.messages[index].updateAt,
+						isInvite: false,
+					};
+					data.push(element);
+				}
+			return data;
+		} catch (error) {
+			console.log('loadMessages error:', error);
+			throw new WsException(error);
+		}
+	}
+	
 	async	getUsersChannels(id: number) {
 		try {
 			const userData = await this.prisma.user.findUnique({

@@ -23,7 +23,7 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
     credentials: true,
   });
-  app.useGlobalPipes(new ValidationPipe());
+  // app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
   app.use(session({
     secret: 'pass',
