@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './Settings.css';
 
 const Settings = () => {
@@ -6,6 +6,9 @@ const Settings = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pseudo, setPseudo] = useState('#PlayerPseudo'); // État pour stocker le pseudo
   const [newPseudo, setNewPseudo] = useState(''); // État pour stocker le nouveau pseudo
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const toggle2FA = () => {
     if (!is2FAEnabled) {
@@ -46,11 +49,38 @@ const Settings = () => {
     setNewPseudo(''); // Réinitialiser le champ de saisie
   };
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      setSelectedImage(file);
+    }
+  };
+
+  const openImageUploader = () => {
+    if (imageInputRef.current) {
+      imageInputRef.current.click();
+    }
+  };
+
+  const roundDivSettingsImgStyle = {
+    backgroundImage: selectedImage ? `url(${URL.createObjectURL(selectedImage)})` : '',
+  };
+
   return (
     <div className="settings" onClick={closeModal}>
       <h1 className="Settingsh1">Settings</h1>
       <div className="settings_container">
-        <div className="round_div_settings_img"></div>
+      <div
+        className="round_div_settings_img"
+        onClick={openImageUploader}
+        style={roundDivSettingsImgStyle}></div>
+        <input
+        type="file"
+        ref={imageInputRef}
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleImageChange}
+        />
         <p className="info_settings">{pseudo}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
         <p className="info_settings">#Rank</p>
         <div className="twofa_container">

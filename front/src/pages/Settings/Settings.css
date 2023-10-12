@@ -182,3 +182,7 @@
   align-items: center;
   font-family: 'Press Start 2P', sans-serif;
 }
+
+.roundDivSettingsImgStyle {
+    background-size: cover;
+}
