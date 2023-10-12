@@ -52,7 +52,10 @@ const Settings = () => {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      setSelectedImage(file);
+      if (file.type === 'image/jpeg' || file.type === 'image/png')
+        setSelectedImage(file);
+      else
+        alert("You need to upload either a .jpg, .jpeg or .png file");
     }
   };
 
@@ -73,14 +76,11 @@ const Settings = () => {
       <div
         className="round_div_settings_img"
         onClick={openImageUploader}
-        style={roundDivSettingsImgStyle}></div>
-        <input
-        type="file"
-        ref={imageInputRef}
-        accept="image/*"
-        style={{ display: 'none' }}
-        onChange={handleImageChange}
-        />
+        style={{
+          backgroundImage: selectedImage
+            ? `url(${URL.createObjectURL(selectedImage)})`
+            : '',
+        }}></div>
         <p className="info_settings">{pseudo}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
         <p className="info_settings">#Rank</p>
         <div className="twofa_container">
@@ -98,13 +98,12 @@ const Settings = () => {
 
       {/* Swap nickname */}
         <div className="change_nick_input">
-          <input
-            type="text"
-            className="change_nick_input"
-            value={newPseudo}
-            onChange={handleNewPseudoChange}
-            placeholder="Change nickname"
-          />
+        <input
+            type="file"
+            ref={imageInputRef}
+            accept=".jpg, .jpeg, .png"
+            style={{ display: 'none' }}
+            onChange={handleImageChange}/>
           <button className="change_pseudo_button" onClick={updatePseudo}>Changer le pseudo</button>
         </div>
 
