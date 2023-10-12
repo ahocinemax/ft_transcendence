@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './Settings.css';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import { useUserContext } from '../../context/userContent';
@@ -9,6 +9,9 @@ const Settings = () => {
   const [pseudo, setPseudo] = useState('#PlayerPseudo'); // État pour stocker le pseudo
   const [newPseudo, setNewPseudo] = useState(''); // État pour stocker le nouveau pseudo
   const { setUserName } = useUserContext(); 
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const toggle2FA = () => {
     if (!is2FAEnabled) {
@@ -49,12 +52,41 @@ const Settings = () => {
     setNewPseudo(''); // Réinitialiser le champ de saisie
   };
 
+  /* const { userName, games, image, } = useUserContext() */
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      if (file.type === 'image/jpeg' || file.type === 'image/png')
+        setSelectedImage(file);
+      else
+        alert("You need to upload either a .jpg, .jpeg or .png file");
+    }
+  };
+
+  const openImageUploader = () => {
+    if (imageInputRef.current) {
+      imageInputRef.current.click();
+    }
+  };
+
+  const roundDivSettingsImgStyle = {
+    backgroundImage: selectedImage ? `url(${URL.createObjectURL(selectedImage)})` : '',
+  };
+
   const { userName, games, image, } = useUserContext()
+
   return (
     <div className="settings" onClick={closeModal}>
       <h1 className="Settingsh1">Settings</h1>
       <div className="settings_container">
-        <div className="round_div_settings_img"></div>
+      <div
+        className="round_div_settings_img"
+        onClick={openImageUploader}
+        style={{
+          backgroundImage: selectedImage
+            ? `url(${URL.createObjectURL(selectedImage)})`
+            : '',
+        }}></div>
         <p className="info_settings">{pseudo}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
         <p className="info_settings">#Rank</p>
         <div className="twofa_container">
@@ -72,13 +104,12 @@ const Settings = () => {
 
       {/* Swap nickname */}
         <div className="change_nick_input">
-          <input
-            type="text"
-            className="change_nick_input"
-            value={newPseudo}
-            onChange={handleNewPseudoChange}
-            placeholder="Change nickname"
-          />
+        <input
+            type="file"
+            ref={imageInputRef}
+            accept=".jpg, .jpeg, .png"
+            style={{ display: 'none' }}
+            onChange={handleImageChange}/>
           <button className="change_pseudo_button" onClick={updatePseudo}>Changer le pseudo</button>
         </div>
 
