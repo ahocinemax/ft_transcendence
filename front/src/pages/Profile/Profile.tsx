@@ -1,5 +1,6 @@
 import React from 'react';
-import './Profile.css'; 
+import './Profile.css';
+import SettingsIcon from '../../Settings_Icon.png';
 
 const Profile = () => {
   return (
@@ -12,6 +13,7 @@ const Profile = () => {
                 <h1 className="info">#Score?</h1>
                 <h1 className="info">#Rank?</h1>
             </div>
+            <a href="/settings" className="nav-link_profile"><img src={SettingsIcon} alt="Logo 5" /></a>
         </div>
         <div className="centered_div_container">
             <div className="scores_div">
@@ -40,6 +42,24 @@ const Profile = () => {
                     <h1 className="info">Winrate</h1>
                     <h1 className="stat">100%</h1>
                 </div>
+            </div>
+        </div>
+        <div className='friendlist'>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player2</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player3</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player4</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player5</div>
             </div>
         </div>
     </div>
