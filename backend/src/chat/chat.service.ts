@@ -53,12 +53,12 @@ export class ChatService {
 						orderBy: { createdAt: 'asc' },
 						select: {
 							id: true,
-							msg: true,
+							content: true,
 							createdAt: true,
 							owner: { select: {
 								id: true,
 								email: true,
-								username: true
+								name: true
 							}}
 						}
 					}
