@@ -26,7 +26,7 @@ import { BlockModule } from './block/block.module';
 import { PendingService } from './pending/pending.service';
 import { PendingController } from './pending/pending.controller';
 import { PendingModule } from './pending/pending.module';
-//chat
+// socket
 import { WebsocketModule } from './websocket/websocket.module';
 
 @Module({

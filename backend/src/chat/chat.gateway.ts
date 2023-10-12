@@ -81,4 +81,10 @@ export class ChatGateway implements OnGatewayConnection {
 		const data = await this.chatService.fetch_messages(channelId);
 		client.emit('fetch messages', data);
 	}
+
+	@SubscribeMessage('users in')
+	async getUsersIn(channelId: number) {
+		const data = await this.chatService.getRegisteredUsers(channelId);
+		return data;
+	}
 }

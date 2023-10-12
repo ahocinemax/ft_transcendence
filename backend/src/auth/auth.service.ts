@@ -83,7 +83,7 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    console.log("request : getUserbyToken: ", req.cookies);
+    console.log("getUserbyToken: ", req.cookies);
     try {
       const accessToken = req.cookies.access_token;
       //console.log("req.cookies.access_token(controller)", req.cookies.access_token);

@@ -24,7 +24,7 @@ export class MessageDTO {
 
     @IsNumber()
     @IsNotEmpty()
-    channel_id: number;
+    channelId: number;
 }
 
 export class ChannelDTO {

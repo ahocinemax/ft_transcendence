@@ -95,6 +95,22 @@ export class ChatService {
 			throw new WsException(error);
 		}
 	}
+
+	async getRegisteredUsers(channelId: number) {
+		try {
+			const usersInChannel = this.prisma.channel.findUnique({
+				where: { id: channelId },
+				select: {
+					owners: true,
+					admins: true,
+					members: true,
+					invited: true,
+					banned: true
+				}
+			})
+			return usersInChannel;
+		} catch (e) { throw new WsException(e.message); }
+	}
 	
 	async	getUsersChannels(id: number) {
 		try {
@@ -188,14 +204,14 @@ export class ChatService {
 	async	new_message(data: MessageDTO) {
 		try {
 			const id = await this.getUserIdByMail(data.email); // Get user id by email
-			const isMuted = await this.isMuted(id, data.channel_id); // Check if user is muted
+			const isMuted = await this.isMuted(id, data.channelId); // Check if user is muted
 			if (isMuted) return ; // If user is muted, message is not created
 			const message = await this.prisma.message.create({
 				data: {
 					content: data.message,
 					history: [data.message],
 					owner: { connect: { email: data.email, }, },
-					channel: { connect: { id: data.channel_id } },
+					channel: { connect: { id: data.channelId } },
 				},
 			});
 			// The createdAt value is set when the message is created, but the updatedAt value is not.
