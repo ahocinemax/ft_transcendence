@@ -9,6 +9,7 @@ import { User } from "@prisma/client";
 import { GoogleAuthService } from "./google-auth/google-auth.service";
 import { AuthGuard } from '@nestjs/passport'
 import { WebsocketGateway } from "src/websocket/websocket.gateway";
+import cookieParser from "cookie-parser";
 
 
 @Controller("auth")
@@ -37,34 +38,36 @@ export class AuthController {
 	async getToken(@Req() req: Request, @Res() res: Response) {
 	  const codeFromApi = req.query.code as string;
 	  const token = await this.Auth42.getAccessToken(codeFromApi);
-	  console.log("token", token);
 	  const user42infos = await this.Auth42.access42UserInformation(
 		token.access_token
 	  );
-	  if (user42infos) {
-		// Use the information from the 42API to create the user in the database.
-		const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, false);
-		this.authService.createCookiesFortyTwo(res, token);
-		//const userAlreadyRegisterd = await this.authService.getUserByEmail(user42infos.email);
-		//this.authService.updateCookies(res, token, userAlreadyRegisterd);
-		console.log("Set-Cookie header(42API):\n", res.get('Set-Cookie'));
-		  //this.authService.updateCookies(res, token, userAlreadyRegisterd);
-		  if (process.env.NODE_ENV === 'development') {
-			res.redirect("/user");
-		  }
-		  else if (process.env.NODE_ENV === 'production') {
-			res.status(301).redirect(process.env.CLIENT_CREATE);
-		  } 
-		}
-		else {
-			// Handle the error when we do not get the user info from the 42API.
-			res.status(400).json({ error: 'Unable to get the user information from the 42API.' });
-		}
+	  //if (user42infos) {
+	//	// Use the information from the 42API to create the user in the database.
+	//	const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, false);
+	//	this.authService.createCookiesFortyTwo(res, token);
+	//	//const userAlreadyRegisterd = await this.authService.getUserByEmail(user42infos.email);
+	//	//this.authService.updateCookies(res, token, userAlreadyRegisterd);
+	//	console.log("Set-Cookie header(42API):\n", res.get('Set-Cookie'));
+	//	  //this.authService.updateCookies(res, token, userAlreadyRegisterd);
+	//	  if (process.env.NODE_ENV === 'development') {
+	//		res.redirect("/user");
+	//	  }
+	//	  else if (process.env.NODE_ENV === 'production') {
+	//		res.status(301).redirect(process.env.CLIENT_CREATE);
+	//	  } 
+	//	}
+	//	else {
+	//		// Handle the error when we do not get the user info from the 42API.
+	//		res.status(400).json({ error: 'Unable to get the user information from the 42API.' });
+	//	}
+	this.authService.createCookiesFortyTwo(res, token);
+    const userExists = await this.authService.getUserByEmail(user42infos.email);
+    this.authService.RedirectionUser(req,res, userExists?.email);	
 	}
 
 	@Get("logout")
 	async deleteCookies(@Req() req: Request, @Res() res: Response) {
-		//console.log(res); 
+		console.log(res); 
 		await this.authService.deleteCookies(res);
 	}
 

@@ -17,10 +17,11 @@ export const UserApi = {
 
     async post(url: string, data: unknown) {
         console.log("Fetch [POST]:", `${process.env.REACT_APP_SERVER_HOST}${url}`);
-        return await fetch(url, {
+        return await fetch("http://localhost:3000" + url, {
             ...requestConfig,
             method: 'POST',
-            body: JSON.stringify(data),
+            body: JSON.stringify(data) || '{}',
+            credentials: 'include',
             });
     },
 

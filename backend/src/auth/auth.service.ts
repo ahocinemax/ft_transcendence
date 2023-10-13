@@ -84,15 +84,15 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    //console.log("request : getUserbyToken: ", req.headers);
+    //console.log("request : getUserbyToken: ", req);
     let accessToken;
     try {
-      if (
-          req.headers.authorization.split(' ')[1] ) {
+      //if (
+      //    req.headers.authorization.split(' ')[1] ) {
           accessToken = req.cookies.access_token;
-      } else {
-          accessToken = req.headers.authorization.split(' ')[1];
-      }
+      //} else {
+      //    accessToken = req.headers.authorization.split(' ')[1];
+     // }
       const user = await this.prisma.user.findFirst({
         where: {
           accessToken: accessToken,
@@ -121,12 +121,11 @@ async createDataBase42User(
   }
 
 //COOKIES
-  async createCookiesFortyTwo(@Res() res: Response, token: any) {
-    console.log("token.access_token(42API)", token.access_token);
+  async createCookiesFortyTwo(@Req() res: Response, token: any) {
     res.cookie("access_token", token.access_token,
       {
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
-        httpOnly: true,
+        httpOnly: false,
         secure: true,
         sameSite: "lax",
       });
@@ -192,6 +191,15 @@ async createDataBase42User(
         });
         return userAlreadyRegisterd;
     } catch (error) {}
+}
+
+async RedirectionUser(
+  @Req() req: Request,
+  @Res() res: Response,
+  email: string | null | undefined
+) {
+  if (!email) res.redirect(301, process.env.CLIENT_CREATE);
+  else res.redirect(301, process.env.CLIENT_SEVER);
 }
 }
 

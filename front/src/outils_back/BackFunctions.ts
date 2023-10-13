@@ -10,6 +10,10 @@ export const backFunctions = {
             return null;
         }
     },
+    async createUser(user: unknown): Promise<any> {
+		const response = await UserApi.post('/auth/Oauth42', user);
+		return await response.json();
+	},
 
     async getUserByToken(): Promise<any> {
 		const response = await UserApi.fetchGet('/auth/getuserbytoken', getUserCallback);

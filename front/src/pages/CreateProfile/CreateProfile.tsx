@@ -20,11 +20,20 @@ const Settings = () => {
       navigate('/');
       return;
     }
+    else {
+      console.log("user: ", user);
+      const newUser = await backFunctions.createUser(user);
+      if (newUser) {
+        console.log('User created successfully:', newUser);
+        // ここでユーザー名も設定できます
+        setUserName({userName: newUser.name});
+      }
+    }
   }
 
   async function checkUserToken() {
     const response = await backFunctions.checkIfTokenValid();
-    if (response.statusCode == 400 || response.statusCode == 403) {
+    if (/*response.statusCode == 400 || */response.statusCode == 403) {
       navigate('/');
       return;
     }
@@ -90,7 +99,7 @@ const Settings = () => {
 
 
   const { userName, games, image, } = useUserContext()
-  return (
+  return tokenExists ? (
     <div className="settings">
       <h1 className="Settingsh1">Create profile</h1>
       <div className="settings_container">
@@ -109,7 +118,7 @@ const Settings = () => {
           <button className="change_pseudo_button" onClick={updatePseudo}>Choose nickname</button>
         </div>
     </div>
-  );
+  ) : null;
 };
 
 export default Settings;
