@@ -14,11 +14,9 @@ function Login() {
         <div className="Overlay"></div>
         <div className="Connexion_popup_container">
           <div className="logins_logos">
-            <a href={fortytwoAuthUrl}>
-              <div className="fortytwo_logo"></div>
+            <a className="fortytwo_logo" href ={fortytwoAuthUrl}>
             </a>
-            <a href={googleAuthUrl}>
-             <div className="google_logo"></div>
+            <a className="google_logo" href={googleAuthUrl}>
             </a>
           </div>
         </div>

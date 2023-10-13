@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import './Profile.css'; 
+import './Profile.css';
 import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
 import { useParams, useNavigate } from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
+import SettingsIcon from '../../Settings_Icon.png';
 
 const userInfoInit: userModel = {
 		id: 0,
@@ -69,6 +70,7 @@ const Profile = () => {
 					<h1 className="info">{userInfo.score ? `${userInfo.score}` : "#Score?"}</h1>
 					<h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
 				</div>
+            <a href="/settings" className="nav-link_profile"><img src={SettingsIcon} alt="Logo 5" /></a>
 			</div>
 			<div className="centered_div_container">
 				<div className="scores_div">
@@ -99,6 +101,24 @@ const Profile = () => {
 					</div>
 				</div>
 			</div>
+        <div className='friendlist'>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player2</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player3</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player4</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player5</div>
+            </div>
+        </div>
 		</div>
 	);
 }

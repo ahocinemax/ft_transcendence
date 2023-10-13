@@ -60,7 +60,7 @@
     height: 70%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between; /* Add space between child elements */;
+    justify-content: space-between;
     box-sizing: border-box;
   }
 
