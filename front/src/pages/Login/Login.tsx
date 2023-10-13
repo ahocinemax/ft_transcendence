@@ -1,11 +1,9 @@
 import React from 'react';
 import './Login.css';
 
-interface LoginProps {
-  onClose: () => void;
-}
-
 function Login() {
+  const googleAuthUrl = `${process.env.REACT_APP_GOOGLE_AUTH_URL}`;
+  const fortytwoAuthUrl = `${process.env.REACT_APP_AUTH42_URL}`;
   return (
     <div className="Login">
       <div className="VideoContainer">{/* 
@@ -16,8 +14,10 @@ function Login() {
         <div className="Overlay"></div>
         <div className="Connexion_popup_container">
           <div className="logins_logos">
-            <div className="fortytwo_logo"></div>
-            <div className="google_logo"></div>
+            <a className="fortytwo_logo" href ={fortytwoAuthUrl}>
+            </a>
+            <a className="google_logo" href={googleAuthUrl}>
+            </a>
           </div>
         </div>
       </div>
