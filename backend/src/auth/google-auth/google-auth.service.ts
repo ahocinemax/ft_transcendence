@@ -66,6 +66,7 @@ export class GoogleAuthService {
             }, HttpStatus.BAD_REQUEST);
         }
     }
+    
     async getGoogleUser(code: string): Promise<any> {
         const accessToken = await this.getAccessTokenFromCode(code);
         const response = await this.getUserInfoFromAccessToken(accessToken);

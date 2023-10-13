@@ -64,7 +64,7 @@ export class AuthController {
 
 	@Get("logout")
 	async deleteCookies(@Req() req: Request, @Res() res: Response) {
-		console.log(res); 
+		//console.log(res); 
 		await this.authService.deleteCookies(res);
 	}
 

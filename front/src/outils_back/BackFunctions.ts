@@ -14,13 +14,13 @@ export const backFunctions = {
     async getUserByToken(): Promise<any> {
 		const response = await UserApi.fetchGet('/auth/getuserbytoken', getUserCallback);
         localStorage.setItem("userToken", response.accessToken);
-        // console.log("Response: ", response); 
+        console.log("Response: ", response); 
 		return response;
 	},
  
     async checkIfTokenValid(): Promise<any> {
 		const response = await UserApi.fetchGet('/auth/token', getTokenCallback);
-		return await response.json();
+		return await response;
 	},
 
     async getLeaderBoard(): Promise<any> {
@@ -28,11 +28,16 @@ export const backFunctions = {
         return await UserApi.fetchGet('/user/getLeaderboard', getLeaderboardCallback);
     },
     
-    async updateUser(username: string, UpdateUser: unknown): Promise<User | null> {
+    async updateUser(username: string, UpdateUser: unknown): Promise<any> {
         console.log("fetching updateUser...: ", username);
         const response = await UserApi.patch('/user/' + username, UpdateUser);
         return await response.json();
-    }
+    },
+
+    async logout(): Promise<any> {
+        const response = await UserApi.fetchGet('/auth/logout', getTokenCallback);
+        //return await response.json();
+    },
 };
 
 export const getUserCallback = (result: any) => {

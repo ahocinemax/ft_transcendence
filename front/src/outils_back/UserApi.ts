@@ -45,7 +45,7 @@ export const UserApi = {
         console.log("Fetch TOKEN [GET]:", token);
         let myHeaders = new Headers();
         myHeaders.append("Authorization", token);
-        // myHeaders.append("Allow-Control-Allow-Origin", "*");
+        //myHeaders.append("Allow-Control-Allow-Origin", "*");
         return myHeaders;
     },
 
@@ -67,9 +67,9 @@ export const UserApi = {
             headers,
             body: null,
             redirect: "follow",
-            //credentials: "include",
+            //credentials: 'include',
             });
-            //console.log("response", response);
+            console.log("response fetchGet: ", response);
             const result_1 = await response.json();
             return (!response.ok) ? "error" : callback(result_1);
         } catch (error) { return console.log("error", error); }

@@ -63,12 +63,13 @@ async createDataBase42User(
 /* CHECK FUNCTIONS */
 
   async checkIfTokenValid(@Req() req: Request, @Res() res: Response) {
-    const token: string = req.cookies.access_token;
-    console.log("token", token);
-    console.log("req!!!!!!!!!!!!!!!!!!!!!!", req.cookies);
-    const token42Valid = await this.Auth42.access42UserInformation(token); // check token from user if user is from 42
+    const token: string = req.headers.authorization.split(' ')[1];
+    //console.log("token", token);
+    //console.log("res", res);
+    //console.log("req!!!!!!!!!!!!!!!!!!!!!!", req.headers.authorization.split(' ')[1]);
+    //const token42Valid = await this.Auth42.access42UserInformation(token); // check token from user if user is from 42
     const tokenGoogleValid = await this.googleAuthService.getUserInfoFromAccessToken(token); // check token from user if user is from Google
-    if (!tokenGoogleValid && !token42Valid) {
+    if (!tokenGoogleValid /*&& !token42Valid*/) {
       throw new BadRequestException("InvalidToken", {
         cause: new Error(),
         description: "Json empty, the token is invalid",
@@ -83,10 +84,15 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    console.log("request : getUserbyToken: ", req.cookies);
+    //console.log("request : getUserbyToken: ", req.headers);
+    let accessToken;
     try {
-      const accessToken = req.cookies.access_token;
-      //console.log("req.cookies.access_token(controller)", req.cookies.access_token);
+      if (
+          req.headers.authorization.split(' ')[1] ) {
+          accessToken = req.cookies.access_token;
+      } else {
+          accessToken = req.headers.authorization.split(' ')[1];
+      }
       const user = await this.prisma.user.findFirst({
         where: {
           accessToken: accessToken,
@@ -167,7 +173,7 @@ async createDataBase42User(
 
   async deleteCookies(@Res() res: Response) {
     try {
-      res.clearCookie("accessToken").clearCookie("FullToken").end();
+      res.clearCookie("access_token").end();
     } catch (error)
     {
       throw new HttpException({

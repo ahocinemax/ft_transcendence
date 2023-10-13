@@ -25,9 +25,10 @@ const Settings = () => {
   async function checkUserToken() {
     const response = await backFunctions.checkIfTokenValid();
     if (response.statusCode == 400 || response.statusCode == 403) {
-      navigate("/");
+      navigate('/');
       return;
     }
+    console.log('checkUserToken response: ', response);
     setTokenExists(true);
   }
 
@@ -82,7 +83,7 @@ const Settings = () => {
 
   useEffect(() => {
     checkCreateUser();
-    //checkUserToken();
+    checkUserToken();
   }, []);
 
 
