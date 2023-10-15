@@ -1,5 +1,6 @@
 import React from 'react';
-import { Routes, Route, Router } from 'react-router-dom';
+import { Routes, Route} from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import Start from './Start/Start';
 import Login from './Login/Login';
 import Homepage from './Homepage/Homepage';
@@ -12,13 +13,18 @@ import Gamepage from './Gamepage/Gamepage';
 import CreateProfile from './CreateProfile/CreateProfile';
 
 function App() {
+    
+    const location = useLocation();
+    const pathsWithoutSidebar = ['/login', '/'];
+    const shouldRenderSidebar = !pathsWithoutSidebar.includes(location.pathname);
+
     return (
         <div className='app'>
-            <Sidebar />
+            {shouldRenderSidebar && <Sidebar />}
             <div className='content'>
                 <Routes>
-                    <Route path="/" element={<Start />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/start" element={<Start />} />
                     <Route path="/homepage" element={<Homepage />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/chat" element={<Chat />} />
