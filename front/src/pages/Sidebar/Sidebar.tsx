@@ -35,7 +35,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const {userName} = useUserContext();
   const handleLogout = async () => {
-    let user = {otp_valifated: false};
+    let user = {otp_validated: false};
     try {
       await backFunctions.logout();
       console.log('Logout successful');

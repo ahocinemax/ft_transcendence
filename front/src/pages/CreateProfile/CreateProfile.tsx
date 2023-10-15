@@ -15,25 +15,27 @@ const Settings = () => {
   const { setUserName } = useUserContext(); 
   async function checkCreateUser () {
     const user = await backFunctions.getUserByToken();
+    console.log('checkCreateUser user: ', user);
     if (user && user.isRegistered == true){
       console.log('User already created');
       navigate('/');
       return;
-    }
-    else {
-      console.log("user: ", user);
+    }else {
+      // ユーザーが存在しない場合、createUserを呼び出す
+      console.log('User not created');
       const newUser = await backFunctions.createUser(user);
       if (newUser) {
         console.log('User created successfully:', newUser);
         // ここでユーザー名も設定できます
-        setUserName({userName: newUser.name});
+        //setUserName({userName: newUser.name});
       }
     }
+  
   }
 
   async function checkUserToken() {
     const response = await backFunctions.checkIfTokenValid();
-    if (/*response.statusCode == 400 || */response.statusCode == 403) {
+    if (response.statusCode == 400 || response.statusCode == 403) {
       navigate('/');
       return;
     }
@@ -99,7 +101,7 @@ const Settings = () => {
 
 
   const { userName, games, image, } = useUserContext()
-  return tokenExists ? (
+  return (
     <div className="settings">
       <h1 className="Settingsh1">Create profile</h1>
       <div className="settings_container">
@@ -118,7 +120,7 @@ const Settings = () => {
           <button className="change_pseudo_button" onClick={updatePseudo}>Choose nickname</button>
         </div>
     </div>
-  ) : null;
+  );
 };
 
 export default Settings;

@@ -11,14 +11,14 @@ export const backFunctions = {
         }
     },
     async createUser(user: unknown): Promise<any> {
-		const response = await UserApi.post('/auth/Oauth42', user);
-		return await response.json();
+		const response = await UserApi.post('/auth/Oauth42', user, createUserCallback);
+		return await response;
 	},
 
     async getUserByToken(): Promise<any> {
 		const response = await UserApi.fetchGet('/auth/getuserbytoken', getUserCallback);
-        localStorage.setItem("userToken", response.accessToken);
         console.log("Response: ", response); 
+        localStorage.setItem("userToken", response.accessToken);
 		return response;
 	},
  
@@ -34,8 +34,9 @@ export const backFunctions = {
     
     async updateUser(username: string, UpdateUser: unknown): Promise<any> {
         console.log("fetching updateUser...: ", username);
-        const response = await UserApi.patch('/user/' + username, UpdateUser);
-        return await response.json();
+        const response = await UserApi.fetchPatch('/user/' + username, UpdateUser, patchUserUpdateCallback);
+        //console.log("Response: ", response);
+        return await response;
     },
 
     async logout(): Promise<any> {
@@ -56,5 +57,15 @@ export const getTokenCallback = (result: any) => {
 
 export const getLeaderboardCallback = (result: any) => {
     // console.log("getLeaderboardCallback: ", result);
+    return result;
+}
+
+export const patchUserUpdateCallback = (result: any) => {
+    console.log("patchUserUpdateCallback: ", result);
+    return result;
+}
+
+export const createUserCallback = (result: any) => {
+    console.log("createUserCallback: ", result);
     return result;
 }

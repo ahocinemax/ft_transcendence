@@ -44,8 +44,8 @@ async createDataBase42User(
 }
 
   async handleDataBaseCreation(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
-    const token: string = req.cookies.token;
-    console.log("token", token);
+    const token: string = req.cookies.access_token;
+    console.log("handleDataBaseCreation;;;;;;;;;;;", req);
     const user42infos = await this.Auth42.access42UserInformation(token);
     if (user42infos)
       {
@@ -58,18 +58,22 @@ async createDataBase42User(
         path: finalUser,
       });
     }
+//    await this.googleAuthService.createDataBaseGoogleAuth(
+//      req.body.email,
+//      req.body.accessToken,
+//      req.body.name,
+//      req.body.isRegistered,
+//    );
   }
 
 /* CHECK FUNCTIONS */
 
   async checkIfTokenValid(@Req() req: Request, @Res() res: Response) {
-    const token: string = req.headers.authorization.split(' ')[1];
-    //console.log("token", token);
-    //console.log("res", res);
-    //console.log("req!!!!!!!!!!!!!!!!!!!!!!", req.headers.authorization.split(' ')[1]);
-    //const token42Valid = await this.Auth42.access42UserInformation(token); // check token from user if user is from 42
+    const token: string = req.cookies.access_token;
+    //console.log("token(checkIfTokenValid)", token);
+    const token42Valid = await this.Auth42.access42UserInformation(token); // check token from user if user is from 42
     const tokenGoogleValid = await this.googleAuthService.getUserInfoFromAccessToken(token); // check token from user if user is from Google
-    if (!tokenGoogleValid /*&& !token42Valid*/) {
+    if (!tokenGoogleValid && !token42Valid) {
       throw new BadRequestException("InvalidToken", {
         cause: new Error(),
         description: "Json empty, the token is invalid",
@@ -84,15 +88,11 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    //console.log("request : getUserbyToken: ", req);
-    let accessToken;
+    //console.log("request : getUserbyToken: ", req.cookies.access_token);
     try {
-      //if (
-      //    req.headers.authorization.split(' ')[1] ) {
-          accessToken = req.cookies.access_token;
-      //} else {
-      //    accessToken = req.headers.authorization.split(' ')[1];
-     // }
+          //const accessToken = req.cookies.access_tokenGoogle || req.cookies.access_token42;
+      const accessToken = req.cookies.access_token;
+      console.log("accessToken", accessToken);
       const user = await this.prisma.user.findFirst({
         where: {
           accessToken: accessToken,
@@ -107,6 +107,7 @@ async createDataBase42User(
             error: "Error to get the user by token (user empty)"},
            HttpStatus.BAD_REQUEST);
           };
+      //console.log("user", user);
       return user;
     } catch (error) {
       console.error("Error getUserbyToken", error);
@@ -127,18 +128,18 @@ async createDataBase42User(
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
         httpOnly: false,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
       });
   }
 
   async createCookiesGoogle(@Res() res: Response, token: any) {
-    console.log("token.access_token(Google)", token.accessToken);
+    console.log("token.access_token", token.accessToken);
       res.cookie("access_token", token.accessToken,
       {
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
       });
   }
 
@@ -177,7 +178,7 @@ async createDataBase42User(
     {
       throw new HttpException({
       status: HttpStatus.BAD_REQUEST,
-      error: "Error to update the cookes"},
+      error: "Error to update the cookies"},
       HttpStatus.BAD_REQUEST);
   }
   }
@@ -198,8 +199,9 @@ async RedirectionUser(
   @Res() res: Response,
   email: string | null | undefined
 ) {
+  console.log("redirectionUser", email);
   if (!email) res.redirect(301, process.env.CLIENT_CREATE);
-  else res.redirect(301, process.env.CLIENT_SEVER);
+  else res.redirect(301, process.env.CLIENT_HOST);
 }
 }
 

@@ -104,18 +104,23 @@ export class GoogleAuthService {
     }
 
     async getUserInfoFromAccessToken(accessToken: string): Promise<any> {
+        try{
         const userInfoEndpoint = 'https://www.googleapis.com/oauth2/v3/userinfo';
         const response = await axios.get(userInfoEndpoint, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             }
         });
-
         if (response.data) {
             return response.data;
         } else {
-            throw new Error('Failed to get user info');
+            console.log('Failed to get user info');
+            return null;
         }
     }
-
+    catch (error) {
+        console.log("getUserInfoFromAccessToken error(google account empty)");
+        return null;
+    }
+}
 }

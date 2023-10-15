@@ -41,7 +41,7 @@ export class AuthController {
 	  const user42infos = await this.Auth42.access42UserInformation(
 		token.access_token
 	  );
-	  //if (user42infos) {
+	//if (user42infos) {
 	//	// Use the information from the 42API to create the user in the database.
 	//	const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, false);
 	//	this.authService.createCookiesFortyTwo(res, token);
@@ -60,6 +60,7 @@ export class AuthController {
 	//		// Handle the error when we do not get the user info from the 42API.
 	//		res.status(400).json({ error: 'Unable to get the user information from the 42API.' });
 	//	}
+
 	this.authService.createCookiesFortyTwo(res, token);
     const userExists = await this.authService.getUserByEmail(user42infos.email);
     this.authService.RedirectionUser(req,res, userExists?.email);	
@@ -79,7 +80,13 @@ export class AuthController {
 	@Get("OAuth")
 	@UseGuards(AuthGuard('google'))
 	async getGoogleAuthToken(@Req() req: Request, @Res() res: Response){
-		//console.log("Request query (code from GoogleOAuth):", req.query);
+		console.log("Request query (code from GoogleOAuth):", req.query);
+		//const user = await this.googleAuthService.createDataBaseGoogleAuth(
+		//	googleUser.email,
+		//	googleUser.accessToken,
+		//	googleUser.userName,
+		//	false,
+		//);
 	}
 
 	@Get('google/callback')
@@ -89,23 +96,25 @@ export class AuthController {
 
 		const googleUser = await this.googleAuthService.getGoogleUser(code);
 		this.authService.createCookiesGoogle(res, googleUser);
-		//const userAlreadyRegisterd = await this.authService.getUserByEmail(googleUser.email);
 		//this.authService.updateCookies(res, googleUser.accessToken, userAlreadyRegisterd);
 		//console.log("googleUser", googleUser);
-		const user = await this.googleAuthService.createDataBaseGoogleAuth(
-			googleUser.email,
-			googleUser.accessToken,
-			googleUser.userName,
-			false
-		);
+		
+		//const user = await this.googleAuthService.createDataBaseGoogleAuth(
+		//	googleUser.email,
+		//	googleUser.accessToken,
+		//	googleUser.userName,
+		//	false
+		//);
 
 		//console.log("auth.controller(GoogleAuth-callback)")
-		if (process.env.NODE_ENV === 'development') {
-			res.redirect("/user");
-		}
-		else if (process.env.NODE_ENV === 'production') {
-			res.status(301).redirect(process.env.CLIENT_CREATE);
-		}
-		this.WebsocketGateway.onlineFromService(user.id);
+	//	if (process.env.NODE_ENV === 'development') {
+	//		res.redirect("/user");
+	//	}
+	//	else if (process.env.NODE_ENV === 'production') {
+	//		res.status(301).redirect(process.env.CLIENT_CREATE);
+	//	}
+
+		this.authService.RedirectionUser(req,res, googleUser?.email);	
+		this.WebsocketGateway.onlineFromService(googleUser.id);
 	}	
 }
