@@ -5,40 +5,46 @@ import { backFunctions } from '../../outils_back/BackFunctions';
 import { useUserContext } from '../../context/userContent';
 
 const CheckUser = () => {
-  const navigate = useNavigate();
-  const [tokenExists, setTokenExists] = useState(false);
+const navigate = useNavigate();
+const [tokenExists, setTokenExists] = useState(false);
+async function checkCreateUser () {
+  const user = await backFunctions.getUserByToken();
+  console.log('checkCreateUser user: ', user);
+  if (user && user.isRegistered == true) {
+    console.log('User already created');
+    navigate('/');
+    return false;
+  } else {
+    // ユーザーが存在しない場合、createUserを呼び出
+      return true;
+  }
+}
 
-  useEffect(() => {
-    async function fetchData() {
-      // Check if user is already registered
-      const user = await backFunctions.getUserByToken();
-      if (user && user.isRegistered === true) {
-        console.log('User already created');
-        navigate('/');
-        return;
+async function checkUserToken() {
+  const response = await backFunctions.checkIfTokenValid();
+  if (response.statusCode == 400 || response.statusCode == 403) {
+    navigate('/');
+    return false;
+  }
+  console.log('checkUserToken response: ', response);
+  setTokenExists(true);
+  return true;
+}
+
+
+useEffect(() => {
+  async function initialize() {
+    // まずトークンの有効性を確認
+    const tokenResponse = await checkUserToken();
+    if (tokenResponse) {
+      const userResponse = await checkCreateUser();
+      if (userResponse) {
+        navigate('/create');
       }
-
-      // Check if token is valid
-      const response = await backFunctions.checkIfTokenValid();
-      if (response.statusCode === 400 || response.statusCode === 403) {
-        console.log('Invalid or expired token');
-        navigate('/');
-        return;
-      }
-
-      console.log('Valid token and user not registered');
-      setTokenExists(true);
     }
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (tokenExists) {
-      navigate('/create');
-    }
-  }, [tokenExists]);
-
+  }
+  initialize();
+}, []);
   return null;
 };
 

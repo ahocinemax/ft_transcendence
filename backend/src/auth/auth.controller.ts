@@ -41,25 +41,7 @@ export class AuthController {
 	  const user42infos = await this.Auth42.access42UserInformation(
 		token.access_token
 	  );
-	//if (user42infos) {
-	//	// Use the information from the 42API to create the user in the database.
-	//	const user = await this.Auth42.createDataBase42User(user42infos, token.access_token, user42infos.login, false);
-	//	this.authService.createCookiesFortyTwo(res, token);
-	//	//const userAlreadyRegisterd = await this.authService.getUserByEmail(user42infos.email);
-	//	//this.authService.updateCookies(res, token, userAlreadyRegisterd);
-	//	console.log("Set-Cookie header(42API):\n", res.get('Set-Cookie'));
-	//	  //this.authService.updateCookies(res, token, userAlreadyRegisterd);
-	//	  if (process.env.NODE_ENV === 'development') {
-	//		res.redirect("/user");
-	//	  }
-	//	  else if (process.env.NODE_ENV === 'production') {
-	//		res.status(301).redirect(process.env.CLIENT_CREATE);
-	//	  } 
-	//	}
-	//	else {
-	//		// Handle the error when we do not get the user info from the 42API.
-	//		res.status(400).json({ error: 'Unable to get the user information from the 42API.' });
-	//	}
+
 
 	this.authService.createCookiesFortyTwo(res, token);
     const userExists = await this.authService.getUserByEmail(user42infos.email);
@@ -68,7 +50,7 @@ export class AuthController {
 
 	@Get("logout")
 	async deleteCookies(@Req() req: Request, @Res() res: Response) {
-		console.log(res); 
+		//console.log(res);
 		await this.authService.deleteCookies(res);
 	}
 
@@ -92,9 +74,9 @@ export class AuthController {
 	@Get('google/callback')
 	async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
 		const code = req.query.code as string;
-		//console.log("code", code);
-
-		const googleUser = await this.googleAuthService.getGoogleUser(code);
+		
+		const googleUser: any = await this.googleAuthService.getGoogleUser(code);
+		//console.log("googleUser", googleUser);
 		this.authService.createCookiesGoogle(res, googleUser);
 		//this.authService.updateCookies(res, googleUser.accessToken, userAlreadyRegisterd);
 		//console.log("googleUser", googleUser);
@@ -113,8 +95,8 @@ export class AuthController {
 	//	else if (process.env.NODE_ENV === 'production') {
 	//		res.status(301).redirect(process.env.CLIENT_CREATE);
 	//	}
-
-		this.authService.RedirectionUser(req,res, googleUser?.email);	
+		const userExists = await this.authService.getUserByEmail(googleUser.email);
+		this.authService.RedirectionUser(req,res, userExists?.email);	
 		this.WebsocketGateway.onlineFromService(googleUser.id);
 	}	
 }

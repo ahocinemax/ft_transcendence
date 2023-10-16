@@ -16,25 +16,17 @@ export const UserApi = {
     async post(url: string, data: unknown, callback: any) {
         //console.log("Fetch [POST]:", `${process.env.REACT_APP_SERVER_HOST}${url}`);
         const headers = await this.authHeader();
-        //return await fetch(`${process.env.REACT_APP_SERVER_HOST}${url}`, {
-        //    //...requestConfig,
-        //    method: 'POST',
-        //    //headers,
-        //    //redirect: "follow",
-        //    body: JSON.stringify(data) || '{}',
-        //    credentials: 'include',
-        //    });
             try {
                 console.log("Fetch [POST]:", `${process.env.REACT_APP_SERVER_HOST}${url}`);
-                console.log("data:", data);
+                console.log("data[POST]:", data);
                 const response =  await fetch(`${process.env.REACT_APP_SERVER_HOST}${url}`, {
                 method: 'POST',
-                ...requestConfig,
+                //...requestConfig,
                 headers,
                 credentials: 'include',
                 body: JSON.stringify(data),
                 });
-                console.log("response fetchPatch: ", response);
+                console.log("response fetchPost: ", response);
                 const result_1 = await response.json();
                 return (!response.ok) ? "error" : callback(result_1);
             }
@@ -64,7 +56,8 @@ export const UserApi = {
         let token = "Bearer " + localStorage.getItem("userToken");
         console.log("Fetch TOKEN [GET]:", token);
         let myHeaders = new Headers();
-        //myHeaders.append("Authorization", token);
+        myHeaders.append("Authorization", token);
+        myHeaders.append("Content-Type", "application/json");
         //myHeaders.append("Allow-Controle-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         //myHeaders.append("Allow-Control-Allow-Origin", "*");  
         //myHeaders.append("Access-Control-Allow-Origin", "http://localhost:4000");
@@ -119,33 +112,3 @@ export const UserApi = {
 
 
 };
-
-
-
-
-
-/*
--4000-
-Accept: application/json, text/plain, 
-Accept-Encoding: gzip, deflate, br
-Accept-Language: ja,en-US;q=0.9,en;q=0.8,zh-CN;q=0.7,zh;q=0.6
-Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept
-Access-Control-Allow-Origin: http://localhost:4000
-Connection: keep-alive
-Content-Length: 7
-Content-Type: application/json
-Host: localhost:4000
-Origin: http://localhost:3000
-Referer: http://localhost:3000/
-Sec-Ch-Ua: "Google Chrome";v="117", "Not;A=Brand";v="8", "Chromium";v="117"
-Sec-Ch-Ua-Mobile: ?0
-Sec-Ch-Ua-Platform: "Linux"
-Sec-Fetch-Dest: empty
-Sec-Fetch-Mode: cors
-Sec-Fetch-Site: same-site
-User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36
-
-
--3000-
-
-*/

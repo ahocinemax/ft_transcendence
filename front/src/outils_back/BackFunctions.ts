@@ -43,6 +43,30 @@ export const backFunctions = {
         const response = await UserApi.fetchGet('/auth/logout', getTokenCallback);
         //return await response.json();
     },
+
+    async sendMailTwoFactor(user: unknown): Promise<any> {
+		const response = await UserApi.post(
+            '/auth-2FA/send2FAMail', 
+            user, 
+            sendMailTwoFactorCallback);
+		return await response;
+	},    
+    
+    async confirmCodeForTwoFactor(user: unknown): Promise<any> {
+		const response = await UserApi.post(
+            '/auth-2FA/confirmCode', 
+            user, 
+            sendMailTwoFactorCallback);
+		return await response;
+	}, 
+    
+    async disableTwoFactor(user: unknown): Promise<any> {
+		const response = await UserApi.post(
+            '/auth-2FA/disable2FA', 
+            user, 
+            disableTwoFactorCallback);
+		return await response;
+	}, 
 };
 
 export const getUserCallback = (result: any) => {
@@ -62,6 +86,16 @@ export const getLeaderboardCallback = (result: any) => {
 
 export const patchUserUpdateCallback = (result: any) => {
     console.log("patchUserUpdateCallback: ", result);
+    return result;
+}
+
+export const sendMailTwoFactorCallback = (result: any) => {
+    console.log("sendMailTwoFactorCallback: ", result);
+    return result;
+}
+
+export const disableTwoFactorCallback = (result: any) => {
+    console.log("disableTwoFactorCallback: ", result);
     return result;
 }
 

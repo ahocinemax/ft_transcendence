@@ -1,5 +1,6 @@
 import { Injectable, HttpStatus, HttpException, Req, Res, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { Request, Response } from 'express';
 import axios from 'axios';
 
 
@@ -41,7 +42,7 @@ export class GoogleAuthService {
                         accessToken: token,
                         name: name,
                         login42: "google account",
-                        isRegistered: isRegistered
+                        isRegistered: true
                     }
                 });
                 return userAlreadyRegisterd;
@@ -77,6 +78,7 @@ export class GoogleAuthService {
             accessToken: accessToken,
             isRegistered: false
         };
+        console.log("googleUser", googleUser);
         return googleUser;
     }
 
@@ -122,5 +124,18 @@ export class GoogleAuthService {
         console.log("getUserInfoFromAccessToken error(google account empty)");
         return null;
     }
-}
+};
+
+async getGoogleUserByCookies(@Req() req: Request) {
+    const token: string = req.cookies.access_token;
+    const data = await this.getUserInfoFromAccessToken(token)
+        const googleUser: GoogleUser = {
+            id: data.sub,
+            email: data.email,
+            userName: data.name,
+            accessToken: token,
+            isRegistered: false,
+        };
+    return googleUser;
+  };
 }

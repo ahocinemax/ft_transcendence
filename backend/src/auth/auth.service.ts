@@ -45,8 +45,9 @@ async createDataBase42User(
 
   async handleDataBaseCreation(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
     const token: string = req.cookies.access_token;
-    console.log("handleDataBaseCreation;;;;;;;;;;;", req);
+    console.log("handleDataBaseCreation(authservice):::::", req.cookies.access_token);
     const user42infos = await this.Auth42.access42UserInformation(token);
+    //console.log("user42infos:::::::::", user42infos);
     if (user42infos)
       {
         const finalUser = await this.Auth42.createDataBase42User(user42infos,
@@ -58,13 +59,32 @@ async createDataBase42User(
         path: finalUser,
       });
     }
-//    await this.googleAuthService.createDataBaseGoogleAuth(
-//      req.body.email,
-//      req.body.accessToken,
-//      req.body.name,
-//      req.body.isRegistered,
-//    );
-  }
+    else{
+      try {
+        const userGoogleInfos = await this.googleAuthService.getGoogleUserByCookies(req)
+        console.log("userGoogleInfos::::::", userGoogleInfos);
+        if (userGoogleInfos) {
+          const finalUser = await this.googleAuthService.createDataBaseGoogleAuth
+        (
+          userGoogleInfos.email,
+          userGoogleInfos.accessToken,
+          userGoogleInfos.userName,
+          userGoogleInfos.isRegistered,
+        )
+          return res.status(200).json(
+          {
+            statusCode: 200,
+            path: finalUser,
+          });
+      }} catch (error) {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: "Error to create the user to the database"
+          }, HttpStatus.BAD_REQUEST);
+        };
+    }
+};
 
 /* CHECK FUNCTIONS */
 
@@ -191,7 +211,9 @@ async createDataBase42User(
             }
         });
         return userAlreadyRegisterd;
-    } catch (error) {}
+    } catch (error) {
+      console.log("error", error);
+    }
 }
 
 async RedirectionUser(
@@ -200,7 +222,7 @@ async RedirectionUser(
   email: string | null | undefined
 ) {
   console.log("redirectionUser", email);
-  if (!email) res.redirect(301, process.env.CLIENT_CREATE);
+  if (!email) res.redirect(301, "http://localhost:3000/checkuser");
   else res.redirect(301, process.env.CLIENT_HOST);
 }
 }

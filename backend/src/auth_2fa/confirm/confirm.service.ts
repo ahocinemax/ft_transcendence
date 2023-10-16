@@ -20,14 +20,14 @@ export class ConfirmService {
             const otp_code = user?.otp_code;
             //console.log("otp_code", otp_code);
             const { hash } = req.body;
-            //console.log("hash", hash);
+            console.log("hash", hash);
             //console.log("req.body", req.body);
             const valid = await bcrypt.compare(hash, otp_code);
+            //console.log("valid", valid);
             if (valid) {
+                //console.log("req", req.body);
                 await this.updateUser(req);
-                res.status(200).json({
-                    message: "2FA validated",
-                });
+                res.status(200).json({message: 'OK'});
             }
             else {
                 throw new HttpException({
