@@ -14,22 +14,24 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 	);
 	const [loading, setLoading] = useState(true);
 	const name = useUserContext().userName.userName;
-	const socket = useSocket('/', {
+	const socket = useSocket(`${process.env.REACT_APP_SERVER_HOST}/`, {
 		reconnectionAttempts: 5,
 		reconnectionDelay: 5000,
 		autoConnect: false,
 		query: { name: name, },
 	});
 
-	useEffect(() => {
-		if (!name) return setLoading(false);
-		socket.io.opts.query!.name = name;
-		socket.connect();
-		console.log('socketConnected');
-		SocketDispatch({type: 'update_socket', payload: socket});
-		StartListeners();
-		SendHandshake();
-	}, [name, socket]);
+	const SendHandshake = () => {
+		console.info(`Sending handshake to server...`);
+
+		socket.emit('handshake');
+		socket.on('handshake', (name: string, users: string[]) => {
+			SocketDispatch({type: 'update_name', payload: name});
+			SocketDispatch({type: 'update_users', payload: users});
+			setLoading(false);
+			console.info(`Handshake completed.`);
+		});
+	};
 
 	const StartListeners = () => {
 		socket.io.on('reconnect', (attempt) => {
@@ -48,17 +50,16 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 			console.error(`Socket error: `, error);
 		});
 	};
-	const SendHandshake = () => {
-		console.info(`Sending handshake to server...`);
 
-		socket.emit('handshake');
-		socket.on('handshake', (name: string, users: string[]) => {
-			SocketDispatch({type: 'update_name', payload: name});
-			SocketDispatch({type: 'update_users', payload: users});
-			setLoading(false);
-			console.info(`Handshake completed.`);
-		});
-	};
+	useEffect(() => {
+		if (!name) return setLoading(false);
+		socket.io.opts.query!.name = name;
+		socket.connect();
+		console.log('socketConnected');
+		SocketDispatch({type: 'update_socket', payload: socket});
+		StartListeners();
+		SendHandshake();
+	}, [name, socket]);
 
 	useEffect(() => {
 		socket.on('user_connected', (users: string[]) => {

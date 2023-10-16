@@ -41,7 +41,6 @@ const Profile = () => {
     const [isUser, setIsUser] = useState(true);
     let params = useParams();
 
-    console.log("userData.userName.userName: ", userData.userName.userName);
     //console.log("name:     ", userInfo.name);
 
 		useEffect(() => {
@@ -49,7 +48,6 @@ const Profile = () => {
 				let result;
 				if (!isFetched && userData.userName.userName !== undefined) {
 					result = await backFunctions.getUserByToken();
-					console.log("userData.userName.userName: ", userData.userName.userName);
 					initializeUser(result, setUserInfo);
 					setIsFetched(true);
 					setIsUser(false);

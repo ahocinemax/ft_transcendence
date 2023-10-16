@@ -45,7 +45,7 @@ export const UserApi = {
         console.log("Fetch TOKEN [GET]:", token);
         let myHeaders = new Headers();
         myHeaders.append("Authorization", token);
-        // myHeaders.append("Allow-Control-Allow-Origin", "*");
+        myHeaders.append("Allow-Control-Allow-Origin", "*");
         return myHeaders;
     },
 

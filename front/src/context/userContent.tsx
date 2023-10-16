@@ -15,15 +15,9 @@ export type DoubleAuth = {
 	doubleAuth: boolean;
 };
 
-
-export type Achievements = {
-	achievements: string[];
-};
-
 export type UserName = {
 	userName: string;
 };
-
 
 export type AuthImage = {
 	image: string;
@@ -45,14 +39,11 @@ export type Wins = {
 	wins: number;
 }
 
-
 type UserContextType = {
 	userName: UserName;
 	setUserName: React.Dispatch<React.SetStateAction<UserName>>;
 	image: AuthImage;
 	setImage: React.Dispatch<React.SetStateAction<AuthImage>>;
-	achievements: Achievements;
-	setAchievements: React.Dispatch<React.SetStateAction<Achievements>>;
 	doubleAuth: DoubleAuth;
 	setDoubleAuth: React.Dispatch<React.SetStateAction<DoubleAuth>>;
 	verified2FA: DoubleAuthVerified;
@@ -73,9 +64,6 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 	const navigate = useNavigate();
 	const [userName, setUserName] = useState<UserName>({userName: ''});
 	const [image, setImage] = useState<AuthImage>({image: ''});
-	const [achievements, setAchievements] = useState<Achievements>({
-		achievements: [],
-	});
 	const [doubleAuth, setDoubleAuth] = useState<DoubleAuth>({
 		doubleAuth: false});
 	const [verified2FA, setVerified2FA] = useState<DoubleAuthVerified>({
@@ -106,8 +94,6 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 				setUserName,
 				image,
 				setImage,
-				achievements,
-				setAchievements,
 				doubleAuth,
 				setDoubleAuth,
 				verified2FA,
@@ -129,7 +115,6 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 
 export function useUserContext(): UserContextType {
   const context = useContext(UserContext);
-  //console.log('context', context);
   if (!context) {
     throw new Error('useUserContext doit être utilisé à l\'intérieur d\'un composant UserContextProvider');
   }
