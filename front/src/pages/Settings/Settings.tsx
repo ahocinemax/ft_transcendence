@@ -1,29 +1,70 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './Settings.css';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import { useUserContext } from '../../context/userContent';
+import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
-  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const navigate = useNavigate();
+  const { userName, games, image, doubleAuth, setDoubleAuth} = useUserContext();
+  const [is2FAEnabled, setIs2FAEnabled] = useState(doubleAuth.doubleAuth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pseudo, setPseudo] = useState('#PlayerPseudo'); // État pour stocker le pseudo
   const [newPseudo, setNewPseudo] = useState(''); // État pour stocker le nouveau pseudo
-  const { setUserName } = useUserContext(); 
+  const { setUserName, setEmail, setVerified2FA } = useUserContext(); 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [inputCode, setInputCode] = useState(''); 
 
   const imageInputRef = useRef<HTMLInputElement | null>(null);
-
-  const toggle2FA = () => {
-    if (!is2FAEnabled) {
-      setIsModalOpen(!is2FAEnabled);
-    }
-    setIs2FAEnabled(!is2FAEnabled);
+  
+  const handleCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputCode(event.target.value);
   };
 
-  const closeModal = () => {
-    if (is2FAEnabled) {
-      setIsModalOpen(false);
-      setIs2FAEnabled(!is2FAEnabled);
+  const toggle2FA = async () => {
+    if (doubleAuth.doubleAuth) {
+      // 2FAが有効な場合、無効にする
+      try {
+        const user = { name: userName.userName };
+        const response = await backFunctions.disableTwoFactor(user);
+        if (response.message === 'OK') {
+          console.log('2FA disabled successfully.');
+          setDoubleAuth({doubleAuth:false});
+          setIs2FAEnabled(false);
+        } else {
+          console.log('Failed to disable 2FA.');
+        }
+      } catch (error) {
+        console.error('Failed to disable 2FA:', error);
+      }
+    } else {
+      // 2FAが無効な場合、有効にする
+      setIsModalOpen(true);
+      try {
+        const user = { mail:'mtsuji@student.42.fr', otp_enabled: false, otp_validated: false, otp_verified: false };
+        const response = await backFunctions.sendMailTwoFactor({name: userName.userName});
+        console.log('2FA mail sent:', response);
+      } catch (error) {
+        console.error('Failed to send 2FA mail:', error);
+      }
+    }
+  };
+  const closeModal = async () => {
+    if (!doubleAuth.doubleAuth) {
+      try {
+        const user = { hash: inputCode, name: userName.userName};  // ここでユーザーが入力したコードをオブジェクトに格納
+        const response = await backFunctions.confirmCodeForTwoFactor(user);
+        if (response.message === 'OK') {  // 仮に成功時に'success'が返ってくると仮定
+          console.log('2FA code verified successfully.');
+          setIsModalOpen(false);
+          setDoubleAuth({doubleAuth:true});
+          setIs2FAEnabled(true);
+        } else {
+          console.log('Failed to verify 2FA code.');
+        }
+      } catch (error) {
+        console.error('An error occurred while verifying the 2FA code:', error);
+      }
     }
   };
 
@@ -45,10 +86,20 @@ const Settings = () => {
     setNewPseudo(event.target.value);
   };
 
-  const updatePseudo = () => {
+  const updatePseudo = async () => {
     // Mettre à jour le pseudo avec le nouveau pseudo saisi
     if (newPseudo.length >= 3 && newPseudo.length <= 12 && isAlphanum(newPseudo))
         setPseudo(newPseudo);
+    try {
+          const updatedUser = await backFunctions.updateUser(userName.userName, { name: newPseudo, isRegistered: true });
+          if (updatedUser) {
+            console.log("User updated successfully:", updatedUser);
+            setUserName({userName: newPseudo});
+            navigate('/');
+          }
+        } catch (error) {
+          console.error("Failed to update user:", error);
+        }
     setNewPseudo(''); // Réinitialiser le champ de saisie
   };
 
@@ -73,20 +124,35 @@ const Settings = () => {
     backgroundImage: selectedImage ? `url(${URL.createObjectURL(selectedImage)})` : '',
   };
 
-  const { userName, games, image, } = useUserContext()
+  useEffect(() => {
+    // ここで doubleAuth の状態をサーバーから取得する処理を書く
+    async function fetchDoubleAuthStatus() {
+      try {
+        const response = await backFunctions.getUserByToken(); // 仮にこのような関数があるとする
+        console.log('2FA status:', response.otp_enabled);
+        setDoubleAuth({ doubleAuth: response.otp_enabled });
+        setIs2FAEnabled(response.otp_enabled);
+      } catch (error) {
+        console.error('Failed to get 2FA status:', error);
+      }
+    }
+  
+    fetchDoubleAuthStatus();
+  }, []);
 
   return (
     <div className="settings" onClick={closeModal}>
       <h1 className="Settingsh1">Settings</h1>
       <div className="settings_container">
-      <div
-        className="round_div_settings_img"
-        onClick={openImageUploader}
-        style={{
-          backgroundImage: selectedImage
-            ? `url(${URL.createObjectURL(selectedImage)})`
-            : '',
-        }}></div>
+      {/* <div */}
+         {/* className="round_div_settings_img" */}
+         {/* onClick={openImageUploader} */}
+         {/* style={{ */}
+          {/* backgroundImage: selectedImage */}
+        {/*  ? `url(${URL.createObjectURL(selectedImage)})` */}
+        {/*  : '', */}
+         {/* }}></div> */}
+        <div className="round_div_settings_img" style={{ backgroundImage: `url(${image.image})` }}></div>
         <p className="info_settings">{pseudo}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
         <p className="info_settings">#Rank</p>
         <div className="twofa_container">
@@ -103,22 +169,34 @@ const Settings = () => {
       </div>
 
       {/* Swap nickname */}
-        <div className="change_nick_input">
-        <input
-            type="file"
-            ref={imageInputRef}
-            accept=".jpg, .jpeg, .png"
-            style={{ display: 'none' }}
-            onChange={handleImageChange}/>
+        {/* <div className="change_nick_input"> */}
+        {/* <input */}
+             {/* type="file" */}
+             {/* ref={imageInputRef} */}
+             {/* accept=".jpg, .jpeg, .png" */}
+             {/* style={{ display: 'none' }} */}
+             {/* onChange={handleImageChange}/> */}
+          {/* <button className="change_pseudo_button" onClick={updatePseudo}>Changer le pseudo</button> */}
+        {/* </div> */}
+{/*  */}
+      {/* Swap nickname */}
+      <div className="change_nick_input">
+          <input
+            type="text"
+            className="change_nick_input"
+            value={newPseudo}
+            onChange={handleNewPseudoChange}
+            placeholder="Nickname"
+          />
           <button className="change_pseudo_button" onClick={updatePseudo}>Changer le pseudo</button>
-        </div>
+        </div>        
 
       {/* PopUp */}
       {isModalOpen && (
         <div className="modal" onClick={closeModal}>
           <div className="modal_content" onClick={(e) => e.stopPropagation()}>
             <p className="info_tiny">Enter the code received by e-mail to enable 2FA :</p>
-            <input type="number" placeholder="Code" />
+            <input type="number" placeholder="Code" onChange={handleCodeChange}/>
             <button className="popup_enter_button" onClick={closeModal}>Enter</button>
           </div>
         </div>

@@ -52,16 +52,17 @@ export class Auth42Service {
         method: "GET",
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      if (response.ok) {
+      if (response.status === 200) {
         const data = await response.json();
         return data;
       }
-      //else {
-      //  console.log("Received a non-ok response");
-     // }
+      else {
+        console.log("Received a non-ok response");
+      //  console.log(response);
+      }
     }
     catch (error) {
-      console.log("Fetch42 user error", error);
+      console.log("Fetch42 user error");
     }
     return null;
   }

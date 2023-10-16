@@ -86,7 +86,7 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 			setWins({wins: rhs.wins});
 			setRate({rate: rhs.winRate});
 		});
-	}, [navigate]);
+	}, []);
 	return (
 		<UserContext.Provider
 			value={{

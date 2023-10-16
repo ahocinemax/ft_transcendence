@@ -10,6 +10,7 @@ import Profile from './Profile/Profile';
 import Settings from './Settings/Settings';
 import Gamepage from './Gamepage/Gamepage';
 import CreateProfile from './CreateProfile/CreateProfile';
+import CheckUser from './CreateProfile/CheckUser';
 import { UserContextProvider } from '../context/userContent';
 import SocketContextComponent from '../context/socket';
 import { io } from 'socket.io-client';
@@ -39,6 +40,7 @@ function App() {
 						<Route path="/settings" element={<Settings />} />
 						<Route path="/gamepage" element={<Gamepage />} />
 						<Route path="/create" element={<CreateProfile />} />
+						<Route path="/checkuser" element={<CheckUser />} />
 				</Routes>
 			  </div>
 			</div>

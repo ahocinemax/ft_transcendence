@@ -11,24 +11,47 @@ const Settings = () => {
   const [pseudo, setPseudo] = useState('#PlayerPseudo'); // État pour stocker le pseudo
   const [newPseudo, setNewPseudo] = useState(''); // État pour stocker le nouveau pseudo
   const [tokenExists, setTokenExists] = useState(false);
-  const { setUserName } = useUserContext(); 
-  const checkCreateUser = useCallback(async () => {
-    const user = await backFunctions.getUserByToken();
-    if (user && user.isRegistered === true){
-      console.log('User already created');
-      navigate('/');
-      return;
-    }
-  }, [navigate]);
+  const [isUserCreated, setIsUserCreated] = useState(false);
 
-    const checkUserToken = useCallback(async () => {
-      const response = await backFunctions.checkIfTokenValid();
-    if (response.statusCode === 400 || response.statusCode === 403) {
-      navigate("/");
-      return;
+  const {
+    userName,
+    setUserName,
+    image,
+    setImage,
+  } = useUserContext();
+
+  async function setUserInfosContext(value: string) {
+    try {
+      const userInfos: any = await backFunctions.getUserByToken();
+      setUserName({userName: value});
+      setImage({image: image.image});
+      return true;
+    } catch (error) {
+      console.error("Failed to set user info:", error);
+      return false;
     }
+  }
+
+  async function createUser(value: string) {
+    let UserCreation = {
+      name: value,
+      isRegistered: true,
+    };
+    const user = await backFunctions.createUser(UserCreation);
+    //setUserInfosContext(value);
+    return user;
+  }
+
+  async function checkUserToken() {
+    const response = await backFunctions.checkIfTokenValid();
+    if (response.statusCode == 400 || response.statusCode == 403) {
+      navigate('/');
+      return false;
+    }
+    console.log('checkUserToken response: ', response);
     setTokenExists(true);
-  }, [navigate]);
+    return true;
+  }
 
   const toggle2FA = () => {
     if (!is2FAEnabled) {
@@ -79,29 +102,38 @@ const Settings = () => {
     setNewPseudo(''); // Réinitialiser le champ de saisie
   };
 
-  const checkCreateUserCallback = useCallback(async () => {
-    try {
-      await checkCreateUser();
-    } catch (error) {
-      console.error('Erreur dans checkCreateUser:', error);
-    }
-  }, [checkCreateUser]);
-  
-  const checkUserTokenCallback = useCallback(async () => {
-    try {
-      await checkUserToken();
-    } catch (error) {
-      // Gérer les erreurs ici
-      console.error('Erreur dans checkUserToken:', error);
-    }
-  }, [checkUserToken]);
-  
+  // useEffect(() => {
+  //   async function initialize() {
+  //     // まずトークンの有効性を確認
+  //     const tokenResponse = await checkUserToken();
+  //     if (tokenResponse) {
+  //       const newuser = await createUser(userName.userName);
+  //       if (newuser) {
+  //         await setUserInfosContext(userName.userName);
+  //       }
+  //     }
+  //   }
+  //   initialize();
+  // }, []);
+
+
   useEffect(() => {
-    checkCreateUserCallback();
-    checkUserTokenCallback();
-  }, [checkCreateUserCallback, checkUserTokenCallback]);
-  
-  const { userName, games, image, } = useUserContext()
+    async function initialize() {
+      const tokenResponse = await checkUserToken();
+      if (tokenResponse) {
+        const newUser = await createUser("newUser");
+        if (newUser) {
+          const userInfoSet = await setUserInfosContext("newUser");
+          if (userInfoSet) {
+            setIsUserCreated(true);
+          }
+        }
+      }
+    }
+    initialize();
+  }, []);
+
+  //const { userName, games, image, } = useUserContext()
   return (
     <main>
       {tokenExists ? (

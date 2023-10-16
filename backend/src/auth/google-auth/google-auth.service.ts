@@ -1,5 +1,6 @@
 import { Injectable, HttpStatus, HttpException, Req, Res, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { Request, Response } from 'express';
 import axios from 'axios';
 
 
@@ -41,7 +42,7 @@ export class GoogleAuthService {
                         accessToken: token,
                         name: name,
                         login42: "google account",
-                        isRegistered: isRegistered
+                        isRegistered: true
                     }
                 });
                 return userAlreadyRegisterd;
@@ -66,6 +67,7 @@ export class GoogleAuthService {
             }, HttpStatus.BAD_REQUEST);
         }
     }
+    
     async getGoogleUser(code: string): Promise<any> {
         const accessToken = await this.getAccessTokenFromCode(code);
         const response = await this.getUserInfoFromAccessToken(accessToken);
@@ -76,6 +78,7 @@ export class GoogleAuthService {
             accessToken: accessToken,
             isRegistered: false
         };
+        console.log("googleUser", googleUser);
         return googleUser;
     }
 
@@ -103,18 +106,36 @@ export class GoogleAuthService {
     }
 
     async getUserInfoFromAccessToken(accessToken: string): Promise<any> {
+        try{
         const userInfoEndpoint = 'https://www.googleapis.com/oauth2/v3/userinfo';
         const response = await axios.get(userInfoEndpoint, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             }
         });
-
         if (response.data) {
             return response.data;
         } else {
-            throw new Error('Failed to get user info');
+            console.log('Failed to get user info');
+            return null;
         }
     }
+    catch (error) {
+        console.log("getUserInfoFromAccessToken error(google account empty)");
+        return null;
+    }
+};
 
+async getGoogleUserByCookies(@Req() req: Request) {
+    const token: string = req.cookies.access_token;
+    const data = await this.getUserInfoFromAccessToken(token)
+        const googleUser: GoogleUser = {
+            id: data.sub,
+            email: data.email,
+            userName: data.name,
+            accessToken: token,
+            isRegistered: false,
+        };
+    return googleUser;
+  };
 }

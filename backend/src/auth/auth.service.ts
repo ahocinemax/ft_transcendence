@@ -44,9 +44,10 @@ async createDataBase42User(
 }
 
   async handleDataBaseCreation(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
-    const token: string = req.cookies.token;
-    console.log("token", token);
+    const token: string = req.cookies.access_token;
+    console.log("handleDataBaseCreation(authservice):::::", req.cookies.access_token);
     const user42infos = await this.Auth42.access42UserInformation(token);
+    //console.log("user42infos:::::::::", user42infos);
     if (user42infos)
       {
         const finalUser = await this.Auth42.createDataBase42User(user42infos,
@@ -58,14 +59,38 @@ async createDataBase42User(
         path: finalUser,
       });
     }
-  }
+    else{
+      try {
+        const userGoogleInfos = await this.googleAuthService.getGoogleUserByCookies(req)
+        console.log("userGoogleInfos::::::", userGoogleInfos);
+        if (userGoogleInfos) {
+          const finalUser = await this.googleAuthService.createDataBaseGoogleAuth
+        (
+          userGoogleInfos.email,
+          userGoogleInfos.accessToken,
+          userGoogleInfos.userName,
+          userGoogleInfos.isRegistered,
+        )
+          return res.status(200).json(
+          {
+            statusCode: 200,
+            path: finalUser,
+          });
+      }} catch (error) {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: "Error to create the user to the database"
+          }, HttpStatus.BAD_REQUEST);
+        };
+    }
+};
 
 /* CHECK FUNCTIONS */
 
   async checkIfTokenValid(@Req() req: Request, @Res() res: Response) {
     const token: string = req.cookies.access_token;
-    console.log("token", token);
-    console.log("req!!!!!!!!!!!!!!!!!!!!!!", req.cookies);
+    //console.log("token(checkIfTokenValid)", token);
     const token42Valid = await this.Auth42.access42UserInformation(token); // check token from user if user is from 42
     const tokenGoogleValid = await this.googleAuthService.getUserInfoFromAccessToken(token); // check token from user if user is from Google
     if (!tokenGoogleValid && !token42Valid) {
@@ -83,10 +108,11 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    console.log("getUserbyToken: ", req.cookies);
+    console.log("request : getUserbyToken: ", req.cookies);
     try {
+          //const accessToken = req.cookies.access_tokenGoogle || req.cookies.access_token42;
       const accessToken = req.cookies.access_token;
-      //console.log("req.cookies.access_token(controller)", req.cookies.access_token);
+      console.log("accessToken", accessToken);
       const user = await this.prisma.user.findFirst({
         where: {
           accessToken: accessToken,
@@ -101,6 +127,7 @@ async createDataBase42User(
             error: "Error to get the user by token (user empty)"},
            HttpStatus.BAD_REQUEST);
           };
+      //console.log("user", user);
       return user;
     } catch (error) {
       console.error("Error getUserbyToken", error);
@@ -115,25 +142,24 @@ async createDataBase42User(
   }
 
 //COOKIES
-  async createCookiesFortyTwo(@Res() res: Response, token: any) {
-    console.log("token.access_token(42API)", token.access_token);
+  async createCookiesFortyTwo(@Req() res: Response, token: any) {
     res.cookie("access_token", token.access_token,
       {
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
-        httpOnly: true,
+        httpOnly: false,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
       });
   }
 
   async createCookiesGoogle(@Res() res: Response, token: any) {
-    console.log("token.access_token(Google)", token.accessToken);
+    console.log("token.access_token", token.accessToken);
       res.cookie("access_token", token.accessToken,
       {
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
       });
   }
 
@@ -167,12 +193,12 @@ async createDataBase42User(
 
   async deleteCookies(@Res() res: Response) {
     try {
-      res.clearCookie("accessToken").clearCookie("FullToken").end();
+      res.clearCookie("access_token").end();
     } catch (error)
     {
       throw new HttpException({
       status: HttpStatus.BAD_REQUEST,
-      error: "Error to update the cookes"},
+      error: "Error to update the cookies"},
       HttpStatus.BAD_REQUEST);
   }
   }
@@ -185,7 +211,19 @@ async createDataBase42User(
             }
         });
         return userAlreadyRegisterd;
-    } catch (error) {}
+    } catch (error) {
+      console.log("error", error);
+    }
+}
+
+async RedirectionUser(
+  @Req() req: Request,
+  @Res() res: Response,
+  email: string | null | undefined
+) {
+  console.log("redirectionUser", email);
+  if (!email) res.redirect(301, "http://localhost:3000/checkuser");
+  else res.redirect(301, process.env.CLIENT_HOST);
 }
 }
 

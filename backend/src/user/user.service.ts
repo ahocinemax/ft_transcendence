@@ -147,6 +147,7 @@ export class UserService
 	async updateUser(req: Request) {
 		try{
 			const { name }  = req.params;
+			console.log("updateUser request::::",req.body);
 			const user = await this.prisma.user.update({
 				where: {
 					name,
@@ -164,6 +165,7 @@ export class UserService
 			}
 		return user;
 		} catch (error) {
+			console.log(error);
 		throw new HttpException(
 			{
 				status: HttpStatus.BAD_REQUEST,

@@ -61,7 +61,7 @@ const Profile = () => {
 		return (
 		<div className="profile">
 			<div className="bande">
-				<div className="profile_img"></div>
+			<div className="profile_img" style={{ backgroundImage: `url(${userInfo.image})` }}></div>
 				<div className="profile_info">
 					<h1 className="info">{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
 					<h1 className="info">#whichTeam?</h1>
