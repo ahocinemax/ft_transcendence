@@ -33,7 +33,7 @@ model User {
   //friend request
   pending        User[]   @relation("pending")
   pendingOf      User[]   @relation("pending")
-  
+
   otp_enabled   Boolean   @default(false) //for one time pass
   otp_verified  Boolean   @default(false) // for one time pass
   otp_validated Boolean   @default(false) // for one time pass

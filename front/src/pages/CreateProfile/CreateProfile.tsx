@@ -136,7 +136,7 @@ const Settings = () => {
   //const { userName, games, image, } = useUserContext()
   return (
     <main>
-      {tokenExists ? (
+      {/* {tokenExists ? ( */}
         <div className="settings">
           <h1 className="Settingsh1">Create profile</h1>
           <div className="settings_container">
@@ -154,7 +154,8 @@ const Settings = () => {
               />
               <button className="change_pseudo_button" onClick={updatePseudo}>Choose nickname</button>
             </div>
-        </div>) : <main><p>No user found</p></main>}
+          </div>
+        {/* ) : <main><p>No user found</p></main>} */}
     </main>
   );
 };

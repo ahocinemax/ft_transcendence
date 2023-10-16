@@ -17,7 +17,7 @@ export const backFunctions = {
 
     async getUserByToken(): Promise<any> {
 		const response = await UserApi.fetchGet('/auth/getuserbytoken', getUserCallback);
-        console.log("Response: ", response); 
+        // console.log("Response: ", response);
         localStorage.setItem("userToken", response.accessToken);
 		return response;
 	},
@@ -70,7 +70,7 @@ export const backFunctions = {
 };
 
 export const getUserCallback = (result: any) => {
-    console.log("getUserCallback: ", result);
+    // console.log("getUserCallback: ", result);
     return result;
 }
 

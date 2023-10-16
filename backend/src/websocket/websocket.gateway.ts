@@ -28,7 +28,7 @@ export enum Status {
 * @protected
 */
 
-@WebSocketGateway({cors: {origin: '*'}})
+@WebSocketGateway()
 export class WebsocketGateway
 implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 { 
@@ -65,7 +65,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 	}
 
   async handleConnection(@ConnectedSocket() client: AuthenticatedSocket, ...args: any[]) {
-    console.log("Client connected: ", client);
+    // console.log("Client connected: ", client);
     client.data.name = client.handshake.query.name as string;
     this.logger.log(`[NEW CONNEXION] :  ${client.data.name}`);
     this.websocketService.addUser(client);

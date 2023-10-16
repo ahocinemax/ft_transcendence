@@ -18,7 +18,9 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		reconnectionAttempts: 5,
 		reconnectionDelay: 5000,
 		autoConnect: false,
-		query: { name: name, },
+		query: { name: name },
+		transports: ['websocket'],
+		extraHeaders: {'Access-Control-Allow-Origin': '*'}
 	});
 
 	const SendHandshake = () => {
@@ -26,6 +28,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 
 		socket.emit('handshake');
 		socket.on('handshake', (name: string, users: string[]) => {
+			console.info(`Handshake received.`)
 			SocketDispatch({type: 'update_name', payload: name});
 			SocketDispatch({type: 'update_users', payload: users});
 			setLoading(false);
@@ -53,9 +56,8 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 
 	useEffect(() => {
 		if (!name) return setLoading(false);
-		socket.io.opts.query!.name = name;
+		socket.io.opts.query!.name = name; // rajouter le header cors ici
 		socket.connect();
-		console.log('socketConnected');
 		SocketDispatch({type: 'update_socket', payload: socket});
 		StartListeners();
 		SendHandshake();

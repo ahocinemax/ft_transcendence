@@ -108,7 +108,7 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    console.log("request : getUserbyToken: ", req.cookies);
+    // console.log("getUserbyToken: ", req.cookies);
     try {
           //const accessToken = req.cookies.access_tokenGoogle || req.cookies.access_token42;
       const accessToken = req.cookies.access_token;

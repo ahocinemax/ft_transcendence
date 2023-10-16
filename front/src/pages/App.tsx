@@ -19,9 +19,10 @@ const socketOptions = {
     transportOptions: { polling: { extraHeaders: { token: localStorage.getItem("userToken"), }, }, },
 };
 
-export const socket = io(`${process.env.REACT_APP_BACK_URL}`, socketOptions);
-console.log("url: ", `${process.env.REACT_APP_BACK_URL}`);
-
+// export const socket = io(`${process.env.REACT_APP_BACK_URL}`, socketOptions);
+// console.log("url: ", `${process.env.REACT_APP_BACK_URL}`);
+// console.log("socket: ", socket);
+console.log("socketOptions: ", socketOptions);
 function App() {
 	return (
 	<UserContextProvider>
