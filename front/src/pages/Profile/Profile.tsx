@@ -61,6 +61,117 @@ const Profile = () => {
                 <div className='friend_profile_img'></div>
                 <div className='friend_profile_name'>Player5</div>
             </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player6</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player7</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player8</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player9</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player10</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player5</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player5</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player5</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player5</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player5</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player5</div>
+            </div>
+            <div className='friend'>
+                <div className='friend_profile_img'></div>
+                <div className='friend_profile_name'>Player5</div>
+            </div>
+        </div>
+        <div className='match_history'>
+            <div className='win'>
+                <div className='match_infos'>EnemyName</div>
+                <div className='match_infos'>7 - 2</div>
+                <div className='match_infos'>Hard Mode</div>
+                <div className='match_infos'>Win</div>
+            </div>
+            <div className='loose'>
+                <div className='match_infos'>EnemyName</div>
+                <div className='match_infos'>7 - 2</div>
+                <div className='match_infos'>Normal Mode</div>
+                <div className='match_infos'>Loose</div>
+            </div>
+            <div className='win'>
+                <div className='match_infos'>EnemyName</div>
+                <div className='match_infos'>7 - 2</div>
+                <div className='match_infos'>Hard Mode</div>
+                <div className='match_infos'>Win</div>
+            </div>
+            <div className='loose'>
+                <div className='match_infos'>EnemyName</div>
+                <div className='match_infos'>7 - 2</div>
+                <div className='match_infos'>Normal Mode</div>
+                <div className='match_infos'>Loose</div>
+            </div>
+            <div className='win'>
+                <div className='match_infos'>EnemyName</div>
+                <div className='match_infos'>7 - 2</div>
+                <div className='match_infos'>Hard Mode</div>
+                <div className='match_infos'>Win</div>
+            </div>
+            <div className='loose'>
+                <div className='match_infos'>EnemyName</div>
+                <div className='match_infos'>7 - 2</div>
+                <div className='match_infos'>Normal Mode</div>
+                <div className='match_infos'>Loose</div>
+            </div>
+            <div className='win'>
+                <div className='match_infos'>EnemyName</div>
+                <div className='match_infos'>7 - 2</div>
+                <div className='match_infos'>Hard Mode</div>
+                <div className='match_infos'>Win</div>
+            </div>
+            <div className='loose'>
+                <div className='match_infos'>EnemyName</div>
+                <div className='match_infos'>7 - 2</div>
+                <div className='match_infos'>Normal Mode</div>
+                <div className='match_infos'>Loose</div>
+            </div>
+            <div className='win'>
+                <div className='match_infos'>EnemyName</div>
+                <div className='match_infos'>7 - 2</div>
+                <div className='match_infos'>Hard Mode</div>
+                <div className='match_infos'>Win</div>
+            </div>
+            <div className='loose'>
+                <div className='match_infos'>EnemyName</div>
+                <div className='match_infos'>7 - 2</div>
+                <div className='match_infos'>Normal Mode</div>
+                <div className='match_infos'>Loose</div>
+            </div>
+            
         </div>
     </div>
   );
