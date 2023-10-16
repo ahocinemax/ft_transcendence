@@ -15,7 +15,7 @@ import CreateProfile from './CreateProfile/CreateProfile';
 function App() {
     
     const location = useLocation();
-    const pathsWithoutSidebar = ['/login', '/'];
+    const pathsWithoutSidebar = ['/login', '/create', '/'];
     const shouldRenderSidebar = !pathsWithoutSidebar.includes(location.pathname);
 
     return (
@@ -23,7 +23,8 @@ function App() {
             {shouldRenderSidebar && <Sidebar />}
             <div className='content'>
                 <Routes>
-                    <Route path="/login" element={<Login />} />
+                    <Route path="/" element={<Login />} />
+                    {/* <Route path="/login" element={<Login />} /> */}
                     <Route path="/start" element={<Start />} />
                     <Route path="/homepage" element={<Homepage />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
