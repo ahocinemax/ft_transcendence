@@ -19,7 +19,7 @@ async function bootstrap() {
     secret: 'pass',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: oneWeek}
+    cookie: { maxAge: oneWeek }
   }));
   app.enableCors({
     origin: 'http://localhost:3000',

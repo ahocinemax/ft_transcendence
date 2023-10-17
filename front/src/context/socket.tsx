@@ -20,7 +20,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		autoConnect: false,
 		query: { name: name },
 		transports: ['websocket'],
-		extraHeaders: {'Access-Control-Allow-Origin': '*'}
+		extraHeaders: {'Access-Control-Allow-Origin': `${process.env.REACT_APP_SERVER_HOST}`}
 	});
 
 	const SendHandshake = () => {
