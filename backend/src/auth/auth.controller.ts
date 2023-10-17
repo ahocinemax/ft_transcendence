@@ -36,6 +36,7 @@ export class AuthController {
 
 	@Get("callback")
 	async getToken(@Req() req: Request, @Res() res: Response) {
+		console.log("auth Controller callback called");
 	  const codeFromApi = req.query.code as string;
 	  const token = await this.Auth42.getAccessToken(codeFromApi);
 	  const user42infos = await this.Auth42.access42UserInformation(

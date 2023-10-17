@@ -22,6 +22,7 @@ async function checkCreateUser () {
 
 async function checkUserToken() {
   const response = await backFunctions.checkIfTokenValid();
+  console.log('checkUserToken response: ', response);
   if (response.statusCode == 400 || response.statusCode == 403) {
     navigate('/');
     return false;

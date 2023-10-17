@@ -15,7 +15,7 @@ export const UserApi = {
 		}
 	},
 
-    async post(url: string, data: unknown, callback: any) {
+    async fetchPost(url: string, data: unknown, callback: any) {
         //console.log("Fetch [POST]:", `${process.env.REACT_APP_SERVER_HOST}${url}`);
         const headers = await this.authHeader();
             try {
@@ -55,12 +55,13 @@ export const UserApi = {
 	},
 
     async authHeader() {
-        // console.log("usetToken:", localStorage.getItem("userToken"));  
-        let token = "Bearer " + localStorage.getItem("userToken");
-        // console.log("Fetch TOKEN [GET]:", token);
         let myHeaders = new Headers();
+        if (localStorage.getItem("userToken") !== null) {  
+        let token = "Bearer " + localStorage.getItem("userToken");
         myHeaders.append("Authorization", token);
-        myHeaders.append("Content-Type", "application/json");
+    }
+    myHeaders.append("Content-Type", "application/json");
+        // console.log("Fetch TOKEN [GET]:", token);
         //myHeaders.append("Allow-Controle-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         //myHeaders.append("Allow-Control-Allow-Origin", "*");  
         //myHeaders.append("Access-Control-Allow-Origin", "http://localhost:4000");
@@ -112,5 +113,22 @@ export const UserApi = {
             throw error;
         }
     },
+
+    async fetchDelete(url: string, callback: any) {
+		let fetchUrl = process.env.REACT_APP_SERVER_HOST + url;
+		console.log("Fetch [DELETE]:", fetchUrl);
+		const headers = await this.authHeader();
+		try {
+			const response = await fetch(fetchUrl, {
+			method: "DELETE",
+			headers,
+			body: null,
+			redirect: "follow",
+			credentials: "include",
+			});
+			const result_1 = await response.json();
+			return (!response.ok) ? "error" : callback(result_1);
+		} catch (error) { return console.log("error", error); }
+	},
 
 };

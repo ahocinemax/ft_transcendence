@@ -77,6 +77,9 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 	useEffect(() => {
 		const userInfos = getUserInfo(navigate);
 		userInfos.then((rhs) => {
+			if (rhs === null) {
+				return;
+			}
 			setUserName({userName: rhs.name});
 			setImage({image: rhs.image});
 			setDoubleAuth({doubleAuth: rhs.otp_enabled});
