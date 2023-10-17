@@ -265,6 +265,7 @@ const Chat = () => {
                 <div className="chat_button_container">
                     <div className="chat_buttons DUEL"></div>
                     <div className="chat_buttons MSG" onClick={() => addPrivateUser(selectedUser)}></div>
+                    <div className="chat_buttons ADD_FRIEND"></div>
                     <div className="chat_buttons BLOCK"></div>
                 </div>
                 <div className="chat_button_container">

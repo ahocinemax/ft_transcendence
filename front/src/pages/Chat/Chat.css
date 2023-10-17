@@ -390,3 +390,9 @@
     background-size: cover;
     height: 175%;
   }
+
+  .chat_buttons.ADD_FRIEND
+  {
+    background-image: url(../../../public/add_friend.png);
+    background-size: contain;
+  }
