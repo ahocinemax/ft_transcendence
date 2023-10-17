@@ -235,7 +235,6 @@
 47 silly audit   '@types/send': [ '0.17.2' ],
 47 silly audit   '@types/serve-static': [ '1.15.3' ],
 47 silly audit   '@types/socket.io': [ '3.0.2' ],
-47 silly audit   '@types/socket.io-client': [ '3.0.0' ],
 47 silly audit   '@types/stack-utils': [ '2.0.1' ],
 47 silly audit   '@types/superagent': [ '4.1.19' ],
 47 silly audit   '@types/supertest': [ '2.0.14' ],
