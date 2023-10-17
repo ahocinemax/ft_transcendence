@@ -90,7 +90,7 @@ async createDataBase42User(
 
   async checkIfTokenValid(@Req() req: Request, @Res() res: Response) {
     const token: string = req.cookies.access_token;
-    //console.log("token(checkIfTokenValid)", token);
+    console.log("token(checkIfTokenValid)", token);
     const token42Valid = await this.Auth42.access42UserInformation(token); // check token from user if user is from 42
     const tokenGoogleValid = await this.googleAuthService.getUserInfoFromAccessToken(token); // check token from user if user is from Google
     if (!tokenGoogleValid && !token42Valid) {
@@ -123,14 +123,18 @@ async createDataBase42User(
       {
         throw new HttpException(
           {
-            status: HttpStatus.BAD_REQUEST,
+            status: HttpStatus.NOT_FOUND,
             error: "Error to get the user by token (user empty)"},
-           HttpStatus.BAD_REQUEST);
-          };
+           HttpStatus.NOT_FOUND);
+          }
       //console.log("user", user);
       return user;
     } catch (error) {
       console.error("Error getUserbyToken", error);
+      if (error instanceof HttpException) {
+        //console.log("error", error);
+        throw error;
+      }
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,

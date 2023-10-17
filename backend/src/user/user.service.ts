@@ -122,6 +122,7 @@ export class UserService
 	async getLeaderBoard()
 	{
 		// return all users id sorted by rank
+		console.log('coucou abdel');
 		const users = await this.prisma.user.findMany({
 			where: {
 				NOT: {
