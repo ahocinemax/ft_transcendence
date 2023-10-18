@@ -1,5 +1,7 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom'; //, Router
+import { Routes, Route} from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+
 import Start from './Start/Start';
 import Login from './Login/Login';
 import Homepage from './Homepage/Homepage';
@@ -19,30 +21,30 @@ const socketOptions = { token: localStorage.getItem("userToken") };
 console.log("socketOptions: ", socketOptions);
 
 function App() {
-	return (
-	<UserContextProvider>
-		<SocketContextComponent>
-			{/* Vos composants ici */}
-			<div className='app'>
-			  <Sidebar />
-			  <div className='content'>
-				<Routes>
-				<Route path="/" element={<Start />} />
-						<Route path="/login" element={<Login />} />
-						<Route path="/homepage" element={<Homepage />} />
-						<Route path="/leaderboard" element={<Leaderboard />} />
-						<Route path="/chat" element={<Chat />} />
-						<Route path="/profile" element={<Profile />} />
-						<Route path="/settings" element={<Settings />} />
-						<Route path="/gamepage" element={<Gamepage />} />
-						<Route path="/create" element={<CreateProfile />} />
-						<Route path="/checkuser" element={<CheckUser />} />
-				</Routes>
-			  </div>
-			</div>
-		</SocketContextComponent>
-	</UserContextProvider>
-	);
+    
+    const location = useLocation();
+    const pathsWithoutSidebar = ['/login', '/create', '/'];
+    const shouldRenderSidebar = !pathsWithoutSidebar.includes(location.pathname);
+
+    return (
+        <div className='app'>
+            {shouldRenderSidebar && <Sidebar />}
+            <div className='content'>
+                <Routes>
+                    <Route path="/" element={<Login />} />
+                    {/* <Route path="/login" element={<Login />} /> */}
+                    <Route path="/start" element={<Start />} />
+                    <Route path="/homepage" element={<Homepage />} />
+                    <Route path="/leaderboard" element={<Leaderboard />} />
+                    <Route path="/chat" element={<Chat />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/gamepage" element={<Gamepage />} />
+                    <Route path="/create" element={<CreateProfile />} />
+                </Routes>
+            </div>
+        </div>
+    );
 }
 
 export default App;

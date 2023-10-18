@@ -1,45 +1,29 @@
 // eslint-disable-next-line
 import React, { useState } from 'react';
-import {useLocation, useNavigate} from 'react-router-dom';
 import './Start.css';
 // eslint-disable-next-line
 import Login from '../Login/Login'
 
 
 function Start() {
+  const [showGameModes, setShowGameModes] = useState(false);
 
-    const navigate = useNavigate();
+  const toggleGameModes = () => {
+    setShowGameModes(!showGameModes);
+  };
 
-    const navigate_to_login = () => {
-        navigate("/login");
-        return;
-    }
- 
-    const navigate_to_homepage = () => {
-      navigate("/homepage");
-      return;
-  }
-
-  const navigate_to_profile = () => {
-    navigate("/profile");
-    return;
-}
-  
-    return (
-      <div className="Start">
-        <div className="container">
-          <h1 className="heading" onClick={navigate_to_login}>
-            START
-          </h1>
-          <h1 className="heading" onClick={navigate_to_homepage}>
-            HOMEPAGE
-          </h1>
-          <h1 className="heading" onClick={navigate_to_profile}>
-            PROFIL
-          </h1>
-        </div>
+  return (
+    <div className="Start">
+      <h1 className="start_heading" onClick={toggleGameModes}>
+        START
+      </h1>
+      <div className={`gamemodes_container ${showGameModes ? 'show' : ''}`}>
+        <h3 className="gamemode Normal">Normal</h3>
+        <h3 className="gamemode Hard">Hard</h3>
+        <h3 className="gamemode Hardcore">Hardcore</h3>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
 export default Start;

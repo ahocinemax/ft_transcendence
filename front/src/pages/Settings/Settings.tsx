@@ -181,15 +181,15 @@ const Settings = () => {
 {/*  */}
       {/* Swap nickname */}
       <div className="change_nick_input">
-          <input
-            type="text"
-            className="change_nick_input"
-            value={newPseudo}
-            onChange={handleNewPseudoChange}
-            placeholder="Nickname"
-          />
-          <button className="change_pseudo_button" onClick={updatePseudo}>Changer le pseudo</button>
-        </div>        
+        <input
+          type="text"
+          className="change_nick_input"
+          value={newPseudo}
+          onChange={handleNewPseudoChange}
+          placeholder="Change nickname"
+        />
+        <button className="change_pseudo_button" onClick={updatePseudo}>Changer le pseudo</button>
+      </div>
 
       {/* PopUp */}
       {isModalOpen && (
