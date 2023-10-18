@@ -39,19 +39,21 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   clientSocket = new Map<number, Socket>();
 
   onlineFromService(id: number) {
-    console.log("onlineFromService");
+    console.log("Status: onlineFromService : ", id);
     this.userStatusMap.set(id, Status.online);
     const serializedMap = [...this.userStatusMap.entries()];
     this.server.emit('update-status', serializedMap);
   }
 
   offlineFromService(id: number) {
+    console.log("Status: offlineFromService : ", id);
     this.userStatusMap.set(id, Status.offline);
     const serializedMap = [...this.userStatusMap.entries()];
-    this.server.emit('update-status', serializedMap); 
+    this.server.emit('update-status', serializedMap);
   }
 
   inGameFromService(id: number) {
+    console.log("Status: inGameFromService : ", id);
     this.userStatusMap.set(id, Status.inGame);
     const serializedMap = [...this.userStatusMap.entries()];
     this.server.emit('update-status', serializedMap);
@@ -68,7 +70,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
     // console.log("Client connected: ", client);
     client.data.name = client.handshake.query.name as string;
     this.logger.log(`[NEW CONNEXION] :  ${client.data.name}`);
-    this.websocketService.addUser(client);
+    this.websocketService.addUser(client); 
   }
 
   async handleDisconnect(client: AuthenticatedSocket) {

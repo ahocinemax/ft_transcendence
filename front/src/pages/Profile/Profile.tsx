@@ -7,17 +7,17 @@ import { backFunctions } from '../../outils_back/BackFunctions';
 import SettingsIcon from '../../Settings_Icon.png';
 
 const userInfoInit: userModel = {
-		id: 0,
-		name: "",
-		image: "",
-		friends: [],
-		gamesLost: 0,
-		gamesPlayed: 0,
-		gamesWon: 0,
-		rank: 0,
-		score: 0,
-		winRate: 0,
-	};
+	id: 0,
+	name: "",
+	image: "",
+	friends: [],
+	gamesLost: 0,
+	gamesPlayed: 0,
+	gamesWon: 0,
+	rank: 0,
+	score: 0,
+	winRate: 0,
+};
 	
 	const initializeUser = (result: any, setUserInfo: any) => {
 		userInfoInit.id = result.id;
@@ -48,6 +48,7 @@ const Profile = () => {
 				let result;
 				if (!isFetched && userData.userName.userName !== undefined) {
 					result = await backFunctions.getUserByToken();
+					if (result === undefined) return ;
 					initializeUser(result, setUserInfo);
 					setIsFetched(true);
 					setIsUser(false);

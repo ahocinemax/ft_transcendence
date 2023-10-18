@@ -1,9 +1,11 @@
 import React from 'react';
 import './Leaderboard.css'; 
+import { backFunctions } from '../../outils_back/BackFunctions';
 
 function Leaderboard() {
 
-    
+    const leaderboard = backFunctions.getLeaderBoard();
+    console.log("leaderboard: ", leaderboard);
     
     return (
         <div className="Login">

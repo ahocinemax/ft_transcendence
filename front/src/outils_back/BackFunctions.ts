@@ -19,10 +19,6 @@ export const backFunctions = {
 
     async getUserByToken(): Promise<any> {
 		const response = await UserApi.fetchGet('/auth/getuserbytoken', getUserCallback);
-        // console.log("Response: ", response);
-        if (response) {
-            localStorage.setItem("userToken", response.accessToken);
-        }
 		return response;
 	},
  

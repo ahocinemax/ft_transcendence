@@ -64,11 +64,8 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 	const navigate = useNavigate();
 	const [userName, setUserName] = useState<UserName>({userName: ''});
 	const [image, setImage] = useState<AuthImage>({image: ''});
-	const [doubleAuth, setDoubleAuth] = useState<DoubleAuth>({
-		doubleAuth: false});
-	const [verified2FA, setVerified2FA] = useState<DoubleAuthVerified>({
-		verified2FA: false,
-	});
+	const [doubleAuth, setDoubleAuth] = useState<DoubleAuth>({doubleAuth: false});
+	const [verified2FA, setVerified2FA] = useState<DoubleAuthVerified>({verified2FA: false});
 	const [email, setEmail] = useState<Email>({email: ''});
 	const [games, setGames] = useState<Games>({games: 0});
 	const [wins, setWins] = useState<Wins>({wins: 0});
@@ -77,9 +74,7 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 	useEffect(() => {
 		const userInfos = getUserInfo(navigate);
 		userInfos.then((rhs) => {
-			if (rhs === null) {
-				return;
-			}
+			if (rhs == null) return ;
 			setUserName({userName: rhs.name});
 			setImage({image: rhs.image});
 			setDoubleAuth({doubleAuth: rhs.otp_enabled});
@@ -89,7 +84,8 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 			setWins({wins: rhs.wins});
 			setRate({rate: rhs.winRate});
 		});
-	}, []);
+	}, [navigate]);
+
 	return (
 		<UserContext.Provider
 			value={{

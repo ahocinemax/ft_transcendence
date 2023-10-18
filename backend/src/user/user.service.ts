@@ -52,12 +52,8 @@ export class UserService
 	async getFriends(id: number)
 	{
 		const friendIDList = await this.prisma.user.findMany({
-			where: {
-				id: id,
-			},
-			select: {
-				friends: true,
-			},
+			where: { id: id },
+			select: { friends: true }
 		});
 		const friendList: UserDto[] = [];
 		for (const elem of friendIDList)
@@ -78,12 +74,7 @@ export class UserService
 	{
 		try
 		{
-			const user = await this.prisma.user.findFirst({
-				where:
-				{
-					name: name,
-				},
-			})
+			const user = await this.prisma.user.findFirst({ where: { name: name }});
 			console.log(name);
 			console.log(user);
 			return (user);
@@ -100,37 +91,21 @@ export class UserService
 		}
 	}
 
-	async deleteAllUsers()
-	{
-		try
-		{
-			const user = await this.prisma.user.deleteMany({});
-			return user;
-		}
-		catch (error)
-		{
-			throw new HttpException(
-				{
-					status: HttpStatus.BAD_REQUEST,
-					error: 'Error to delete all user',
-				},
-				HttpStatus.BAD_REQUEST
-			);
-		}
+	async deleteAllUsers() {
+		try {
+			await this.prisma.user.deleteMany({});
+		} catch (error) { throw new HttpException({
+			status: HttpStatus.BAD_REQUEST,
+			error: 'Error to delete all user'},
+			HttpStatus.BAD_REQUEST
+		);}
 	}
 
 	async getLeaderBoard()
 	{
 		// return all users id sorted by rank
-		console.log('coucou abdel');
-		const users = await this.prisma.user.findMany({
-			where: {
-				NOT: {
-					gamesPlayed: {
-						equals: 0,
-					},
-				},
-			},
+		return await this.prisma.user.findMany({
+			where: { NOT: { gamesPlayed: { equals: 0 }}},
 			select: {
 				id: true,
 				name: true,
@@ -142,18 +117,17 @@ export class UserService
 			},
 			orderBy: {rank: 'asc'},
 		});
-		return (users);
 	}
 		
 	async updateUser(req: Request) {
 		try{
-			const { name }  = req.params;
-			console.log("updateUser request::::",req.body);
-			const user = await this.prisma.user.update({
-				where: {
-					name,
-				},
-				data: req.body,
+			const accessToken : string = req.cookies.access_token;
+			const userId = this.prisma.user.findMany({
+				where: { accessToken: accessToken },
+				select: { id: true }
+			})[0]
+			const user = await this.prisma.user.update({ where: { id: userId },
+				data: req.body
 			});
 			if (!user) {
 				throw new HttpException(
@@ -180,10 +154,7 @@ export class UserService
 		async getGameHistory(id: number)
 		{
 			const user = await this.prisma.user.findUnique({
-				where:
-				{
-					id: id,
-				},
+				where: { id: id },
 			});
 	
 			// Get the size of the game history (number of games played)

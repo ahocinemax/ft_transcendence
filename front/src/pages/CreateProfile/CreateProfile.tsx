@@ -44,11 +44,12 @@ const Settings = () => {
 
   async function checkUserToken() {
     const response = await backFunctions.checkIfTokenValid();
-    if (response.statusCode == 400 || response.statusCode == 403) {
-      navigate('/');
+    // token not recognized -> redirect to login page
+    if (response === undefined || response.statusCode == 400 || response.statusCode == 403) {
+      navigate('/login');
       return false;
     }
-    console.log('checkUserToken response: ', response);
+    // console.log('checkUserToken response: ', response);
     setTokenExists(true);
     return true;
   }
@@ -88,17 +89,19 @@ const Settings = () => {
   const updatePseudo = async () => {
     // Mettre à jour le pseudo avec le nouveau pseudo saisi
     if (newPseudo.length >= 3 && newPseudo.length <= 12 && isAlphanum(newPseudo))
-        setPseudo(newPseudo);
+    setPseudo(newPseudo);
     try {
-          const updatedUser = await backFunctions.updateUser(userName.userName, { name: newPseudo, isRegistered: true });
-          if (updatedUser) {
-            console.log("User updated successfully:", updatedUser);
-            setUserName({userName: newPseudo});
-            navigate('/');
-          }
-        } catch (error) {
-          console.error("Failed to update user:", error);
-        }
+      console.log('newPseudo: ', newPseudo);
+      console.log('userName: ', userName.userName);
+      const updatedUser = await backFunctions.updateUser(userName.userName, { name: newPseudo, isRegistered: true });
+      if (updatedUser) {
+        console.log("User updated successfully:", updatedUser);
+        setUserName({userName: newPseudo});
+        navigate('/');
+      }
+    } catch (error) {
+      console.error("Failed to update user:", error);
+    }
     setNewPseudo(''); // Réinitialiser le champ de saisie
   };
 

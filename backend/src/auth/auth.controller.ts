@@ -23,12 +23,8 @@ export class AuthController {
 	) {}
 	
 	@Get("getuserbytoken")
-	async getUserByToken(@Req() req: Request) {
-		// console.log("auth.controller.ts:", req.route.path);
-		const user = await this.authService.getUserByToken(req);
-		// console.log("user", user);
-		return user;
-	}
+	async getUserByToken(@Req() req: Request) { return await this.authService.getUserByToken(req); }
+
 	@Post("Oauth42")
 	async userOauthCreationInDataBase(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
 	 await this.authService.handleDataBaseCreation(req, res, UserDto);
@@ -36,23 +32,21 @@ export class AuthController {
 
 	@Get("callback")
 	async getToken(@Req() req: Request, @Res() res: Response) {
-		console.log("auth Controller callback called");
-	  const codeFromApi = req.query.code as string;
-	  const token = await this.Auth42.getAccessToken(codeFromApi);
-	  const user42infos = await this.Auth42.access42UserInformation(
-		token.access_token
-	  );
-
-
-	this.authService.createCookiesFortyTwo(res, token);
-    const userExists = await this.authService.getUserByEmail(user42infos.email);
-    this.authService.RedirectionUser(req,res, userExists?.email);	
+		const codeFromApi = req.query.code as string;
+		const token = await this.Auth42.getAccessToken(codeFromApi);
+		const user42infos = await this.Auth42.access42UserInformation(token.access_token);
+ 
+		this.authService.createCookiesFortyTwo(res, token);
+		const userExists = await this.authService.getUserByEmail(user42infos.email);
+		this.authService.RedirectionUser(req,res, userExists?.email);
 	}
 
-	@Get("logout")
+	@Get("logout") 
 	async deleteCookies(@Req() req: Request, @Res() res: Response) {
 		//console.log(res);
 		await this.authService.deleteCookies(res);
+		console.log("auth.controller.ts:", req.cookies);
+		this.WebsocketGateway.offlineFromService(req.cookies.id);
 	}
 
 	@Get("token")

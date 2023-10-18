@@ -28,25 +28,14 @@ export class UserController {
 	private logger: Logger = new Logger('User Controller');
 
 	@Get()
-	async getUsers(@Req() req: Request) {
-		//if (process.env.NODE_ENV === 'development') {
-	  	//	const users = await this.userService.getAllUsers();
-	  	//	res.render('users.ejs', { users });
-		//} // users is a .ejs file under the views directory
-		//else {
-			return this.userService.getAllUsers();	
-		//}
-	}
+	async getUsers(@Req() req: Request) { return this.userService.getAllUsers(); }
 	
 	@Get(':name')
-	async getUserByName(@Req() req: Request) {
-		return this.userService.getUserByName(req.params.name);
-	}
+	async getUserByName(@Req() req: Request) { return this.userService.getUserByName(req.params.name); }
 
 	@Patch(':name')
 	async UpdateUser(@Req() req: Request) {
 		if (req.body.image) {
-			//uploading image !
 			const user = this.cloudinaryService.uploadImage(req);
 			return user;
 		}
@@ -55,13 +44,14 @@ export class UserController {
 
 	@Delete('deleteall')
 	async DeleteAllUsers() {
+		console.log('delete all received');
 		return this.userService.deleteAllUsers();
 	}
 
 	@Get('getLeaderboard')
 	async getLeaderboard() {
 		console.log('getLeaderboard log message');
-		return this.userService.getLeaderBoard();
+		return this.userService.getLeaderBoard(); 
 	}
 
 	@Get('getGameHistory')

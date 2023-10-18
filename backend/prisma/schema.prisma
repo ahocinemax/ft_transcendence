@@ -19,7 +19,7 @@ model User {
   image         String?   @default("https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png")
   status        String?   @default("offline")
 
-  accessToken   String    @default("noToken")
+  accessToken   String    @unique @default("noToken")
   isRegistered  Boolean   @default(false)
 
   //social network

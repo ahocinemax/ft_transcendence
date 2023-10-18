@@ -45,7 +45,7 @@ async createDataBase42User(
 
   async handleDataBaseCreation(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
     const token: string = req.cookies.access_token;
-    console.log("handleDataBaseCreation(authservice):::::", req.cookies.access_token);
+    // console.log("handleDataBaseCreation(authservice):::::", req.cookies.access_token);
     const user42infos = await this.Auth42.access42UserInformation(token);
     //console.log("user42infos:::::::::", user42infos);
     if (user42infos)
@@ -62,10 +62,9 @@ async createDataBase42User(
     else{
       try {
         const userGoogleInfos = await this.googleAuthService.getGoogleUserByCookies(req)
-        console.log("userGoogleInfos::::::", userGoogleInfos);
+        // console.log("userGoogleInfos::::::", userGoogleInfos);
         if (userGoogleInfos) {
-          const finalUser = await this.googleAuthService.createDataBaseGoogleAuth
-        (
+          const finalUser = await this.googleAuthService.createDataBaseGoogleAuth(
           userGoogleInfos.email,
           userGoogleInfos.accessToken,
           userGoogleInfos.userName,
@@ -108,17 +107,11 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    // console.log("getUserbyToken: ", req.cookies);
     try {
-          //const accessToken = req.cookies.access_tokenGoogle || req.cookies.access_token42;
       const accessToken = req.cookies.access_token;
-      console.log("accessToken", accessToken);
       const user = await this.prisma.user.findFirst({
-        where: {
-          accessToken: accessToken,
-        },
+        where: { accessToken: accessToken }
       });
-      //console.log("user", user);
       if (!user)
       {
         throw new HttpException(
@@ -127,12 +120,10 @@ async createDataBase42User(
             error: "Error to get the user by token (user empty)"},
            HttpStatus.NOT_FOUND);
           }
-      //console.log("user", user);
       return user;
     } catch (error) {
       console.error("Error getUserbyToken", error);
       if (error instanceof HttpException) {
-        //console.log("error", error);
         throw error;
       }
       throw new HttpException(
@@ -157,7 +148,7 @@ async createDataBase42User(
   }
 
   async createCookiesGoogle(@Res() res: Response, token: any) {
-    console.log("token.access_token", token.accessToken);
+    // console.log("token.access_token", token.accessToken);
       res.cookie("access_token", token.accessToken,
       {
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
@@ -170,8 +161,9 @@ async createDataBase42User(
   async updateCookies(@Res() res: Response, token: any, userInfos: any) {
     try {
       if (userInfos)
-      { console.log("userInfos", userInfos);
-        console.log("token(updatecookies)", token.access_token);
+      {
+        // console.log("userInfos", userInfos);
+        // console.log("token(updatecookies)", token.access_token);
         const name = userInfos.name;
         const user = await this.prisma.user.update({
           where: {name: name,},
