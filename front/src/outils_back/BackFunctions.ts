@@ -47,7 +47,7 @@ export const backFunctions = {
             sendMailTwoFactorCallback);
 		return await response;
 	},    
-    
+
     async confirmCodeForTwoFactor(user: unknown): Promise<any> {
 		const response = await UserApi.fetchPost(
             '/auth-2FA/confirmCode', 
@@ -55,7 +55,7 @@ export const backFunctions = {
             sendMailTwoFactorCallback);
 		return await response;
 	}, 
-    
+
     async disableTwoFactor(user: unknown): Promise<any> {
 		const response = await UserApi.fetchPost(
             '/auth-2FA/disable2FA', 
@@ -63,7 +63,7 @@ export const backFunctions = {
             disableTwoFactorCallback);
 		return await response;
 	},
-    
+
     /* LeaderBoard */
     async getLeaderBoard(): Promise<any> {
         // console.log("fetching getLeaderboard...");

@@ -38,20 +38,21 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   userStatusMap = new Map<number, Status>();
   clientSocket = new Map<number, Socket>();
 
+  // this id is from google or 42 api. Must replace it by the corresponding id in the database
   onlineFromService(id: number) {
     console.log("Status: onlineFromService : ", id);
     this.userStatusMap.set(id, Status.online);
     const serializedMap = [...this.userStatusMap.entries()];
     this.server.emit('update-status', serializedMap);
   }
-
-  offlineFromService(id: number) {
-    console.log("Status: offlineFromService : ", id);
+  // this id is from google or 42 api. Must replace it by the corresponding id in the database
+  offlineFromService(id: number) { 
+    console.log("Status: offlineFromService (id) : ", id);
     this.userStatusMap.set(id, Status.offline);
     const serializedMap = [...this.userStatusMap.entries()];
     this.server.emit('update-status', serializedMap);
   }
-
+  // this id is from google or 42 api. Must replace it by the corresponding id in the database
   inGameFromService(id: number) {
     console.log("Status: inGameFromService : ", id);
     this.userStatusMap.set(id, Status.inGame);
@@ -105,12 +106,3 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 		await this.websocketService.updateStatus(client, 'online');
 	}
 }
-
-/*
-  memo:
-  client -> front
-  server -> back
-  frontからbackにメッセージを送ることができるようにする
-  そのためには、back側で、frontからのメッセージを受け取るための
-  メソッドを用意する必要がある
-*/

@@ -203,12 +203,7 @@ export class UserService
 		{
 			if (id === undefined)
 				throw new BadRequestException('getUser error : id is undefined');
-			const user = await this.prisma.user.findUniqueOrThrow({
-				where:
-				{
-					id: id,
-				},
-			});
+			const user = await this.prisma.user.findUniqueOrThrow({ where: { id: id } });
 			const dtoUser = plainToClass(UserDto, user);
 			return dtoUser;
 		}

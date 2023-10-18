@@ -21,34 +21,17 @@ async function bootstrap() {
     saveUninitialized: false,
     cookie: { maxAge: oneWeek }
   }));
+  app.useGlobalPipes(new ValidationPipe());
+  app.use(cookieParser());
   app.enableCors({
     origin: 'http://localhost:3000',
-    allowedHeaders: ['content-type','Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+    allowedHeaders: ['content-type','Authorization', 'Accept', 'Origin', 'X-Requested-With','Access-Control-Allow-Origin', 'credentials'],
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
     //preflightContinue: true,
     //optionsSuccessStatus: 204,
     credentials: true,
   });
-  //app.use((req, res, next) => {
-  //  console.log(req.method, req.headers);
-  //  next();
-  //});
-  app.useGlobalPipes(new ValidationPipe());
-  app.use(cookieParser());
-  app.enableCors({
-    origin: 'http://localhost:3000',
-    allowedHeaders: ['content-type','Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
-    //preflightContinue: true,
-    //optionsSuccessStatus: 204,
-    credentials: true,
-  });
-  //app.use((req, res, next) => {
-  //  console.log(req.method, req.headers);
-  //  next();
-  //});
-  app.useGlobalPipes(new ValidationPipe());
-  app.use(cookieParser());
+
   app.use(passport.initialize());
   app.use(passport.session());
   await app.listen(4000);

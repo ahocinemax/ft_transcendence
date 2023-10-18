@@ -13,5 +13,5 @@ import { GameModule } from "src/game/game.module";
   imports: [PrismaModule, Auth42Module, UserModule, GoogleAuthModule, GameModule],
   controllers: [AuthController],
   providers: [AuthService, UserService, GoogleAuthService],
-})
+}) 
 export class AuthModule {} 

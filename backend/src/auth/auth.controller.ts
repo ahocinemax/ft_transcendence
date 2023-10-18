@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, Res, UseGuards, Logger } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { Auth42Service } from "src/auth/auth42/auth42.service";
 import { Request, Response } from "express";
@@ -21,7 +21,7 @@ export class AuthController {
 		private googleAuthService: GoogleAuthService,
 		private readonly WebsocketGateway: WebsocketGateway,
 	) {}
-	
+	private logger: Logger = new Logger('Auth Controller');
 	@Get("getuserbytoken")
 	async getUserByToken(@Req() req: Request) { return await this.authService.getUserByToken(req); }
 
@@ -45,7 +45,7 @@ export class AuthController {
 	async deleteCookies(@Req() req: Request, @Res() res: Response) {
 		//console.log(res);
 		await this.authService.deleteCookies(res);
-		console.log("auth.controller.ts:", req.cookies);
+		this.logger.log("Log out", req.cookies);
 		this.WebsocketGateway.offlineFromService(req.cookies.id);
 	}
 

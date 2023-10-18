@@ -12,7 +12,7 @@ import { UserService } from './user.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { Request, Response } from 'express';
 //import { UpdateEmailDto, UpdateUsernameDto } from './dto';
-
+ 
 const express = require('express');
 const app = express();
 
@@ -49,14 +49,14 @@ export class UserController {
 	}
 
 	@Get('getLeaderboard')
-	async getLeaderboard() {
-		console.log('getLeaderboard log message');
-		return this.userService.getLeaderBoard(); 
+	async getLeader() {
+		this.logger.log('getLeaderboard log message');
+		return this.userService.getLeaderBoard();
 	}
 
 	@Get('getGameHistory')
 	async getGameHistory(@Req() req: Request) {
-		this.logger.log('getLeaderboard log message');
+		this.logger.log('getGameHistory log message');
 		return this.userService.getGameHistory(req.body.id);
 	}
 }

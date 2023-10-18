@@ -5,7 +5,6 @@ import App from './pages/App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
-
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 	 <React.StrictMode>
 		<BrowserRouter>
