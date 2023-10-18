@@ -6,12 +6,12 @@ import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { userName, games, image, doubleAuth, setDoubleAuth} = useUserContext();
+  const { userName, games, image, setImage, doubleAuth, setDoubleAuth, setUserName} = useUserContext();
   const [is2FAEnabled, setIs2FAEnabled] = useState(doubleAuth.doubleAuth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pseudo, setPseudo] = useState('#PlayerPseudo'); // État pour stocker le pseudo
   const [newPseudo, setNewPseudo] = useState(''); // État pour stocker le nouveau pseudo
-  const { setUserName, setEmail, setVerified2FA } = useUserContext(); 
+  const { setEmail, setVerified2FA } = useUserContext(); 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [inputCode, setInputCode] = useState(''); 
 
@@ -107,7 +107,7 @@ const Settings = () => {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      if (file.type === 'image/jpeg' || file.type === 'image/png')
+      if (file.type === 'image/jpeg' || file.type === 'image/png'|| file.type === 'image/webp')
         setSelectedImage(file);
       else
         alert("You need to upload either a .jpg, .jpeg or .png file");
@@ -128,8 +128,12 @@ const Settings = () => {
     // ここで doubleAuth の状態をサーバーから取得する処理を書く
     async function fetchDoubleAuthStatus() {
       try {
-        const response = await backFunctions.getUserByToken(); // 仮にこのような関数があるとする
+        const response = await backFunctions.getUserByToken();
         console.log('2FA status:', response.otp_enabled);
+        setDoubleAuth({ doubleAuth: response.otp_enabled });
+        setIs2FAEnabled(response.otp_enabled);
+        setUserName({ userName: response.name });
+        setImage({ image: response.image });
         setDoubleAuth({ doubleAuth: response.otp_enabled });
         setIs2FAEnabled(response.otp_enabled);
       } catch (error) {
@@ -140,19 +144,20 @@ const Settings = () => {
     fetchDoubleAuthStatus();
   }, []);
 
+
   return (
     <div className="settings" onClick={closeModal}>
       <h1 className="Settingsh1">Settings</h1>
       <div className="settings_container">
-      {/* <div */}
-         {/* className="round_div_settings_img" */}
-         {/* onClick={openImageUploader} */}
-         {/* style={{ */}
-          {/* backgroundImage: selectedImage */}
-        {/*  ? `url(${URL.createObjectURL(selectedImage)})` */}
-        {/*  : '', */}
-         {/* }}></div> */}
-        <div className="round_div_settings_img" style={{ backgroundImage: `url(${image.image})` }}></div>
+       <div 
+          className="round_div_settings_img"
+          onClick={openImageUploader} 
+          style={{ 
+           backgroundImage: selectedImage
+          ? `url(${URL.createObjectURL(selectedImage)})` 
+          : '', 
+         }}></div>
+        {/* <div className="round_div_settings_img" style={{ backgroundImage: `url(${image.image})` }}></div> */}
         <p className="info_settings">{pseudo}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
         <p className="info_settings">#Rank</p>
         <div className="twofa_container">
@@ -168,16 +173,16 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* Swap nickname */}
-        {/* <div className="change_nick_input"> */}
-        {/* <input */}
-             {/* type="file" */}
-             {/* ref={imageInputRef} */}
-             {/* accept=".jpg, .jpeg, .png" */}
-             {/* style={{ display: 'none' }} */}
-             {/* onChange={handleImageChange}/> */}
-          {/* <button className="change_pseudo_button" onClick={updatePseudo}>Changer le pseudo</button> */}
-        {/* </div> */}
+      {/* Swap image */}
+         {/* <div className="change_nick_input"> 
+         <input 
+              type="file"
+              ref={imageInputRef}
+              accept=".jpg, .jpeg, .png, webp"
+              style={{ display: 'none' }}
+              onChange={handleImageChange}/>
+           <button className="change_pseudo_button" onClick={updatePseudo}>Changer le pseudo</button>
+         </div> */}
 {/*  */}
       {/* Swap nickname */}
       <div className="change_nick_input">
