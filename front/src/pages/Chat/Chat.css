@@ -1,5 +1,6 @@
 .chat {
     display: flex;
+    flex-direction: row;
   }
   
   .main_part {
@@ -9,17 +10,37 @@
     background-image: url(../../../public/pixelartchat.gif);
     background-size: cover;
   }
+
+  .chan_privmsg_container {
+    width: 20%;
+  }
+
+  .private_users_container {
+    width: 100%;
+  }
   
   .channel_part {
-    width: 20%;
+    width: 100%;
     height: 100%;
     background-color: rgba(7, 39, 112, 0.85);
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow-y: auto; /* Enable vertical scrolling */
-    max-height: 100vh; /* Set a maximum height to limit scrolling */
+    max-height: 70vh; /* Set a maximum height to limit scrolling */
     overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
+
+  .priv_msg_part {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 30vh; /* Set a maximum height to limit scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    background-color: rgba(7, 39, 112, 0.85);
   }
   
   .Overlay {
@@ -114,6 +135,20 @@
   
   /* Draggable part color on hover*/
   .channel_part::-webkit-scrollbar-thumb:hover {
+    background: #691c7887;
+  }
+  .priv_msg_part::-webkit-scrollbar {
+    width: 7.5px;
+  }
+  
+  /* Draggable part color */
+  .priv_msg_part::-webkit-scrollbar-thumb {
+    background: #4a095787;
+    border-radius: 5px;
+  }
+  
+  /* Draggable part color on hover*/
+  .priv_msg_part::-webkit-scrollbar-thumb:hover {
     background: #691c7887;
   }
   
@@ -253,23 +288,23 @@
         align-items: center;
     }
   
-  .img_popup1
-  {
-    width: 20%;
-    height: auto;
-    max-width: 50%;
-    max-height: 50%;
-    margin-bottom: 10px;
-    margin-top: 10px;
-    border-radius: 50%;
-    background-image: url(../../../public/avatar.png);
-  }
+    .img_popup1
+    {
+      width: 20%;
+      height: auto;
+      max-width: 50%;
+      max-height: 50%;
+      margin-bottom: 10px;
+      margin-top: 10px;
+      border-radius: 50%;
+      background-image: url(../../../public/avatar.png);
+    }
 
   .close_button
   {
-    position: absolute; /* Position absolue à l'intérieur de .user_popup */
-    top: 10px; /* Définissez la distance par rapport au haut de .user_popup */
-    right: 10px; /* Définissez la distance par rapport à la droite de .user_popup */
+    position: absolute;
+    top: 10px;
+    right: 10px;
     font-style: bold;
     font-size: 1.5em;
     font-family: 'Press Start 2P', sans-serif;
@@ -332,9 +367,9 @@
     background-image: url(../../../public/block_player_icon.png);
   }
 
-  .chat_buttons.BLOCK
+  .chat_buttons.MSG
   {
-    background-image: url(../../../public/block_player_icon.png);
+    background-image: url(../../../public/msg_icon.png);
   }
 
   .chat_buttons.MUTE
@@ -354,4 +389,10 @@
     background-image: url(../../../public/ban_icon1.png);
     background-size: cover;
     height: 175%;
+  }
+
+  .chat_buttons.ADD_FRIEND
+  {
+    background-image: url(../../../public/add_friend.png);
+    background-size: contain;
   }
