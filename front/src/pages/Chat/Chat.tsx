@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import './Chat.css'; 
 import SearchComponent from '../../components/SearchComponent/SearchComponent';
 import ChannelNamePopup from '../../components/channel_name_popup/channel_name_popup';
+import PrivateChanPopup from '../../components/Private_chan_popup/private_chan_popup';
+import { act } from '@testing-library/react';
 
 
 const Chat = () => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [PasswordNeeded, setPassword] = useState(false);
     const [activeChannel, setActiveChannel] = useState('');
     const [messageInput, setMessageInput] = useState(''); // État pour stocker le message en cours de frappe
     const [messagesData, setMessagesData] = useState<MessageData>({});
@@ -15,15 +18,35 @@ const Chat = () => {
     const [selectedUser, setSelectedUser] = useState('');
     const [isUserPopupVisible, setIsUserPopupVisible] = useState(false);
 
+    const [privatePassword, setPrivatePassword] = useState(''); // État pour le mot de passe privé
+    const [tempActiveChannel, setTempActiveChannel] = useState(''); // État temporaire pour stocker le canal sur lequel vous avez cliqué
+
+
+
     const handleSearch = (query: string) => 
     {
     console.log(`Recherche en cours pour : ${query}`);
   };
 
-    const handleChannelClick = (channelName: string) => {
-        setActivePrivateConversation('');
-        setActiveChannel(channelName);
-    };
+
+
+  const handleChannelClick = (channelName: string) => {
+    if (PasswordNeeded)
+        return;
+    const channel = channels.find((c) => c.name === channelName);
+    if (channel && channel.isPrivate) 
+    {
+        setTempActiveChannel(channelName);
+  
+        // Ensuite, activez le mot de passe
+        setPassword(true);
+    } else {
+      // Salon public, accédez directement
+      setActivePrivateConversation('');
+      setActiveChannel(channelName);
+    }
+  };
+  
 
     const handlePrivMsgClick = (userName: string) => {
         setActiveChannel('');
@@ -33,7 +56,7 @@ const Chat = () => {
     const addPrivateUser = (userName: string) => {
         // Créez une copie de la liste priv_msgs avec le nouvel utilisateur ajouté
         const updatedPrivateUsers = [...priv_msgs, { name: userName }];
-        setPriv_msgs(updatedPrivateUsers); // Utilisez setPriv_msgs au lieu de setPrivateUsers
+        setPriv_msgs(updatedPrivateUsers);
     };
 
     const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
@@ -79,15 +102,29 @@ const Chat = () => {
         setIsUserPopupVisible(false);
       };
 
+      const handlePasswordSubmit = (password: string) => {
+        // Vérifiez si le mot de passe saisi correspond à celui du canal actif
+        const channel = channels.find((c) => c.name === tempActiveChannel);
+        
+        if (channel && channel.password === password) {
+            // Mot de passe correct, accédez au canal
+            setPassword(false); // Fermez le pop-up de mot de passe
+            setActiveChannel(tempActiveChannel);
+        } else {
+          // Mot de passe incorrect, affichez un message d'erreur ou gérez-le comme vous le souhaitez
+          console.log('Mot de passe incorrect');
+        }
+      };
+
 
   /* Récupérer ici tous les channels de notre base de données sous forme d'array*/
   const channels = [
     { name: 'Channel 1', isPrivate: false },
-    { name: 'Channel 2', isPrivate: true },
+    { name: 'Channel 2', isPrivate: true, password: 'motdepasse2' },
     { name: 'Channel 3', isPrivate: false },
     { name: 'Channel 4', isPrivate: false },
-    { name: 'Channel 5', isPrivate: true },
-    { name: 'Channel 6', isPrivate: true },
+    { name: 'Channel 5', isPrivate: true, password: 'motdepasse5' },
+    { name: 'Channel 6', isPrivate: true, password: 'motdepasse6' },
     { name: 'Channel 7', isPrivate: false },
     { name: 'Channel 8', isPrivate: false },
     { name: 'Channel 9', isPrivate: false },
@@ -101,6 +138,7 @@ const Chat = () => {
     { name: 'User 2'},
     { name: 'User 3'}
 ]);
+
 
 
     interface MessageData 
@@ -133,6 +171,18 @@ const Chat = () => {
     setIsPopupOpen(false);
   };
 
+  const askPassword = () => 
+  {
+    /* Fonction back pour créer un channel */
+    setPassword(true);
+  }
+
+  const PasswordDone = () => 
+  {
+    // Close the pop-up
+    setPassword(false);
+  };
+
   return (
     <div className="chat">
         <div className="chan_privmsg_container">
@@ -148,6 +198,9 @@ const Chat = () => {
               <div className="channel_div_container">
                 {channels.map((channel, index) => (
                   <div className="channel_div" key={index} onClick={() => handleChannelClick(channel.name)}>
+                    {PasswordNeeded && (
+                      <PrivateChanPopup onClose={PasswordDone} onPasswordSubmit={handlePasswordSubmit} />
+                    )}
                     <div className="channel_content">
                       <h1 className="channel_title">#{channel.name}</h1>
                       {channel.isPrivate && (
