@@ -27,6 +27,8 @@ function App() {
     const shouldRenderSidebar = !pathsWithoutSidebar.includes(location.pathname);
 
     return (
+        <UserContextProvider>
+            <SocketContextComponent>
         <div className='app'>
             {shouldRenderSidebar && <Sidebar />}
             <div className='content'>
@@ -44,6 +46,8 @@ function App() {
                 </Routes>
             </div>
         </div>
+        </SocketContextComponent>
+        </UserContextProvider>
     );
 }
 
