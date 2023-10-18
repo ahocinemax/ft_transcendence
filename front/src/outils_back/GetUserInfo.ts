@@ -11,7 +11,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
  * @returns user info
 */
 const getUserInfo = async (navigate: NavigateFunction) => {
-	// Check if access token is in cookie before calling getUserByToken
+	// Check if access token exists in cookie before calling getUserByToken
 	const cookie = document.cookie;
 	const cookieArray = cookie.split(';');
 	let accessToken = '';
@@ -21,8 +21,8 @@ const getUserInfo = async (navigate: NavigateFunction) => {
 			break;
 		}
 	}
-	localStorage.setItem("userToken", accessToken);
-	return (accessToken === ''|| accessToken === 'undefined') ? null : await backFunctions.getUserByToken();
+	localStorage.setItem("userToken", accessToken); // Setting global variaable userToken
+	return (accessToken === '' || accessToken === 'undefined') ? null : await backFunctions.getUserByToken();
 };
 
 export default getUserInfo;

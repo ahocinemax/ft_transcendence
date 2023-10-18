@@ -1,4 +1,4 @@
-import { BadRequestException, Body, HttpException, HttpStatus, Injectable, Req, Res } from "@nestjs/common";
+import { Logger, BadRequestException, Body, HttpException, HttpStatus, Injectable, Req, Res } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
 import { Request, Response, request } from "express";
 import { Auth42Service } from "src/auth/auth42/auth42.service";
@@ -14,6 +14,8 @@ export class AuthService {
     private Auth42: Auth42Service,
     private googleAuthService: GoogleAuthService,
   ) {}
+
+  private logger = new Logger("Auth Service");
 
 /* DATABASE Creation function */
 async createDataBase42User(
@@ -45,54 +47,47 @@ async createDataBase42User(
 
   async handleDataBaseCreation(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
     const token: string = req.cookies.access_token;
-    // console.log("handleDataBaseCreation(authservice):::::", req.cookies.access_token);
     const user42infos = await this.Auth42.access42UserInformation(token);
-    //console.log("user42infos:::::::::", user42infos);
     if (user42infos)
       {
         const finalUser = await this.Auth42.createDataBase42User(user42infos,
         token,
         req.body.name,
-        req.body.isRegistered);
+        true);
         return res.status(200).json({
         statusCode: 200,
         path: finalUser,
       });
     }
-    else{
-      try {
-        const userGoogleInfos = await this.googleAuthService.getGoogleUserByCookies(req)
-        // console.log("userGoogleInfos::::::", userGoogleInfos);
-        if (userGoogleInfos) {
-          const finalUser = await this.googleAuthService.createDataBaseGoogleAuth(
-          userGoogleInfos.email,
-          userGoogleInfos.accessToken,
-          userGoogleInfos.userName,
-          userGoogleInfos.isRegistered,
-        )
-          return res.status(200).json(
-          {
-            statusCode: 200,
-            path: finalUser,
-          });
-      }} catch (error) {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: "Error to create the user to the database"
-          }, HttpStatus.BAD_REQUEST);
-        };
-    }
+    /* this function is called only with 42 oauth, So no need to handle google part */
+    // else{
+    //   try {
+    //     const userGoogleInfos = await this.googleAuthService.getGoogleUserByCookies(req)
+    //     if (userGoogleInfos) {
+    //       const finalUser = await this.googleAuthService.createDataBaseGoogleAuth(
+    //       userGoogleInfos.email,
+    //       userGoogleInfos.accessToken,
+    //       userGoogleInfos.userName,
+    //       userGoogleInfos.isRegistered,
+    //     )
+    //       return res.status(200).json({ statusCode: 200, path: finalUser });
+    //   }} catch (error) {
+    //     throw new HttpException(
+    //       {
+    //         status: HttpStatus.BAD_REQUEST,
+    //         error: "Error to create the user to the database"
+    //       }, HttpStatus.BAD_REQUEST);
+    //     };
+    // }
 };
 
 /* CHECK FUNCTIONS */
 
   async checkIfTokenValid(@Req() req: Request, @Res() res: Response) {
     const token: string = req.cookies.access_token;
-    console.log("token(checkIfTokenValid)", token);
     const token42Valid = await this.Auth42.access42UserInformation(token); // check token from user if user is from 42
     const tokenGoogleValid = await this.googleAuthService.getUserInfoFromAccessToken(token); // check token from user if user is from Google
-    if (!tokenGoogleValid && !token42Valid) {
+    if (!tokenGoogleValid && !token42Valid) { // token don't match with any existing users
       throw new BadRequestException("InvalidToken", {
         cause: new Error(),
         description: "Json empty, the token is invalid",
@@ -107,33 +102,28 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    try {
+    try
+    {
       const accessToken = req.cookies.access_token;
-      const user = await this.prisma.user.findFirst({
-        where: { accessToken: accessToken }
-      });
+      console.log("trying to reach user with accessToken: ", accessToken);
+      const user = await this.prisma.user.findFirst({where: { accessToken: accessToken }});
+
       if (!user)
       {
         throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: "Error to get the user by token (user empty)"},
-           HttpStatus.NOT_FOUND);
-          }
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: "Error to get the user by token (user empty)"
+        }, HttpStatus.NOT_FOUND);
+      }
       return user;
     } catch (error) {
-      console.error("Error getUserbyToken", error);
-      if (error instanceof HttpException) {
-        throw error;
-      }
+      if (error instanceof HttpException) throw error;
       throw new HttpException(
         {
-          status: HttpStatus.BAD_REQUEST,
-          error: error.response ? error.response.error : "Error to get the user by token"
-        },
-         HttpStatus.BAD_REQUEST
-         );
-        };
+          status: HttpStatus.BAD_REQUEST,error: error.response ? error.response.error : "Error to get the user by token"},
+        HttpStatus.BAD_REQUEST);
+    };
   }
 
 //COOKIES
@@ -165,9 +155,10 @@ async createDataBase42User(
         // console.log("userInfos", userInfos);
         // console.log("token(updatecookies)", token.access_token);
         const name = userInfos.name;
+        console.log("updating user ", name);
         const user = await this.prisma.user.update({
-          where: {name: name,},
-          data: {  accessToken: token.access_token,},
+          where: { name: name,},
+          data: { accessToken: token.access_token }
         });
         res.cookie("access_token", token.access_token, {
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
@@ -202,9 +193,7 @@ async createDataBase42User(
   async getUserByEmail(email: string){
     try {
         const userAlreadyRegisterd = await this.prisma.user.findUnique({
-            where: {
-                email: email,
-            }
+            where: { email: email }
         });
         return userAlreadyRegisterd;
     } catch (error) {
@@ -212,14 +201,15 @@ async createDataBase42User(
     }
 }
 
-async RedirectionUser(
-  @Req() req: Request,
-  @Res() res: Response,
-  email: string | null | undefined
-) {
-  console.log("redirectionUser", email);
-  if (!email) res.redirect(301, "http://localhost:3000/checkuser");
-  else res.redirect(301, process.env.CLIENT_HOST);
-}
+async RedirectionUser(@Req() req: Request, @Res() res: Response, isRegistered: boolean | undefined) {
+    if (!isRegistered) // check if user is already registerd
+      res.redirect(301, "http://localhost:3000/checkuser");
+    else
+    {
+      const user = await this.getUserByToken(req.cookies.access_token);
+      const fetchUrl = process.env.CLIENT_HOST + "/user/" + user.name;
+      res.redirect(301, fetchUrl); // redirect to the profile page
+    }
+  }
 }
 

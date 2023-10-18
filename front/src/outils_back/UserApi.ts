@@ -26,17 +26,19 @@ export const UserApi = {
 		console.log("Fetch [GET]:", fetchUrl);
 		console.log('cookie:', document.cookie);
 		const headers = await this.authHeader();
-		try {
-			const response = await fetch(fetchUrl, {
-				method: "GET",
-				headers,
-				body: null,
-				redirect: "follow",
-				credentials: "include",
-			});
-			const result_1 = await response.json();
-			return (!response.ok) ? "error" : callback(result_1);
-		} catch (error) { return console.log("error fetchGet", error); }
+		if (localStorage.getItem("userToken") !== null) {
+			try {
+				const response = await fetch(fetchUrl, {
+					method: "GET",
+					headers,
+					body: null,
+					redirect: "follow",
+					credentials: "include",
+				});
+				const result_1 = await response.json();
+				return (!response.ok) ? "error" : callback(result_1);
+			} catch (error) { return console.log("error fetchGet", error); }
+		}
 	},
 
 	async fetchPost(url: string, data: unknown, callback: any) {

@@ -39,7 +39,7 @@ export class UserService
 				name,
 				accessToken,
 				login42: id,
-			},
+			}
 		});
 		return (user);
 	}
@@ -47,6 +47,17 @@ export class UserService
 	async getAllUsers()
 	{
 		return (await this.prisma.user.findMany());
+	}
+
+	async getUserByEmail(email: string){
+		try {
+			const userAlreadyRegisterd = await this.prisma.user.findUnique({
+				where: { email: email }
+			});
+			return userAlreadyRegisterd;
+		} catch (error) {
+		  console.log("error", error);
+		}
 	}
 
 	async getFriends(id: number)
@@ -75,8 +86,8 @@ export class UserService
 		try
 		{
 			const user = await this.prisma.user.findFirst({ where: { name: name }});
-			console.log(name);
-			console.log(user);
+			// console.log(name);
+			// console.log(user);
 			return (user);
 		}
 		catch (error)

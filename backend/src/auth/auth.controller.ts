@@ -4,12 +4,12 @@ import { Auth42Service } from "src/auth/auth42/auth42.service";
 import { Request, Response } from "express";
 import { UserService } from "src/user/user.service";
 import { UserDto } from "./dto/user.dto";
-import { GoogleAuthGuard } from "./google-auth/google-auth.guard";
+// import { GoogleAuthGuard } from "./google-auth/google-auth.guard";
 import { User } from "@prisma/client";
 import { GoogleAuthService } from "./google-auth/google-auth.service";
 import { AuthGuard } from '@nestjs/passport'
 import { WebsocketGateway } from "src/websocket/websocket.gateway";
-import cookieParser from "cookie-parser";
+// import cookieParser from "cookie-parser";
 
 
 @Controller("auth")
@@ -22,6 +22,7 @@ export class AuthController {
 		private readonly WebsocketGateway: WebsocketGateway,
 	) {}
 	private logger: Logger = new Logger('Auth Controller');
+
 	@Get("getuserbytoken")
 	async getUserByToken(@Req() req: Request) { return await this.authService.getUserByToken(req); }
 
@@ -34,11 +35,16 @@ export class AuthController {
 	async getToken(@Req() req: Request, @Res() res: Response) {
 		const codeFromApi = req.query.code as string;
 		const token = await this.Auth42.getAccessToken(codeFromApi);
+		// this.logger.log("J'ai recupere ce token avec 42api: ");
+		// console.log(token);
 		const user42infos = await this.Auth42.access42UserInformation(token.access_token);
- 
+		// this.logger.log("Voici les infos du user disponibles: ");
+		// console.log(user42infos);
 		this.authService.createCookiesFortyTwo(res, token);
 		const userExists = await this.authService.getUserByEmail(user42infos.email);
-		this.authService.RedirectionUser(req,res, userExists?.email);
+		// this.logger.log("Est ce que l'utlisateur existe deja ?: ");
+		// console.log(userExists);
+		this.authService.RedirectionUser(req,res, userExists?.isRegistered);
 	}
 
 	@Get("logout") 
@@ -57,7 +63,7 @@ export class AuthController {
 	@Get("OAuth")
 	@UseGuards(AuthGuard('google'))
 	async getGoogleAuthToken(@Req() req: Request, @Res() res: Response){
-		console.log("Request query (code from GoogleOAuth):", req.query);
+		// console.log("Request query (code from GoogleOAuth):", req.query);
 		//const user = await this.googleAuthService.createDataBaseGoogleAuth(
 		//	googleUser.email,
 		//	googleUser.accessToken,
@@ -69,7 +75,7 @@ export class AuthController {
 	@Get('google/callback')
 	async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
 		const code = req.query.code as string;
-		
+
 		const googleUser: any = await this.googleAuthService.getGoogleUser(code);
 		//console.log("googleUser", googleUser);
 		this.authService.createCookiesGoogle(res, googleUser);
@@ -91,7 +97,7 @@ export class AuthController {
 	//		res.status(301).redirect(process.env.CLIENT_CREATE);
 	//	}
 		const userExists = await this.authService.getUserByEmail(googleUser.email);
-		this.authService.RedirectionUser(req,res, userExists?.email);	
+		this.authService.RedirectionUser(req,res, userExists?.isRegistered);	
 		this.WebsocketGateway.onlineFromService(googleUser.id);
 	}	
 }

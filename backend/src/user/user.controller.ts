@@ -33,6 +33,9 @@ export class UserController {
 	@Get(':name')
 	async getUserByName(@Req() req: Request) { return this.userService.getUserByName(req.params.name); }
 
+	@Get(':email')
+	async getUserByEmail(@Req() req: Request) { return this.userService.getUserByEmail(req.params.email); }
+
 	@Patch(':name')
 	async UpdateUser(@Req() req: Request) {
 		if (req.body.image) {

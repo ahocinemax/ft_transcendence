@@ -71,11 +71,10 @@ export class WebsocketService {
 
     private async setOnline(@ConnectedSocket() client: AuthenticatedSocket) {
 		try {
+			console.log('trying to set online client: ', client.data.name);
 			await this.prisma.user.update({
 				where: {name: client.data.name},
-				data: {
-					status: 'online',
-				},
+				data: {status: 'online'}
 			});
 			this.sendMessage(client, 'update_status', {
 				status: 'online',

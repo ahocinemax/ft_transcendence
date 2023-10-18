@@ -43,6 +43,7 @@ function App() {
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/gamepage" element={<Gamepage />} />
                     <Route path="/create" element={<CreateProfile />} />
+                    <Route path="/checkuser" element={<CheckUser />} />
                 </Routes>
             </div>
         </div>
