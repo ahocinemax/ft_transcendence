@@ -12,7 +12,7 @@ const CheckUser = () => {
 		const user = await backFunctions.getUserByToken();
 		if (user && user.isRegistered === true) { // user already created -> redirect to homepage
 			console.log('User already created');
-			navigate('/');
+			navigate('/start');
 			return false;
 		} else // ユーザーが存在しない場合、createUserを呼び出
 			return true;
@@ -21,7 +21,7 @@ const CheckUser = () => {
 	async function checkUserToken() {
 		const response = await backFunctions.checkIfTokenValid();
 		if (response.statusCode === 400 || response.statusCode === 403) { // token not recognized -> redirect to login page
-			navigate('/');
+			navigate('/login');
 			return false;
 		}
 		setTokenExists(true);
