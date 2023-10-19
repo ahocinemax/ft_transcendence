@@ -28,8 +28,10 @@ export class AuthController {
 
 	@Post("Oauth42")
 	async userOauthCreationInDataBase(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
-	 await this.authService.handleDataBaseCreation(req, res, UserDto);
-	}
+		this.logger.log("NEW USER ON CREATION:");
+		console.log(UserDto);
+		await this.authService.handleDataBaseCreation(req, res, UserDto);
+	} 
 
 	@Get("callback")
 	async getToken(@Req() req: Request, @Res() res: Response) {
@@ -40,8 +42,9 @@ export class AuthController {
 		const user42infos = await this.Auth42.access42UserInformation(token.access_token);
 		// this.logger.log("Voici les infos du user disponibles: ");
 		// console.log(user42infos);
+		let userExists: User | null = null;
 		this.authService.createCookiesFortyTwo(res, token);
-		const userExists = await this.authService.getUserByEmail(user42infos.email);
+		if (user42infos?.email) userExists = await this.authService.getUserByEmail(user42infos.email);
 		// this.logger.log("Est ce que l'utlisateur existe deja ?: ");
 		// console.log(userExists);
 		this.authService.RedirectionUser(req,res, userExists?.isRegistered);
@@ -52,8 +55,9 @@ export class AuthController {
 		//console.log(res);
 		await this.authService.deleteCookies(res);
 		this.logger.log("Log out", req.cookies);
-		this.WebsocketGateway.offlineFromService(req.cookies.id);
-	}
+		const user = await this.authService.getUserByToken(req.cookies.access_token);
+		this.WebsocketGateway.offlineFromService(user.id);
+	} 
 
 	@Get("token")
 	async checkIfTokenValid(@Req() req: Request, @Res() res: Response) {
@@ -98,6 +102,6 @@ export class AuthController {
 	//	}
 		const userExists = await this.authService.getUserByEmail(googleUser.email);
 		this.authService.RedirectionUser(req,res, userExists?.isRegistered);	
-		this.WebsocketGateway.onlineFromService(googleUser.id);
+		// this.WebsocketGateway.onlineFromService(googleUser.id);
 	}	
 }

@@ -23,7 +23,7 @@ export class Auth42Service {
     } catch (error) {
       console.error("Error during fetch:", error);
       throw new HttpException({ status: HttpStatus.BAD_REQUEST, error: "Error to get the user by token"}, HttpStatus.BAD_REQUEST);
-    };
+    }; 
   }
 
   async access42UserInformation(accessToken: string) {
@@ -38,7 +38,6 @@ export class Auth42Service {
       }
       else {
         this.logger.log("Cannot get 42 user info with this token"); 
-        console.log(response);
       }
     }
     catch (error) {

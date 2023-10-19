@@ -8,9 +8,10 @@ import { UserService } from "src/user/user.service";
 import { GoogleAuthModule } from './google-auth/google-auth.module';
 import { GoogleAuthService } from "./google-auth/google-auth.service";
 import { GameModule } from "src/game/game.module";
+import { WebsocketGateway } from "src/websocket/websocket.gateway";
 
 @Module({
-  imports: [PrismaModule, Auth42Module, UserModule, GoogleAuthModule, GameModule],
+  imports: [PrismaModule, Auth42Module, UserModule, GoogleAuthModule, GameModule, WebsocketGateway],
   controllers: [AuthController],
   providers: [AuthService, UserService, GoogleAuthService],
 }) 

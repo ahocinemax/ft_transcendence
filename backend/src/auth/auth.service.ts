@@ -5,6 +5,7 @@ import { Auth42Service } from "src/auth/auth42/auth42.service";
 import { PrismaService } from "../../prisma/prisma.service";
 import { UserDto } from "./dto/user.dto";
 import { GoogleAuthService } from "./google-auth/google-auth.service";
+import { WebsocketGateway } from "src/websocket/websocket.gateway";
 
 @Injectable({})
 export class AuthService {
@@ -13,6 +14,7 @@ export class AuthService {
     private userService: UserService,
     private Auth42: Auth42Service,
     private googleAuthService: GoogleAuthService,
+    private websocketService: WebsocketGateway,
   ) {}
 
   private logger = new Logger("Auth Service");
@@ -47,38 +49,36 @@ async createDataBase42User(
 
   async handleDataBaseCreation(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
     const token: string = req.cookies.access_token;
+    let finalUser: any;
     const user42infos = await this.Auth42.access42UserInformation(token);
     if (user42infos)
-      {
-        const finalUser = await this.Auth42.createDataBase42User(user42infos,
-        token,
-        req.body.name,
-        true);
-        return res.status(200).json({
-        statusCode: 200,
-        path: finalUser,
-      });
-    }
+    {
+      finalUser = await this.Auth42.createDataBase42User(user42infos,
+      token,
+      UserDto.name,
+      UserDto.isRegistered
+    );}
     /* this function is called only with 42 oauth, So no need to handle google part */
-    // else{
-    //   try {
-    //     const userGoogleInfos = await this.googleAuthService.getGoogleUserByCookies(req)
-    //     if (userGoogleInfos) {
-    //       const finalUser = await this.googleAuthService.createDataBaseGoogleAuth(
-    //       userGoogleInfos.email,
-    //       userGoogleInfos.accessToken,
-    //       userGoogleInfos.userName,
-    //       userGoogleInfos.isRegistered,
-    //     )
-    //       return res.status(200).json({ statusCode: 200, path: finalUser });
-    //   }} catch (error) {
-    //     throw new HttpException(
-    //       {
-    //         status: HttpStatus.BAD_REQUEST,
-    //         error: "Error to create the user to the database"
-    //       }, HttpStatus.BAD_REQUEST);
-    //     };
-    // }
+    else {
+      try {
+        const userGoogleInfos = await this.googleAuthService.getGoogleUserByCookies(req)
+        if (userGoogleInfos) {
+          finalUser = await this.googleAuthService.createDataBaseGoogleAuth(
+          userGoogleInfos.email,
+          userGoogleInfos.accessToken,
+          UserDto.name,
+          UserDto.isRegistered
+        ) 
+      }} catch (error) {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: "Error to create the user to the database"
+          }, HttpStatus.BAD_REQUEST);
+      };
+  }
+  // this.websocketService.onlineFromService(finalUser.id);
+  return res.status(200).json({statusCode: 200, path: finalUser});
 };
 
 /* CHECK FUNCTIONS */
@@ -97,15 +97,16 @@ async createDataBase42User(
       statusCode: 200,
       path: request.url,
     });
-  }
+  } 
 
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
     try
     {
-      const accessToken = req.cookies.access_token;
+      const accessToken = req.cookies.access_token; // problem when user is not logged in => undefined
       console.log("trying to reach user with accessToken: ", accessToken);
+      if (accessToken === undefined) return ;
       const user = await this.prisma.user.findFirst({where: { accessToken: accessToken }});
 
       if (!user)

@@ -28,7 +28,7 @@ export enum Status {
 * @protected
 */
 
-@WebSocketGateway()
+@WebSocketGateway() 
 export class WebsocketGateway
 implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 { 
@@ -43,6 +43,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
     console.log("Status: onlineFromService : ", id);
     this.userStatusMap.set(id, Status.online);
     const serializedMap = [...this.userStatusMap.entries()];
+    this.websocketService.updateStatus(this.clientSocket[id], 'online');
     this.server.emit('update-status', serializedMap);
   }
   // this id is from google or 42 api. Must replace it by the corresponding id in the database
@@ -50,6 +51,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
     console.log("Status: offlineFromService (id) : ", id);
     this.userStatusMap.set(id, Status.offline);
     const serializedMap = [...this.userStatusMap.entries()];
+    this.websocketService.updateStatus(this.clientSocket[id], 'offline');
     this.server.emit('update-status', serializedMap);
   }
   // this id is from google or 42 api. Must replace it by the corresponding id in the database
@@ -57,6 +59,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
     console.log("Status: inGameFromService : ", id);
     this.userStatusMap.set(id, Status.inGame);
     const serializedMap = [...this.userStatusMap.entries()];
+    this.websocketService.updateStatus(this.clientSocket[id], 'busy');
     this.server.emit('update-status', serializedMap);
   }
 

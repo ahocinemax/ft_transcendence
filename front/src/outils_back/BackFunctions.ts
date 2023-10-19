@@ -18,6 +18,7 @@ export const backFunctions = {
 	},
 
     async getUserByToken(): Promise<any> {
+        if (localStorage.getItem('accesstoken') === undefined) return null;
 		const response = await UserApi.fetchGet('/auth/getuserbytoken', getUserCallback);
 		return response;
 	},
@@ -28,9 +29,8 @@ export const backFunctions = {
 	},
 
     async updateUser(username: string, UpdateUser: unknown): Promise<any> {
-        console.log("fetching updateUser...: ", username);
+        console.log("fetching updateUser...: ", username); // username is undefined here ?!
         const response = await UserApi.fetchPatch('/user/' + username, UpdateUser, patchUserUpdateCallback);
-        //console.log("Response: ", response);
         return await response;
     },
 

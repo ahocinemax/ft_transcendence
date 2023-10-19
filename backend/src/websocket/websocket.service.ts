@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { ConnectedSocket, WsException } from '@nestjs/websockets';
 import { Socket } from 'dgram';
@@ -14,6 +14,7 @@ export class WebsocketService {
 
     public server: Server;
     public clients: Map<string, AuthenticatedSocket> = new Map<string, AuthenticatedSocket>();
+	private logger: Logger = new Logger('Websocket Service');
 
     public removeUser(@ConnectedSocket() client: AuthenticatedSocket) {
 		this.clients.delete(client.data.name);
@@ -53,6 +54,8 @@ export class WebsocketService {
 		@ConnectedSocket() client: AuthenticatedSocket,
 		type: string
 		) {
+			this.logger.log("[UPDATE STATUS]");
+			// console.log(client);
 			switch (type) {
 				case 'online':
 					await this.setOnline(client);

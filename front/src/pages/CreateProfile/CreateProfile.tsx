@@ -35,6 +35,8 @@ const Settings = () => {
     const response = await backFunctions.checkIfTokenValid();
     // token not recognized -> redirect to login page
     if (response === undefined || response.statusCode == 400 || response.statusCode == 403) {
+      // remove token from cookies
+      document.cookie = "access_token=; path=/;";
       navigate('/login');
       return false;
     }
@@ -54,14 +56,12 @@ const Settings = () => {
     setNewPseudo(event.target.value);
   };
 
-
-  useEffect(() => {
-      checkUserToken();
-  }, []);
-
   const createAndUpdateUser = async () => {
+    // checkUserToken();
     if (newPseudo.length >= 3 && newPseudo.length <= 12 && isAlphanum(newPseudo)) {
+      console.log("sorry:", newPseudo);
       const newUser = await createUser(newPseudo);
+      console.log("sorry2:", newUser);
       if (newUser) {
         const updatedUser = await backFunctions.updateUser(newUser.name, { name: newPseudo, isRegistered: true });
         if (updatedUser) {
