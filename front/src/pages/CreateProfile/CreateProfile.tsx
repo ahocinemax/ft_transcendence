@@ -20,17 +20,6 @@ const Settings = () => {
     setImage,
   } = useUserContext();
 
-  async function setUserInfosContext(value: string) {
-    try {
-      const userInfos: any = await backFunctions.getUserByToken();
-      setUserName({userName: value});
-      setImage({image: image.image});
-      return true;
-    } catch (error) {
-      console.error("Failed to set user info:", error);
-      return false;
-    }
-  }
 
   async function createUser(value: string) {
     let UserCreation = {
@@ -54,87 +43,38 @@ const Settings = () => {
     return true;
   }
 
-  const toggle2FA = () => {
-    if (!is2FAEnabled) {
-      setIsModalOpen(!is2FAEnabled);
-    }
-    setIs2FAEnabled(!is2FAEnabled);
-  };
-
-  const closeModal = () => {
-    if (is2FAEnabled) {
-      setIsModalOpen(false);
-      setIs2FAEnabled(!is2FAEnabled);
-    }
-  };
 
   function isAlphanum(inputString: string) {
     const alphanumericRegex = /^[a-zA-Z0-9]+$/;
     return alphanumericRegex.test(inputString);
   }
 
-  const handlePseudoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Mettre à jour l'état du pseudo lorsque l'utilisateur modifie le champ de saisie => Temp avec le back?
-    if (pseudo.length >= 3 && pseudo.length <= 12 && isAlphanum(pseudo))
-        setPseudo(event.target.value);
-    /* else
-        setPseudo(pseudo); */
-  };
-
   const handleNewPseudoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Mettre à jour l'état du nouveau pseudo lorsque l'utilisateur modifie le champ de saisie => Temp avec le back?
     setNewPseudo(event.target.value);
   };
 
-  const updatePseudo = async () => {
-    // Mettre à jour le pseudo avec le nouveau pseudo saisi
-    if (newPseudo.length >= 3 && newPseudo.length <= 12 && isAlphanum(newPseudo))
-    setPseudo(newPseudo);
-    try {
-      console.log('newPseudo: ', newPseudo);
-      console.log('userName: ', userName.userName);
-      const updatedUser = await backFunctions.updateUser(userName.userName, { name: newPseudo, isRegistered: true });
-      if (updatedUser) {
-        console.log("User updated successfully:", updatedUser);
-        setUserName({userName: newPseudo});
-        navigate('/');
-      }
-    } catch (error) {
-      console.error("Failed to update user:", error);
-    }
-    setNewPseudo(''); // Réinitialiser le champ de saisie
-  };
-
-  // useEffect(() => {
-  //   async function initialize() {
-  //     // まずトークンの有効性を確認
-  //     const tokenResponse = await checkUserToken();
-  //     if (tokenResponse) {
-  //       const newuser = await createUser(userName.userName);
-  //       if (newuser) {
-  //         await setUserInfosContext(userName.userName);
-  //       }
-  //     }
-  //   }
-  //   initialize();
-  // }, []);
-
 
   useEffect(() => {
-    async function initialize() {
-      const tokenResponse = await checkUserToken();
-      if (tokenResponse) {
-        const newUser = await createUser("newUser");
-        if (newUser) {
-          const userInfoSet = await setUserInfosContext("newUser");
-          if (userInfoSet) {
-            setIsUserCreated(true);
-          }
+      checkUserToken();
+  }, []);
+
+  const createAndUpdateUser = async () => {
+    if (newPseudo.length >= 3 && newPseudo.length <= 12 && isAlphanum(newPseudo)) {
+      const newUser = await createUser(newPseudo);
+      if (newUser) {
+        const updatedUser = await backFunctions.updateUser(newUser.name, { name: newPseudo, isRegistered: true });
+        if (updatedUser) {
+          console.log("User updated successfully:", updatedUser);
+          setUserName({userName: newPseudo});
+          navigate('/');
         }
       }
+      else {
+        console.log("User creation failed (no new user)");
+      }
     }
-    initialize();
-  }, []);
+  };
 
   //const { userName, games, image, } = useUserContext()
   return (
@@ -143,7 +83,7 @@ const Settings = () => {
         <div className="settings">
           <h1 className="Settingsh1">Create profile</h1>
           <div className="settings_container">
-            <div className="round_div_settings_img" style={{ backgroundImage: `url(${image.image})` }}></div>
+            <div className="round_div_settings_img" style={{ backgroundImage: `https://res.cloudinary.com/transcendence42/image/upload/v1692378890/ft_transcendence/ft_transcendence_avator_utith7.png` }}></div>
           </div>
 
           {/* Swap nickname */}
@@ -155,7 +95,7 @@ const Settings = () => {
                 onChange={handleNewPseudoChange}
                 placeholder="Nickname"
               />
-              <button className="change_pseudo_button" onClick={updatePseudo}>Choose nickname</button>
+              <button className="change_pseudo_button" onClick={createAndUpdateUser}>Choose nickname</button>
             </div>
           </div>
         {/* ) : <main><p>No user found</p></main>} */}

@@ -133,11 +133,18 @@ export class UserService
 	async updateUser(req: Request) {
 		try{
 			const accessToken : string = req.cookies.access_token;
-			const userId = this.prisma.user.findMany({
+			console.log("updateUser.req.body: ", req.body);
+			const users = await this.prisma.user.findMany({
 				where: { accessToken: accessToken },
 				select: { id: true }
-			})[0]
-			const user = await this.prisma.user.update({ where: { id: userId },
+			});
+
+			const userId = users[0].id;
+			if (!userId) {
+				throw new BadRequestException('updateUser error : userId is undefined');
+			}
+			const user = await this.prisma.user.update({ 
+				where: { id: userId },
 				data: req.body
 			});
 			if (!user) {

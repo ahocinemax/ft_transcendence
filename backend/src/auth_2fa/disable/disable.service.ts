@@ -12,6 +12,7 @@ export class DisableService {
             const disableUser = await this.updateUser(req);
             console.log("disableUser", disableUser);
             res.status(200).json({
+				message: 'OK',
                 user: {
                     id: disableUser.id,
                     name: disableUser.name,
