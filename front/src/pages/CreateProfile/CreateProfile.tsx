@@ -67,7 +67,7 @@ const Settings = () => {
         if (updatedUser) {
           console.log("User updated successfully:", updatedUser);
           setUserName({userName: newPseudo});
-          navigate('/');
+          navigate('/start');
         }
       }
       else {
