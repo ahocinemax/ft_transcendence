@@ -141,8 +141,6 @@ const Chat = () => {
     { name: 'User 3'}
 ]);
 
-
-
     interface MessageData 
     {
         [key: string]: {
@@ -186,7 +184,7 @@ const Chat = () => {
   };
 
 
-  const handleSubmit = ({res} : {res: any}) => {
+  const handleSubmit = (res: any) => {
      console.log("🚀 ~ file: Chat.tsx:190 ~ handleSubmit ~ res:", res)
      // Utilisez la connexion socket pour émettre 'newchannel' avec les informations
      

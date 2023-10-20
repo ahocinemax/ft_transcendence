@@ -138,7 +138,7 @@ export class ChatService {
 			}
 			return availableChannels;
 		} catch (error) {
-			throw new WsException(error.message);
+			console.log('User\'s not registered to any channel');
 		}
 	}
 
