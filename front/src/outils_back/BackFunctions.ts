@@ -12,7 +12,7 @@ export const backFunctions = {
             return null;
         }
     },
-    async createUser(user: unknown): Promise<any> {
+    async createUser(user: {name: string, isRegistered: boolean}): Promise<any> {
 		const response = await UserApi.fetchPost('/auth/Oauth42', user, createUserCallback);
 		return await response;
 	},

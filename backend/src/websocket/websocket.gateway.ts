@@ -35,11 +35,11 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   @WebSocketServer()
   server: Server;
 
-  userStatusMap = new Map<number, Status>();
-  clientSocket = new Map<number, Socket>();
+  userStatusMap = new Map<string, Status>();
+  clientSocket = new Map<string, Socket>();
 
   // this id is from google or 42 api. Must replace it by the corresponding id in the database
-  onlineFromService(id: number) {
+  onlineFromService(id: string) {
     console.log("Status: onlineFromService : ", id);
     this.userStatusMap.set(id, Status.online);
     const serializedMap = [...this.userStatusMap.entries()];
@@ -47,7 +47,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
     this.server.emit('update-status', serializedMap);
   }
   // this id is from google or 42 api. Must replace it by the corresponding id in the database
-  offlineFromService(id: number) { 
+  offlineFromService(id: string) { 
     console.log("Status: offlineFromService (id) : ", id);
     this.userStatusMap.set(id, Status.offline);
     const serializedMap = [...this.userStatusMap.entries()];
@@ -55,7 +55,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
     this.server.emit('update-status', serializedMap);
   }
   // this id is from google or 42 api. Must replace it by the corresponding id in the database
-  inGameFromService(id: number) {
+  inGameFromService(id: string) {
     console.log("Status: inGameFromService : ", id);
     this.userStatusMap.set(id, Status.inGame);
     const serializedMap = [...this.userStatusMap.entries()];

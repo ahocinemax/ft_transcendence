@@ -25,7 +25,7 @@ function App() {
     const location = useLocation();
     const pathsWithoutSidebar = ['/login', '/create', '/'];
     const shouldRenderSidebar = !pathsWithoutSidebar.includes(location.pathname);
-
+    const userData = (localStorage.getItem("userData"));
     return (
         <UserContextProvider>
             <SocketContextComponent>

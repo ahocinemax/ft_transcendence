@@ -14,36 +14,25 @@ type GoogleUser = {
 
 @Injectable({})
 export class GoogleAuthService {
-    constructor(
-        private prisma: PrismaService,
-    ) { }
+    constructor(private prisma: PrismaService) {}
 
     async createDataBaseGoogleAuth(
         email: string,
         token: string,
         name: string,
-        isRegistered: boolean
+        ...any: any
     ) {
         try {
             //check if user is already logged or not
             let userAlreadyRegisterd = await this.prisma.user.findUnique({
-                where: {
-                    email: email,
-                }
+                where: { email: email }
             });
 
             if (userAlreadyRegisterd) {
-                // renew infomarion of user already registered
+                // renew access token of user already registered
                 userAlreadyRegisterd = await this.prisma.user.update({
-                    where: {
-                        email: email,
-                    },
-                    data: {
-                        accessToken: token,
-                        name: name,
-                        login42: "google account",
-                        isRegistered: true
-                    }
+                    where: { email: email },
+                    data: { accessToken: token }
                 });
                 return userAlreadyRegisterd;
             } else {
@@ -54,7 +43,7 @@ export class GoogleAuthService {
                         accessToken: token,
                         name: name,
                         login42: "google account",
-                        isRegistered: isRegistered
+                        isRegistered: true
                     }
                 });
                 return user;
@@ -78,7 +67,6 @@ export class GoogleAuthService {
             accessToken: accessToken,
             isRegistered: false
         };
-        console.log("googleUser", googleUser);
         return googleUser;
     }
 
@@ -121,7 +109,7 @@ export class GoogleAuthService {
         }
     }
     catch (error) {
-        console.log("getUserInfoFromAccessToken error(google account empty)");
+        console.log("no google account match this token)");
         return null;
     }
 };

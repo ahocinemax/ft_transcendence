@@ -7,7 +7,7 @@ export const useSocket = (
 ): Socket => {
 	const {current: socket} = useRef(io(uri, {
 		...opts,
-		extraHeaders: {'Access-Control-Allow-Origin': `${process.env.REACT_APP_SERVER_HOST}`}
+		// extraHeaders: {'Access-Control-Allow-Origin': `${process.env.REACT_APP_SERVER_HOST}`}
 	}));
 
 	useEffect(() => {

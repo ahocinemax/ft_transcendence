@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 export class PrismaService extends PrismaClient
 {
   [x: string]: any;
-  private _msg: any;
+  private _msg: any; 
   public get msg() : any {
     return this._msg;
   }

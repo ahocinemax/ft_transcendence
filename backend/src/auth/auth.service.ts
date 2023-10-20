@@ -14,7 +14,7 @@ export class AuthService {
     private userService: UserService,
     private Auth42: Auth42Service,
     private googleAuthService: GoogleAuthService,
-    private websocketService: WebsocketGateway,
+    private websocketGateway: WebsocketGateway,
   ) {}
 
   private logger = new Logger("Auth Service");
@@ -51,6 +51,11 @@ async createDataBase42User(
     const token: string = req.cookies.access_token;
     let finalUser: any;
     const user42infos = await this.Auth42.access42UserInformation(token);
+    const user = await this.getUserByToken_(token);
+    if (user) {
+      this.websocketGateway.onlineFromService(UserDto.name);
+      return res.status(200).json({statusCode: 200, path: user});
+    }
     if (user42infos)
     {
       finalUser = await this.Auth42.createDataBase42User(user42infos,
@@ -58,7 +63,6 @@ async createDataBase42User(
       UserDto.name,
       UserDto.isRegistered
     );}
-    /* this function is called only with 42 oauth, So no need to handle google part */
     else {
       try {
         const userGoogleInfos = await this.googleAuthService.getGoogleUserByCookies(req)
@@ -77,7 +81,7 @@ async createDataBase42User(
           }, HttpStatus.BAD_REQUEST);
       };
   }
-  // this.websocketService.onlineFromService(finalUser.id);
+  this.websocketGateway.onlineFromService(finalUser.name);
   return res.status(200).json({statusCode: 200, path: finalUser});
 };
 
@@ -102,29 +106,28 @@ async createDataBase42User(
   /* GET FUNCTIONS */
 
   async getUserByToken(req: Request) {
-    try
-    {
-      const accessToken = req.cookies.access_token; // problem when user is not logged in => undefined
+    try {
+      const accessToken = req.cookies.access_token; // problem when user is not logged in => no cookie yet
       console.log("trying to reach user with accessToken: ", accessToken);
       if (accessToken === undefined) return ;
       const user = await this.prisma.user.findFirst({where: { accessToken: accessToken }});
-
-      if (!user)
-      {
-        throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: "Error to get the user by token (user empty)"
-        }, HttpStatus.NOT_FOUND);
-      }
-      return user;
+      return user ? user : null;
     } catch (error) {
       if (error instanceof HttpException) throw error;
       throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,error: error.response ? error.response.error : "Error to get the user by token"},
-        HttpStatus.BAD_REQUEST);
+      {
+        status: HttpStatus.BAD_REQUEST,error: error.response ? error.response.error : "Error to get the user by token"},
+        HttpStatus.BAD_REQUEST
+      );
     };
+  }
+
+  async getUserByToken_(accessToken: string) {
+    try {
+      if (accessToken === undefined) return ;
+      const user = await this.prisma.user.findFirst({where: { accessToken: accessToken }});
+      return user ? user : null;
+    } catch (error) { console.log("error", error); };
   }
 
 //COOKIES

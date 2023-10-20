@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './channel_name_popup.css';
+import SocketContext from '../../context/socketContext';
+import useUserContext from '../../context/userContent';
+import { backFunctions } from '../../outils_back/BackFunctions';
 
 interface ChannelNamePopupProps {
   onClose: () => void;
@@ -9,6 +12,7 @@ const ChannelNamePopup: React.FC<ChannelNamePopupProps> = ({ onClose }) => {
   const [channelName, setChannelName] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState('');
+	const {socket} = useContext(SocketContext).SocketState;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChannelName(e.target.value);
@@ -16,6 +20,30 @@ const ChannelNamePopup: React.FC<ChannelNamePopupProps> = ({ onClose }) => {
 
   const handleSwitchChange = () => {
     setIsPrivate(!isPrivate);
+  };
+
+  const setOwnerInfo = async () => {
+    const owner = await backFunctions.getUserByToken();
+    return owner;
+  }
+
+  async function handleCreateChannel(data: any) {
+
+    // Utilisez la connexion socket pour émettre 'newchannel' avec les informations
+    socket?.emit('new.channel', { data: {
+                  channelName,
+                  isPrivate,
+                  password,
+                  setOwnerInfo,
+                  // ...data,
+                }},
+                (response: any) => {});
+    socket?.on('add preview', (data: any) => {
+      console.log('data: ', data);
+    });
+
+    // Fermez la popup après l'envoi
+    onClose();
   };
 
   return (
@@ -48,7 +76,7 @@ const ChannelNamePopup: React.FC<ChannelNamePopupProps> = ({ onClose }) => {
             />
           </div>
         )}
-        <button className="channel_button" onClick={onClose}>
+        <button className="channel_button" onClick={handleCreateChannel}>
           Create
         </button>
       </div>

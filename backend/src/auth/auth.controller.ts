@@ -28,8 +28,6 @@ export class AuthController {
 
 	@Post("Oauth42")
 	async userOauthCreationInDataBase(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
-		this.logger.log("NEW USER ON CREATION:");
-		console.log(UserDto);
 		await this.authService.handleDataBaseCreation(req, res, UserDto);
 	} 
 
@@ -37,26 +35,19 @@ export class AuthController {
 	async getToken(@Req() req: Request, @Res() res: Response) {
 		const codeFromApi = req.query.code as string;
 		const token = await this.Auth42.getAccessToken(codeFromApi);
-		// this.logger.log("J'ai recupere ce token avec 42api: ");
-		// console.log(token);
 		const user42infos = await this.Auth42.access42UserInformation(token.access_token);
-		// this.logger.log("Voici les infos du user disponibles: ");
-		// console.log(user42infos);
 		let userExists: User | null = null;
 		this.authService.createCookiesFortyTwo(res, token);
 		if (user42infos?.email) userExists = await this.authService.getUserByEmail(user42infos.email);
-		// this.logger.log("Est ce que l'utlisateur existe deja ?: ");
-		// console.log(userExists);
-		this.authService.RedirectionUser(req,res, userExists?.isRegistered);
+		this.authService.RedirectionUser(req, res, userExists?.isRegistered);
 	}
 
 	@Get("logout") 
 	async deleteCookies(@Req() req: Request, @Res() res: Response) {
-		//console.log(res);
 		await this.authService.deleteCookies(res);
-		this.logger.log("Log out", req.cookies);
+		this.logger.log("LOG OUT");
 		const user = await this.authService.getUserByToken(req.cookies.access_token);
-		this.WebsocketGateway.offlineFromService(user.id);
+		this.WebsocketGateway.offlineFromService(user.name);
 	} 
 
 	@Get("token")
@@ -101,7 +92,7 @@ export class AuthController {
 	//		res.status(301).redirect(process.env.CLIENT_CREATE);
 	//	}
 		const userExists = await this.authService.getUserByEmail(googleUser.email);
-		this.authService.RedirectionUser(req,res, userExists?.isRegistered);	
-		// this.WebsocketGateway.onlineFromService(googleUser.id);
+		console.log("userExists: ", userExists?.isRegistered);
+		this.authService.RedirectionUser(req, res, userExists?.isRegistered);	
 	}	
 }

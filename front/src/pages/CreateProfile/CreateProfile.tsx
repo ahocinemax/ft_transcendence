@@ -24,7 +24,7 @@ const Settings = () => {
   async function createUser(value: string) {
     let UserCreation = {
       name: value,
-      isRegistered: true,
+      isRegistered: false
     };
     const user = await backFunctions.createUser(UserCreation);
     //setUserInfosContext(value);
@@ -45,7 +45,6 @@ const Settings = () => {
     return true;
   }
 
-
   function isAlphanum(inputString: string) {
     const alphanumericRegex = /^[a-zA-Z0-9]+$/;
     return alphanumericRegex.test(inputString);
@@ -59,16 +58,14 @@ const Settings = () => {
   const createAndUpdateUser = async () => {
     // checkUserToken();
     if (newPseudo.length >= 3 && newPseudo.length <= 12 && isAlphanum(newPseudo)) {
-      console.log("sorry:", newPseudo);
-      const newUser = await createUser(newPseudo);
-      console.log("sorry2:", newUser);
-      if (newUser) {
-        const updatedUser = await backFunctions.updateUser(newUser.name, { name: newPseudo, isRegistered: true });
-        if (updatedUser) {
-          console.log("User updated successfully:", updatedUser);
+      const newUser = await createUser(newPseudo); // le retour de newUser est dans .path
+      if (newUser.statusCode === 200) {
+        // const updatedUser = await backFunctions.updateUser(newUser.path.name, { name: newPseudo, isRegistered: true });
+        // if (updatedUser) {
+        //   console.log("User updated successfully:", updatedUser);
           setUserName({userName: newPseudo});
           navigate('/start');
-        }
+        // }
       }
       else {
         console.log("User creation failed (no new user)");

@@ -37,7 +37,7 @@ export class WebsocketService {
 			.emit(ServerChatEvents.UserList, {
 				users: userList /*.filter((user: any) => !blacklist.includes(user.name))*/,
 				lobbyId,
-			});
+			}); 
 	}
 
 	public async emitUserListToLobby(userList: User[], lobbyId: string) {
@@ -55,7 +55,7 @@ export class WebsocketService {
 		type: string
 		) {
 			this.logger.log("[UPDATE STATUS]");
-			// console.log(client);
+			console.log("update status client: ", client);
 			switch (type) {
 				case 'online':
 					await this.setOnline(client);
@@ -69,12 +69,12 @@ export class WebsocketService {
 			default:
 				break;
 			}
-		console.log(`${client.data.name} is now ${type}`);
+		console.log(`${client?.data.name} is now ${type}`);
 	}
 
     private async setOnline(@ConnectedSocket() client: AuthenticatedSocket) {
 		try {
-			console.log('trying to set online client: ', client.data.name);
+			console.log('trying to set online client: ', client);
 			await this.prisma.user.update({
 				where: {name: client.data.name},
 				data: {status: 'online'}
@@ -84,10 +84,8 @@ export class WebsocketService {
 				user: client.data.name,
 			});
 			console.log(`${client.data.name} is now online`);
-		} catch (error) {
-			throw new WsException('Failed to update status of user');
-		}
-	}
+		} catch (error) { console.log('Failed to update status of user to online'); }
+	} 
 
 	private async setBusy(@ConnectedSocket() client: AuthenticatedSocket) {
 		try {
@@ -103,7 +101,7 @@ export class WebsocketService {
 			});
 			console.log(`${client.data.name} is now ingame`);
 		} catch (error) {
-			throw new WsException('Failed to update status of user');
+			console.log('Failed to update status of user');
 		}
 	}
 
@@ -122,9 +120,7 @@ export class WebsocketService {
 						user: client.data.name,
 					});
 					console.log(`${client.data.name} is now offline`);
-				} catch (error) {
-					throw new WsException('Failed to update status of user');
-				}
+				} catch (error) { console.log('Failed to update status of user'); }
 			}
 		}, 5_000);
 	}

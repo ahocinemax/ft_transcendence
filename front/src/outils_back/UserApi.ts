@@ -23,7 +23,7 @@ export const UserApi = {
 		
 	async fetchGet(url: string, callback: any) {
 		let fetchUrl = process.env.REACT_APP_SERVER_HOST + url;
-		console.log("Fetch [GET]:", fetchUrl);
+		console.log("Preparing fetch [GET]:", fetchUrl);
 		console.log('cookie:', document.cookie);
 		const headers = await this.authHeader();
 		if (localStorage.getItem("userToken") !== null) {

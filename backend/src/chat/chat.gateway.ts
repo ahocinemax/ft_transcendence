@@ -33,19 +33,20 @@ export class ChatGateway implements OnGatewayConnection {
 	constructor(private chatService: ChatService, private UserService: UserService) {}
 
 	async handleConnection(id: number, @ConnectedSocket() client: Socket) {
-		console.log('new connection');
+		this.logger.log('new connection to channel gateway');
 		const channels = await this.chatService.getUsersChannels(id);
 		await client.join('default_all');
 		if (channels)
 			for (const channel of channels)
 				await client.join(channel);
-	}
-
-	@SubscribeMessage('new channel')
+	} 
+ 
+	@SubscribeMessage('new.channel')
 	async handleNewChannel(
 		@MessageBody() data: ChannelDTO,
 		@ConnectedSocket() client: Socket,
 	) {
+		this.logger.log("[NEW CHANNEL]");
 		const channelId = await this.chatService.create_channel(data);
 		if (channelId == undefined)
 			client.emit(
@@ -57,8 +58,7 @@ export class ChatGateway implements OnGatewayConnection {
 			await client.join(preview.name);
 			client.emit('add preview', preview);
 			this.server.in('update channel request').emit('default_all');
-			console.log(data);
-			this.logger.log(data);
+			console.log("send: ", data);
 			return data;
 		}
 	}
