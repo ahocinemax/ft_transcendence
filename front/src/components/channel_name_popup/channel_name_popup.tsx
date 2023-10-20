@@ -12,7 +12,7 @@ const ChannelNamePopup: React.FC<ChannelNamePopupProps> = ({ onClose }) => {
   const [channelName, setChannelName] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState('');
-	const {socket} = useContext(SocketContext).SocketState;
+	const { socket } = useContext(SocketContext).SocketState;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChannelName(e.target.value);
@@ -34,10 +34,9 @@ const ChannelNamePopup: React.FC<ChannelNamePopupProps> = ({ onClose }) => {
                   channelName,
                   isPrivate,
                   password,
-                  setOwnerInfo,
-                  // ...data,
-                }},
-                (response: any) => {});
+                  owner: await setOwnerInfo(),
+                  ...data,
+                }}, (response: any) => {});
     socket?.on('add preview', (data: any) => {
       console.log('data: ', data);
     });
