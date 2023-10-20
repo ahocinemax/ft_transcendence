@@ -1,18 +1,16 @@
-import React, { useState, useContext } from 'react';
+import  { useState, useContext, useEffect, useCallback } from 'react';
 import './channel_name_popup.css';
-import SocketContext from '../../context/socketContext';
-import useUserContext from '../../context/userContent';
 import { backFunctions } from '../../outils_back/BackFunctions';
 
 interface ChannelNamePopupProps {
+  onHandleSubmit: (data: any) => void;
   onClose: () => void;
 }
 
-const ChannelNamePopup: React.FC<ChannelNamePopupProps> = ({ onClose }) => {
+const ChannelNamePopup = ({ onClose, onHandleSubmit }: ChannelNamePopupProps) => {
   const [channelName, setChannelName] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState('');
-	const { socket } = useContext(SocketContext).SocketState;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChannelName(e.target.value);
@@ -21,27 +19,19 @@ const ChannelNamePopup: React.FC<ChannelNamePopupProps> = ({ onClose }) => {
   const handleSwitchChange = () => {
     setIsPrivate(!isPrivate);
   };
-
   const setOwnerInfo = async () => {
     const owner = await backFunctions.getUserByToken();
-    return owner;
+    return(owner);
   }
 
-  async function handleCreateChannel(data: any) {
-
-    // Utilisez la connexion socket pour émettre 'newchannel' avec les informations
-    socket?.emit('new.channel', { data: {
-                  channelName,
-                  isPrivate,
-                  password,
-                  owner: await setOwnerInfo(),
-                  ...data,
-                }}, (response: any) => {});
-    socket?.on('add preview', (data: any) => {
-      console.log('data: ', data);
-    });
-
-    // Fermez la popup après l'envoi
+  async function handleCreateChannel() {
+    const data = {
+      channelName,
+      isPrivate,
+      password,
+    };
+    const owner = await setOwnerInfo();
+    onHandleSubmit({ data, owner });
     onClose();
   };
 

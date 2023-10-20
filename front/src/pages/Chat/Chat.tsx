@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './Chat.css'; 
 import SearchComponent from '../../components/SearchComponent/SearchComponent';
 import ChannelNamePopup from '../../components/channel_name_popup/channel_name_popup';
 import PrivateChanPopup from '../../components/Private_chan_popup/private_chan_popup';
-import { act } from '@testing-library/react';
+import SocketContext from '../../context/socketContext';
+// import { act } from '@testing-library/react';
 
 
 const Chat = () => {
@@ -17,6 +18,7 @@ const Chat = () => {
     const [activePrivateConversation, setActivePrivateConversation] = useState('');
     const [selectedUser, setSelectedUser] = useState('');
     const [isUserPopupVisible, setIsUserPopupVisible] = useState(false);
+    const { socket } = useContext(SocketContext).SocketState;
 
     const [privatePassword, setPrivatePassword] = useState(''); // État pour le mot de passe privé
     const [tempActiveChannel, setTempActiveChannel] = useState(''); // État temporaire pour stocker le canal sur lequel vous avez cliqué
@@ -183,6 +185,18 @@ const Chat = () => {
     setPassword(false);
   };
 
+
+  const handleSubmit = ({res} : {res: any}) => {
+     console.log("🚀 ~ file: Chat.tsx:190 ~ handleSubmit ~ res:", res)
+     // Utilisez la connexion socket pour émettre 'newchannel' avec les informations
+     
+     socket?.emit('new.channel', res);
+     socket?.on('add preview', (data: any) => {
+       console.log('data: ', data);
+     });
+ 
+     // Fermez la popup après l'envoi
+  }
   return (
     <div className="chat">
         <div className="chan_privmsg_container">
@@ -193,7 +207,9 @@ const Chat = () => {
               <div className="channel_top_div">
                 <h1 className="h1_channel">#Channels(42)</h1>
                 <h1 className="createchan" onClick={createChannel}>+</h1>
-                {isPopupOpen && <ChannelNamePopup onClose={closePopup} />}
+                {isPopupOpen && <ChannelNamePopup onHandleSubmit={handleSubmit} onClose={closePopup} />}
+                {/* Je n'arrive pas à récupérer les infos saisies dans le popup new channel */}
+                {/* Le console.log() de la ligne 190 affiche undefined */}
               </div>
               <div className="channel_div_container">
                 {channels.map((channel, index) => (
