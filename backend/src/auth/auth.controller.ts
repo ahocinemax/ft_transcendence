@@ -39,7 +39,11 @@ export class AuthController {
 		let userExists: User | null = null;
 		this.authService.createCookiesFortyTwo(res, token);
 		if (user42infos?.email) userExists = await this.authService.getUserByEmail(user42infos.email);
-		console.log("authcallback: req.cookies.access_token: ", req.cookies);
+		// When the name match with DB user but access token has changed, we update the access token
+		if (userExists?.accessToken !== token.access_token) {
+			await this.userService.updateUserAccessToken(userExists?.name, token.access_token);
+			userExists = await this.authService.getUserByEmail(user42infos.email);
+		}
 		this.authService.RedirectionUser(req, res, userExists?.isRegistered, userExists?.email);
 	}
 

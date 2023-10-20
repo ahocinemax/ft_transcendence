@@ -107,21 +107,15 @@ async createDataBase42User(
 
   /* GET FUNCTIONS */
 
-  async getUserByToken(req: Request) {
+  async getUserByToken(req: Request) : Promise< null | any > {
     try {
       const accessToken = req.cookies.access_token; // problem when user is not logged in => no cookie yet
       console.log("trying to reach user with accessToken: ", accessToken);
-      if (accessToken === undefined) return ;
-      const user = await this.prisma.user.findFirst({where: { accessToken: accessToken }});
+      if (accessToken === undefined) return null;
+      const user = await this.prisma.user.findFirst( { where: { accessToken: accessToken } } );
       return user ? user : null;
     } catch (error) {
-      if (error instanceof HttpException) throw error;
-      console.log("error(getUserByToken:::::)", error);
-      throw new HttpException(
-      {
-        status: HttpStatus.BAD_REQUEST,error: error.response ? error.response.error : "Error to get the user by token"},
-        HttpStatus.BAD_REQUEST
-      );
+      if (error instanceof HttpException) console.log("error getUserByToken: ", error);
     };
   }
 

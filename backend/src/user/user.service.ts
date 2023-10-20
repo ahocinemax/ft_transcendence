@@ -60,6 +60,16 @@ export class UserService
 		}
 	}
 
+	async updateUserAccessToken(name: string, accessToken: string) {
+		try {
+			const user = await this.prisma.user.update({
+				where: { name: name },
+				data: { accessToken: accessToken }
+			});
+			return user;
+		} catch (error) { console.log('Error to update user access token') }
+	}
+
 	async getFriends(id: number)
 	{
 		const friendIDList = await this.prisma.user.findMany({
