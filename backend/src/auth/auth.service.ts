@@ -52,6 +52,7 @@ async createDataBase42User(
     let finalUser: any;
     const user42infos = await this.Auth42.access42UserInformation(token);
     const user = await this.getUserByToken_(token);
+    console.log("handleDataBaseCreation::: user", user);
     if (user) {
       this.websocketGateway.onlineFromService(UserDto.name);
       return res.status(200).json({statusCode: 200, path: user});
@@ -81,6 +82,7 @@ async createDataBase42User(
           }, HttpStatus.BAD_REQUEST);
       };
   }
+  console.log("finalUser", finalUser);
   this.websocketGateway.onlineFromService(finalUser.name);
   return res.status(200).json({statusCode: 200, path: finalUser});
 };
@@ -114,6 +116,7 @@ async createDataBase42User(
       return user ? user : null;
     } catch (error) {
       if (error instanceof HttpException) throw error;
+      console.log("error(getUserByToken:::::)", error);
       throw new HttpException(
       {
         status: HttpStatus.BAD_REQUEST,error: error.response ? error.response.error : "Error to get the user by token"},
@@ -205,14 +208,21 @@ async createDataBase42User(
     }
 }
 
-async RedirectionUser(@Req() req: Request, @Res() res: Response, isRegistered: boolean | undefined) {
-    if (!isRegistered) // check if user is already registerd
+async RedirectionUser(
+  @Req() req: Request, 
+  @Res() res: Response, 
+  isRegistered: boolean | undefined,
+  email: string | null | undefined) {
+  console.log("Response cookie", res.cookie);
+  if (!isRegistered) // check if user is already registerd
       res.redirect(301, "http://localhost:3000/checkuser");
     else
     {
-      const user = await this.getUserByToken(req.cookies.access_token);
-      const fetchUrl = process.env.CLIENT_HOST + "/user/" + user.name;
-      res.redirect(301, fetchUrl); // redirect to the profile page
+      console.log("else:::::::::");
+      //const user = await this.getUserByToken(req.cookies.access_token);
+      const user = await this.getUserByEmail(email);
+      //const fetchUrl = process.env.CLIENT_HOST + "user/" + user.name;
+      res.redirect(301, process.env.CLIENT_HOST + "profile"); // redirect to the profile page
     }
   }
 }

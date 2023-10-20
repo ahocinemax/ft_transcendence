@@ -123,7 +123,7 @@ async getGoogleUserByCookies(@Req() req: Request) {
             email: data.email,
             userName: data.name,
             accessToken: token,
-            isRegistered: false,
+            isRegistered: data.isRegistered,
         };
     return googleUser;
   };

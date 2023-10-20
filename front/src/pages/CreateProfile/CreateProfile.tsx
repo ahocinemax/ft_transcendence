@@ -24,7 +24,7 @@ const Settings = () => {
   async function createUser(value: string) {
     let UserCreation = {
       name: value,
-      isRegistered: false
+      isRegistered: true
     };
     const user = await backFunctions.createUser(UserCreation);
     //setUserInfosContext(value);

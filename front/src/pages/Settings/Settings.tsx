@@ -95,7 +95,7 @@ const Settings = () => {
           if (updatedUser) {
             console.log("User updated successfully:", updatedUser);
             setUserName({userName: newPseudo});
-            navigate('/');
+            navigate('/profile');
           }
         } catch (error) {
           console.error("Failed to update user:", error);

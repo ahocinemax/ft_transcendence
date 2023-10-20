@@ -55,7 +55,7 @@ export class WebsocketService {
 		type: string
 		) {
 			this.logger.log("[UPDATE STATUS]");
-			console.log("update status client: ", client);
+			// console.log("update status client: ", client);
 			switch (type) {
 				case 'online':
 					await this.setOnline(client);
