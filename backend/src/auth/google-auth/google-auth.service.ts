@@ -20,6 +20,7 @@ export class GoogleAuthService {
         email: string,
         token: string,
         name: string,
+        isRegistered: boolean,
         ...any: any
     ) {
         try {
@@ -43,7 +44,7 @@ export class GoogleAuthService {
                         accessToken: token,
                         name: name,
                         login42: "google account",
-                        isRegistered: true
+                        isRegistered: isRegistered
                     }
                 });
                 return user;

@@ -74,7 +74,7 @@ export class Auth42Service {
             accessToken: token,
             isRegistered: isRegistered,
             login42: user42.login,
-            name: user42.displayname,
+            name: name,
             email: user42.email,
           }
         });
