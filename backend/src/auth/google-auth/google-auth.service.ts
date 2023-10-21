@@ -9,7 +9,7 @@ type GoogleUser = {
     email: string;
     userName: string;
     accessToken: string;
-    isRegistered: boolean
+    //isRegistered: boolean
 };
 
 @Injectable({})
@@ -66,7 +66,7 @@ export class GoogleAuthService {
             email: response.email,
             userName: response.name,
             accessToken: accessToken,
-            isRegistered: false
+            //isRegistered: false
         };
         return googleUser;
     }
@@ -123,7 +123,7 @@ async getGoogleUserByCookies(@Req() req: Request) {
             email: data.email,
             userName: data.name,
             accessToken: token,
-            isRegistered: data.isRegistered,
+            //isRegistered: data.isRegistered,
         };
     return googleUser;
   };
