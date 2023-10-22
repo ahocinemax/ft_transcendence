@@ -69,29 +69,21 @@ export class ChatGateway implements OnGatewayConnection {
 	}
 
 	@SubscribeMessage('add preview') // display channels list available for the user
-	async handleChatSearch(
-		@MessageBody() data: any,
-		@ConnectedSocket() client: Socket,
-	) {
+	async handleChatSearch(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
 		const preview = await this.chatService.get_preview(data.channelId, data.email, );
 		await client.join(preview.name);
 		client.emit('add preview', preview);
 	}
 
 	@SubscribeMessage('get messages')
-	async handleGetMessages(
-		@MessageBody() channelId: number,
-		@ConnectedSocket() client: Socket,
-	) {
+	async handleGetMessages(@MessageBody() channelId: number, @ConnectedSocket() client: Socket) {
 		const data = await this.chatService.fetch_messages(channelId);
 		client.emit('fetch messages', data);
 	}
 
 	@SubscribeMessage('get channels')
-	async handleFetchChannels(
-		@MessageBody() email: string,
-		@ConnectedSocket() client: Socket,
-	) {
+	async handleFetchChannels(@MessageBody() email: string, @ConnectedSocket() client: Socket) {
+		this.logger.log("[GET CHANNELS]");
 		const data = await this.chatService.getUsersChannels(email);
 		console.log("sending channels: ", data);
 		client.emit('fetch channels', data);

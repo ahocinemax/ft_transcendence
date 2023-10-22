@@ -6,6 +6,7 @@ import PrivateChanPopup from '../../components/Private_chan_popup/private_chan_p
 import SocketContext from '../../context/socketContext';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import UserContext from '../../context/userContent';
+import { channelModel } from '../../interface/global'
 // import { act } from '@testing-library/react';
 
 
@@ -24,7 +25,7 @@ const Chat = () => {
   const userInfos = useContext(UserContext);
   const [privatePassword, setPrivatePassword] = useState(''); // État pour le mot de passe privé
   const [tempActiveChannel, setTempActiveChannel] = useState(''); // État temporaire pour stocker le canal sur lequel vous avez cliqué
-  // const [channels, setChannels] = useState<any>([]);
+  const [channels, setChannels] = useState<any>([]);
 
   const handleSearch = (query: string) => {
     console.log(`Recherche en cours pour : ${query}`);
@@ -33,8 +34,8 @@ const Chat = () => {
   const handleChannelClick = (channelName: string) => {
     if (PasswordNeeded)
         return;
-    const channel = channels.find((c: any) => c.name === channelName);
-    if (channel && channel.isPrivate) 
+    const channel: channelModel = channels.find((c: any) => c.name === channelName);
+    if (channel && channel.isPrivate)
     {
         setTempActiveChannel(channelName);
   
@@ -100,7 +101,7 @@ const Chat = () => {
 
   const handlePasswordSubmit = (password: string) => {
     // Vérifiez si le mot de passe saisi correspond à celui du canal actif
-    const channel = channels.find((c: any) => c.name === tempActiveChannel);
+    const channel: channelModel = channels.find((c: any) => c.name === tempActiveChannel);
     
     if (channel && channel.password === password) {
       // Mot de passe correct, accédez au canal
@@ -118,25 +119,11 @@ const Chat = () => {
       console.log('data1: ', data);
     });
     // Handle response
-    socket?.on('fetch channels', (data: any) => {
+    socket?.on('fetch channels', (data: channelModel[]) => {
       console.log('data2: ', data);
+      setChannels(data);
     });
-  }, []);
-
-  const channels: any[] = [
-    { name: 'Channel 1', isPrivate: false },
-    { name: 'Channel 2', isPrivate: true, password: 'motdepasse2' },
-    { name: 'Channel 3', isPrivate: false },
-    { name: 'Channel 4', isPrivate: false },
-    { name: 'Channel 5', isPrivate: true, password: 'motdepasse5' },
-    { name: 'Channel 6', isPrivate: true, password: 'motdepasse6' },
-    { name: 'Channel 7', isPrivate: false },
-    { name: 'Channel 8', isPrivate: false },
-    { name: 'Channel 9', isPrivate: false },
-    { name: 'Channel 10', isPrivate: false },
-    { name: 'Channel 11', isPrivate: false },
-    { name: 'Channel 12', isPrivate: false }
-  ];
+  }, [userInfos]);
 
   const [priv_msgs, setPriv_msgs] = useState([
     { name: 'User 1'},
@@ -216,7 +203,7 @@ const Chat = () => {
                 {/* Le console.log() de la ligne 190 affiche undefined */}
               </div>
               <div className="channel_div_container">
-                {channels.map((channel, index) => (
+                {channels.map((channel: channelModel, index: number) => (
                   <div className="channel_div" key={index} onClick={() => handleChannelClick(channel.name)}>
                     {PasswordNeeded && (
                       <PrivateChanPopup onClose={PasswordDone} onPasswordSubmit={handlePasswordSubmit} />
