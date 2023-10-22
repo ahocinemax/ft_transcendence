@@ -39,6 +39,10 @@ export type Wins = {
 	wins: number;
 }
 
+export type Rank = {
+	rank: number;
+}
+
 type UserContextType = {
 	userName: UserName;
 	setUserName: React.Dispatch<React.SetStateAction<UserName>>;
@@ -56,6 +60,8 @@ type UserContextType = {
 	setWins: React.Dispatch<React.SetStateAction<Wins>>;
 	rate: Rate;
 	setRate: React.Dispatch<React.SetStateAction<Rate>>;
+	rank: Rank;
+	setRank: React.Dispatch<React.SetStateAction<Rank>>;
 };
 
 export const UserContext = createContext({} as UserContextType);
@@ -70,6 +76,7 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 	const [games, setGames] = useState<Games>({games: 0});
 	const [wins, setWins] = useState<Wins>({wins: 0});
 	const [rate, setRate] = useState<Rate>({rate: 0});
+	const [rank, setRank] = useState<Rank>({rank: 0});
 
 	useEffect(() => {
 		const userInfos = getUserInfo(navigate);
@@ -83,6 +90,7 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 			setGames({games: rhs.games});
 			setWins({wins: rhs.wins});
 			setRate({rate: rhs.winRate});
+			setRank({rank: rhs.rank});
 		});
 	}, [navigate]);
 
@@ -105,6 +113,8 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 				setWins,
 				rate,
 				setRate,
+				rank,
+				setRank,
 			}}
 		>
 			{children}

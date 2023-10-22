@@ -30,29 +30,30 @@ export class UserController {
 	@Get()
 	async getUsers(@Req() req: Request) { return this.userService.getAllUsers(); }
 	
-	@Get(':name')
-	async getUserByName(@Req() req: Request) { return this.userService.getUserByName(req.params.name); }
+	@Get('name/:name')
+	 async getUserByName(@Req() req: Request) { return this.userService.getUserByName(req.params.name); }
 
-	@Get(':email')
-	async getUserByEmail(@Req() req: Request) { return this.userService.getUserByEmail(req.params.email); }
+	@Get('email/:email')
+	 async getUserByEmail(@Req() req: Request) { return this.userService.getUserByEmail(req.params.email); }
 
-	@Patch(':name')
-	async UpdateUser(@Req() req: Request) {
-		if (req.body.image) {
-			const user = this.cloudinaryService.uploadImage(req);
-			return user;
-		}
-		return this.userService.updateUser(req);
-	}
+	 @Patch(':name')
+	 async UpdateUser(@Req() req: Request) {
+	 	if (req.body.image) {
+	 		const user = this.cloudinaryService.uploadImage(req);
+	 		return user;
+	 	}
+	 	return this.userService.updateUser(req);
+	 }
 
-	@Delete('deleteall')
-	async DeleteAllUsers() {
-		console.log('delete all received');
-		return this.userService.deleteAllUsers();
-	}
+	 @Delete('deleteall')
+	 async DeleteAllUsers() {
+	 	console.log('delete all received');
+	 	return this.userService.deleteAllUsers();
+	 }
 
 	@Get('getLeaderboard')
 	async getLeader() {
+		console.log('getLaderboard received');
 		this.logger.log('getLeaderboard log message');
 		return this.userService.getLeaderBoard();
 	}
