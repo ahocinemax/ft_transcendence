@@ -19,7 +19,7 @@ import { ChatService } from './chat.service';
 import { UserService } from 'src/user/user.service';
 import { ChannelDTO } from './dto/chat.dto';
 
-@UsePipes(new ValidationPipe())
+@UsePipes(new ValidationPipe()) 
 @UseFilters(new HttpToWsFilter())
 @UseFilters(new ProperWsFilter())
 
@@ -32,11 +32,12 @@ export class ChatGateway implements OnGatewayConnection {
 
 	constructor(private chatService: ChatService, private UserService: UserService) {}
 
-	async handleConnection(id: number, @ConnectedSocket() client: Socket) { // client is undefined
-		this.logger.log('new connection to channel gateway');
-		if (client instanceof Socket) console.log("client is a valid socket");
-		else console.log("client is not a valid socket: ", client);
-		const channels = await this.chatService.getUsersChannels(id);
+	async handleConnection(@ConnectedSocket() client: Socket) { // client is undefined
+		const user = await this.UserService.getUserByName(client.data.name as string);
+		this.logger.log('[NEW CONNECTION]: ' + user.name);
+
+		const email = user?.email;
+		const channels = await this.chatService.getUsersChannels(email);
 		await client?.join('default_all');
 		if (channels)
 			for (const channel of channels)
@@ -91,7 +92,8 @@ export class ChatGateway implements OnGatewayConnection {
 		@MessageBody() email: string,
 		@ConnectedSocket() client: Socket,
 	) {
-		const data = await this.chatService.get_channels(email);
+		const data = await this.chatService.getUsersChannels(email);
+		console.log("sending channels: ", data);
 		client.emit('fetch channels', data);
 	}
 
