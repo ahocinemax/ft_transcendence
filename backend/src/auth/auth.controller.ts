@@ -51,6 +51,7 @@ export class AuthController {
 	async deleteCookies(@Req() req: Request, @Res() res: Response) {
 		await this.authService.deleteCookies(res);
 		this.logger.log("LOG OUT");
+		console.log("logout access_token", req.cookies.access_token);
 		const user = await this.authService.getUserByToken(req.cookies.access_token);
 		this.WebsocketGateway.offlineFromService(user.name);
 	} 

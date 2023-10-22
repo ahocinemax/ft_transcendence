@@ -113,6 +113,12 @@ async createDataBase42User(
       console.log("trying to reach user with accessToken: ", accessToken);
       if (accessToken === undefined) return null;
       const user = await this.prisma.user.findFirst( { where: { accessToken: accessToken } } );
+      console.log("user", user);
+      if (user && user.accessToken === accessToken) {
+        console.log("Matched!");
+      } else {
+        console.log("Not Matched!");
+      }
       return user ? user : null;
     } catch (error) {
       if (error instanceof HttpException) console.log("error getUserByToken: ", error);
@@ -143,7 +149,7 @@ async createDataBase42User(
       res.cookie("access_token", token.accessToken,
       {
         expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
-        httpOnly: true,
+        httpOnly: false,
         secure: true,
         sameSite: "none",
       });
@@ -207,14 +213,13 @@ async RedirectionUser(
   @Res() res: Response, 
   isRegistered: boolean | undefined,
   email: string | null | undefined) {
-  console.log("Response cookie", res.cookie);
   if (!isRegistered) // check if user is already registerd
       res.redirect(301, "http://localhost:3000/checkuser");
     else
     {
-      console.log("else:::::::::");
       //const user = await this.getUserByToken(req.cookies.access_token);
       const user = await this.getUserByEmail(email);
+      console.log("user(redirectionUser)", user);
       //const fetchUrl = process.env.CLIENT_HOST + "user/" + user.name;
       res.redirect(301, process.env.CLIENT_HOST + "profile"); // redirect to the profile page
     }
