@@ -19,10 +19,6 @@ const ChannelNamePopup = ({ onClose, onHandleSubmit }: ChannelNamePopupProps) =>
   const handleSwitchChange = () => {
     setIsPrivate(!isPrivate);
   };
-  const setOwnerInfo = async () => {
-    const owner = await backFunctions.getUserByToken();
-    return(owner);
-  }
 
   async function handleCreateChannel() {
     const data = {
@@ -30,8 +26,11 @@ const ChannelNamePopup = ({ onClose, onHandleSubmit }: ChannelNamePopupProps) =>
       isPrivate,
       password,
     };
-    const owner = await setOwnerInfo();
-    onHandleSubmit({ data, owner });
+    onHandleSubmit({
+      channelName: channelName,
+      private: isPrivate,
+      password: password,
+     });
     onClose();
   };
 

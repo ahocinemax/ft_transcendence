@@ -32,21 +32,24 @@ export class ChatGateway implements OnGatewayConnection {
 
 	constructor(private chatService: ChatService, private UserService: UserService) {}
 
-	async handleConnection(id: number, @ConnectedSocket() client: Socket) {
+	async handleConnection(id: number, @ConnectedSocket() client: Socket) { // client is undefined
 		this.logger.log('new connection to channel gateway');
+		if (client instanceof Socket) console.log("client is a valid socket");
+		else console.log("client is not a valid socket: ", client);
 		const channels = await this.chatService.getUsersChannels(id);
-		await client.join('default_all');
+		await client?.join('default_all');
 		if (channels)
 			for (const channel of channels)
-				await client.join(channel);
-	} 
+				await client?.join(channel);
+	}
  
-	@SubscribeMessage('new.channel')
+	@SubscribeMessage('new channel')
 	async handleNewChannel(
 		@MessageBody() data: ChannelDTO,
 		@ConnectedSocket() client: Socket,
 	) {
 		this.logger.log("[NEW CHANNEL]");
+
 		const channelId = await this.chatService.create_channel(data);
 		if (channelId == undefined)
 			client.emit(
@@ -54,11 +57,12 @@ export class ChatGateway implements OnGatewayConnection {
 				'failed to create the channel, please try again',
 			);
 		else {
-			const preview = await this.chatService.get_preview(channelId, data.email, );
+			const preview = await this.chatService.get_preview(channelId, data.email);
 			await client.join(preview.name);
+			// envoie un résumé du nouveau channel
 			client.emit('add preview', preview);
+			// demande à tous les clients connectés de mettre à jour la liste des channels
 			this.server.in('update channel request').emit('default_all');
-			console.log("send: ", data);
 			return data;
 		}
 	}
@@ -80,6 +84,15 @@ export class ChatGateway implements OnGatewayConnection {
 	) {
 		const data = await this.chatService.fetch_messages(channelId);
 		client.emit('fetch messages', data);
+	}
+
+	@SubscribeMessage('get channels')
+	async handleFetchChannels(
+		@MessageBody() email: string,
+		@ConnectedSocket() client: Socket,
+	) {
+		const data = await this.chatService.get_channels(email);
+		client.emit('fetch channels', data);
 	}
 
 	@SubscribeMessage('users in')

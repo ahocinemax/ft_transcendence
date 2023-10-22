@@ -1,41 +1,39 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import './Chat.css'; 
 import SearchComponent from '../../components/SearchComponent/SearchComponent';
 import ChannelNamePopup from '../../components/channel_name_popup/channel_name_popup';
 import PrivateChanPopup from '../../components/Private_chan_popup/private_chan_popup';
 import SocketContext from '../../context/socketContext';
+import { backFunctions } from '../../outils_back/BackFunctions';
+import UserContext from '../../context/userContent';
 // import { act } from '@testing-library/react';
 
 
 const Chat = () => {
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [PasswordNeeded, setPassword] = useState(false);
-    const [activeChannel, setActiveChannel] = useState('');
-    const [messageInput, setMessageInput] = useState(''); // État pour stocker le message en cours de frappe
-    const [messagesData, setMessagesData] = useState<MessageData>({});
-    const [privateMessagesData, setPrivateMessagesData] = useState<PrivateMessagesData>({});
-    const [activePrivateUser, setActivePrivateUser] = useState('');
-    const [activePrivateConversation, setActivePrivateConversation] = useState('');
-    const [selectedUser, setSelectedUser] = useState('');
-    const [isUserPopupVisible, setIsUserPopupVisible] = useState(false);
-    const { socket } = useContext(SocketContext).SocketState;
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [PasswordNeeded, setPassword] = useState(false);
+  const [activeChannel, setActiveChannel] = useState('');
+  const [messageInput, setMessageInput] = useState(''); // État pour stocker le message en cours de frappe
+  const [messagesData, setMessagesData] = useState<MessageData>({});
+  const [privateMessagesData, setPrivateMessagesData] = useState<PrivateMessagesData>({});
+  const [activePrivateUser, setActivePrivateUser] = useState('');
+  const [activePrivateConversation, setActivePrivateConversation] = useState('');
+  const [selectedUser, setSelectedUser] = useState('');
+  const [isUserPopupVisible, setIsUserPopupVisible] = useState(false);
+  const { socket } = useContext(SocketContext).SocketState;
+  const userInfos = useContext(UserContext);
+  const [privatePassword, setPrivatePassword] = useState(''); // État pour le mot de passe privé
+  const [tempActiveChannel, setTempActiveChannel] = useState(''); // État temporaire pour stocker le canal sur lequel vous avez cliqué
+  // const [channels, setChannels] = useState<any>([]);
 
-    const [privatePassword, setPrivatePassword] = useState(''); // État pour le mot de passe privé
-    const [tempActiveChannel, setTempActiveChannel] = useState(''); // État temporaire pour stocker le canal sur lequel vous avez cliqué
-
-
-
-    const handleSearch = (query: string) => 
-    {
+  const handleSearch = (query: string) => {
     console.log(`Recherche en cours pour : ${query}`);
   };
-
-
 
   const handleChannelClick = (channelName: string) => {
     if (PasswordNeeded)
         return;
-    const channel = channels.find((c) => c.name === channelName);
+    const channel = channels.find((c: any) => c.name === channelName);
     if (channel && channel.isPrivate) 
     {
         setTempActiveChannel(channelName);
@@ -48,78 +46,80 @@ const Chat = () => {
       setActiveChannel(channelName);
     }
   };
-  
 
-    const handlePrivMsgClick = (userName: string) => {
-        setActiveChannel('');
-        setActivePrivateConversation(userName);
-    };
+  const handlePrivMsgClick = (userName: string) => {
+    setActiveChannel('');
+    setActivePrivateConversation(userName);
+  };
 
-    const addPrivateUser = (userName: string) => {
-        // Créez une copie de la liste priv_msgs avec le nouvel utilisateur ajouté
-        const updatedPrivateUsers = [...priv_msgs, { name: userName }];
-        setPriv_msgs(updatedPrivateUsers);
-    };
+  const addPrivateUser = (userName: string) => {
+    // Créez une copie de la liste priv_msgs avec le nouvel utilisateur ajouté
+    const updatedPrivateUsers = [...priv_msgs, { name: userName }];
+    setPriv_msgs(updatedPrivateUsers);
+  };
 
-    const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-    
-        if (messageInput.trim() !== '') {
-            const newMessage = {
-                sender: 'Utilisateur',
-                time: new Date().toLocaleTimeString(),
-                content: messageInput,
-            };
-    
-            if (activeChannel) {
-                const updatedMessagesData = { ...messagesData };
-                if (!updatedMessagesData[activeChannel]) {
-                    updatedMessagesData[activeChannel] = [];
-                }
-                updatedMessagesData[activeChannel].push(newMessage);
-                setMessagesData(updatedMessagesData);
-            } else if (activePrivateConversation) {
-                const updatedPrivateMessagesData = { ...privateMessagesData };
-                if (!updatedPrivateMessagesData[activePrivateConversation]) {
-                    updatedPrivateMessagesData[activePrivateConversation] = [];
-                }
-                updatedPrivateMessagesData[activePrivateConversation].push(newMessage);
-                setPrivateMessagesData(updatedPrivateMessagesData);
-            }
-    
-            setMessageInput('');
+  const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (messageInput.trim() !== '') {
+      const newMessage = {
+        sender: 'Utilisateur',
+        time: new Date().toLocaleTimeString(),
+        content: messageInput,
+      };
+
+      if (activeChannel) {
+        const updatedMessagesData = { ...messagesData };
+        if (!updatedMessagesData[activeChannel]) {
+          updatedMessagesData[activeChannel] = [];
         }
-    };
-
-
-      const handleUserClick = (userName: string) => 
-      {
-        setSelectedUser(userName);
-        setIsUserPopupVisible(true);
-      };
-
-      const closeUserPopup = () => 
-      {
-        setSelectedUser('');
-        setIsUserPopupVisible(false);
-      };
-
-      const handlePasswordSubmit = (password: string) => {
-        // Vérifiez si le mot de passe saisi correspond à celui du canal actif
-        const channel = channels.find((c) => c.name === tempActiveChannel);
-        
-        if (channel && channel.password === password) {
-            // Mot de passe correct, accédez au canal
-            setPassword(false); // Fermez le pop-up de mot de passe
-            setActiveChannel(tempActiveChannel);
-        } else {
-          // Mot de passe incorrect, affichez un message d'erreur ou gérez-le comme vous le souhaitez
-          console.log('Mot de passe incorrect');
+        updatedMessagesData[activeChannel].push(newMessage);
+        setMessagesData(updatedMessagesData);
+      } else if (activePrivateConversation) {
+        const updatedPrivateMessagesData = { ...privateMessagesData };
+        if (!updatedPrivateMessagesData[activePrivateConversation]) {
+          updatedPrivateMessagesData[activePrivateConversation] = [];
         }
-      };
+        updatedPrivateMessagesData[activePrivateConversation].push(newMessage);
+        setPrivateMessagesData(updatedPrivateMessagesData);
+      }
 
+      setMessageInput('');
+    }
+  };
 
-  /* Récupérer ici tous les channels de notre base de données sous forme d'array*/
+  const handleUserClick = (userName: string) => {
+    setSelectedUser(userName);
+    setIsUserPopupVisible(true);
+  };
+
+  const closeUserPopup = () => {
+    setSelectedUser('');
+    setIsUserPopupVisible(false);
+  };
+
+  const handlePasswordSubmit = (password: string) => {
+    // Vérifiez si le mot de passe saisi correspond à celui du canal actif
+    const channel = channels.find((c: any) => c.name === tempActiveChannel);
+    
+    if (channel && channel.password === password) {
+      // Mot de passe correct, accédez au canal
+      setPassword(false); // Fermez le pop-up de mot de passe
+      setActiveChannel(tempActiveChannel);
+    } else { // Mot de passe incorrect, affichez un message d'erreur ou gérez-le comme vous le souhaitez
+      console.log('Mot de passe incorrect');
+    }
+  };
+
+  // useEffect(() => {
+  //   /* Récupérer ici tous les channels de notre base de données sous forme d'array*/
+  //   const channels = socket?.emit('get channels', (data: any) => {
+  //     console.log('data: ', data); // handle new channel info here
+  //   });
+  //   console.log("🚀 ~ file: Chat.tsx:183 ~ useEffect ~ channels", channels)
+  //   setChannels(channels);
+  // }, [channels]);
+
   const channels = [
     { name: 'Channel 1', isPrivate: false },
     { name: 'Channel 2', isPrivate: true, password: 'motdepasse2' },
@@ -139,25 +139,25 @@ const Chat = () => {
     { name: 'User 1'},
     { name: 'User 2'},
     { name: 'User 3'}
-]);
+  ]);
 
-    interface MessageData 
-    {
-        [key: string]: {
-          sender: string;
-          time: string;
-          content: string;
-        }[];
-    }
+  interface MessageData 
+  {
+    [key: string]: {
+      sender: string;
+      time: string;
+      content: string;
+    }[];
+  }
 
-    interface PrivateMessagesData 
-    {
-        [key: string]: {
-          sender: string;
-          time: string;
-          content: string;
-        }[];
-    }
+  interface PrivateMessagesData 
+  {
+    [key: string]: {
+      sender: string;
+      time: string;
+      content: string;
+    }[];
+  }
 
   const createChannel = () => 
   {
@@ -183,18 +183,22 @@ const Chat = () => {
     setPassword(false);
   };
 
-
   const handleSubmit = (res: any) => {
-     console.log("🚀 ~ file: Chat.tsx:190 ~ handleSubmit ~ res:", res)
-     // Utilisez la connexion socket pour émettre 'newchannel' avec les informations
+    console.log("🚀 ~ file: Chat.tsx:197 ~ handleSubmit ~ userInfos", userInfos);
+    const data = {
+      name: res.channelName,
+      private: res.private,
+      password: res.password,
+      email: userInfos.email.email,
+      isProtected: res.private
+    };
      
-     socket?.emit('new.channel', res);
-     socket?.on('add preview', (data: any) => {
-       console.log('data: ', data);
-     });
- 
-     // Fermez la popup après l'envoi
+    socket?.emit('new channel', data);
+    socket?.on('add preview', (data: any) => {
+      console.log('data: ', data); // handle new channel info here
+    });
   }
+
   return (
     <div className="chat">
         <div className="chan_privmsg_container">
