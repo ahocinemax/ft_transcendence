@@ -112,10 +112,11 @@ export class ChatService {
 		} catch (e) { throw new WsException(e.message); }
 	}
 	
-	async	getUsersChannels(id: number) {
+	async	getUsersChannels(email: string) {
 		try {
+			const userId = await this.userService.getUserByEmail(email).then((user) => user.id);
 			const userData = await this.prisma.user.findUnique({
-				where: { id, },
+				where: { id: userId },
 				select: {
 					owner: { where: { dm: true, }, },
 					admin: true,

@@ -111,16 +111,19 @@ const Chat = () => {
     }
   };
 
-  // useEffect(() => {
-  //   /* Récupérer ici tous les channels de notre base de données sous forme d'array*/
-  //   const channels = socket?.emit('get channels', (data: any) => {
-  //     console.log('data: ', data); // handle new channel info here
-  //   });
-  //   console.log("🚀 ~ file: Chat.tsx:183 ~ useEffect ~ channels", channels)
-  //   setChannels(channels);
-  // }, [channels]);
+  useEffect(() => {
+    /* Récupérer ici tous les channels de notre base de données sous forme d'array*/
+    // Send request
+    socket?.emit('get channels', userInfos.email.email, (data: any) => {
+      console.log('data1: ', data);
+    });
+    // Handle response
+    socket?.on('fetch channels', (data: any) => {
+      console.log('data2: ', data);
+    });
+  }, []);
 
-  const channels = [
+  const channels: any[] = [
     { name: 'Channel 1', isPrivate: false },
     { name: 'Channel 2', isPrivate: true, password: 'motdepasse2' },
     { name: 'Channel 3', isPrivate: false },
@@ -184,7 +187,6 @@ const Chat = () => {
   };
 
   const handleSubmit = (res: any) => {
-    console.log("🚀 ~ file: Chat.tsx:197 ~ handleSubmit ~ userInfos", userInfos);
     const data = {
       name: res.channelName,
       private: res.private,
