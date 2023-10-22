@@ -138,7 +138,7 @@ export class ChatService {
 			}
 			return availableChannels;
 		} catch (error) {
-			throw new WsException(error.message);
+			console.log('User\'s not registered to any channel');
 		}
 	}
 
@@ -243,21 +243,8 @@ export class ChatService {
 		}
 	}
 
-	// async	updateMutedChecker(id: number, channelId: number) {
-	//     try {
-	//         const user = await this.prisma.mute.updateMany({
-	//             where: {
-	//                 AND : [
-	//                     { userId: id, },
-	//                     { channelId: channelId, },
-	//                 ],
-	//             },
-	//            data: { muted: true, },
-	//         });
-	//     }
-	//     catch (error) {
-	//         throw new WsException(error.message);
-	//     }
+	// mapMembersToIds(members: any[]): any[] {
+	// 	return members?.map((member) => ({ id: member.id }));
 	// }
 
 	async	create_channel(info: ChannelDTO) {
@@ -271,8 +258,7 @@ export class ChatService {
 					password: password,
 					owners : { connect: { email: info.email, }, },
 					admins : { connect: { email: info.email, }, },
-					members: { connect: info.members.map((member) => ({ id: member.id, }))
-					},
+					// members: { connect: this.mapMembersToIds(info.members) }
 				},
 			});
 			return channel.id;
@@ -280,6 +266,11 @@ export class ChatService {
 			console.log("Failed to create new channel: ", error);
 			throw new WsException(error);
 		}
+	}
+
+	async	get_channels(email: string) {
+		const channels = await this.prisma.channel.findMany({}); // Get all channels
+		return channels;
 	}
 
 	async	get_channel_by_id(channelId: number) {
@@ -316,8 +307,8 @@ export class ChatService {
 
 	async	get_preview(channelId: number, email: string) : Promise<chatPreview> {
 		try {
-			const channel = this.get_channel_by_id(channelId);
-			const preview = this.create_preview(channel, email);
+			const channel = await this.get_channel_by_id(channelId);
+			const preview = await this.create_preview(channel, email);
 			return preview;
 		} catch (error) {
 			console.log("Failed to get channel preview: ", error);
@@ -325,7 +316,7 @@ export class ChatService {
 		}
 	}
 
-	create_preview(source: any, email: string) {
+	async create_preview(source: any, email: string) {
 		let messageCount = 0;
 		if (source.messages) messageCount = source.messages.length;
 		let dmName = '';
