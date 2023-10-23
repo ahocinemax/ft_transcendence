@@ -259,7 +259,11 @@
 		wins,
 		setWins,
 		rate,
-		setRate
+		setRate,
+		play,
+		setPlay,
+		score,
+		setScore,
 	  } = useUserContext();
 
   	useEffect(() => {
@@ -287,11 +291,13 @@
 					<div className="profile_picture" style={{ backgroundImage: `url(${image.image})` }}></div>
    					<h1 className="user_pseudo">{userName.userName}</h1>
    					<div className="user_stats">
-   						<h1 className="user_rank">{rank.rank}</h1>
+   						<h1 className="user_rank">Rank: {rank.rank}</h1>
    						<div className="user_info">
-   							<p>Parties jouées: #Parties</p>
+   							<p>PlayTime: {play.play}</p>
+							<p>Score: {score.score}</p>
    							<p>Victoires: {wins.wins}</p>
-   							<p>WinRate: {rate.rate}</p>
+   							<p>WinRate: {rate.rate * 100}</p>
+							<p>(↑PlayTime + score: example d'affichage. vous pouvez changer!)</p>
    						</div>
    					</div>
   			</div>
@@ -311,7 +317,7 @@
   					<h1 className="h1">{user.gamesWon}</h1>
   				  </div>
   				  <div className="pseudo_div">
-  					<h1 className="h1">{user.winRate}%</h1>
+  					<h1 className="h1">{user.winRate * 100}%</h1>
   				  </div>
   				</div>
   			  )) : 'Loading...'}

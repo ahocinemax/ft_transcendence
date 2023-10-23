@@ -27,8 +27,8 @@ export type Email = {
 	email: string;
 };
 
-export type Games = {
-	games: number;
+export type Lost = {
+	lost: number;
 };
 
 export type Rate = {
@@ -43,6 +43,14 @@ export type Rank = {
 	rank: number;
 }
 
+export type Play = {
+	play: number;
+}
+
+export type Score = {
+	score: number;
+}
+
 type UserContextType = {
 	userName: UserName;
 	setUserName: React.Dispatch<React.SetStateAction<UserName>>;
@@ -54,14 +62,18 @@ type UserContextType = {
 	setVerified2FA: React.Dispatch<React.SetStateAction<DoubleAuthVerified>>;
 	email: Email;
 	setEmail: React.Dispatch<React.SetStateAction<Email>>;
-	games: Games;
-	setGames: React.Dispatch<React.SetStateAction<Games>>;
+	lost: Lost;
+	setLost: React.Dispatch<React.SetStateAction<Lost>>;
 	wins: Wins;
 	setWins: React.Dispatch<React.SetStateAction<Wins>>;
 	rate: Rate;
 	setRate: React.Dispatch<React.SetStateAction<Rate>>;
 	rank: Rank;
 	setRank: React.Dispatch<React.SetStateAction<Rank>>;
+	play: Play;
+	setPlay: React.Dispatch<React.SetStateAction<Play>>;
+	score: Score;
+	setScore: React.Dispatch<React.SetStateAction<Score>>;
 };
 
 export const UserContext = createContext({} as UserContextType);
@@ -73,10 +85,12 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 	const [doubleAuth, setDoubleAuth] = useState<DoubleAuth>({doubleAuth: false});
 	const [verified2FA, setVerified2FA] = useState<DoubleAuthVerified>({verified2FA: false});
 	const [email, setEmail] = useState<Email>({email: ''});
-	const [games, setGames] = useState<Games>({games: 0});
+	const [lost, setLost] = useState<Lost>({lost: 0});
 	const [wins, setWins] = useState<Wins>({wins: 0});
 	const [rate, setRate] = useState<Rate>({rate: 0});
 	const [rank, setRank] = useState<Rank>({rank: 0});
+	const [play, setPlay] = useState<Play>({play: 0});
+	const [score, setScore] = useState<Score>({score: 0});
 
 	useEffect(() => {
 		const userInfos = getUserInfo(navigate);
@@ -87,10 +101,12 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 			setDoubleAuth({doubleAuth: rhs.otp_enabled});
 			setVerified2FA({verified2FA: rhs.otp_validated});
 			setEmail({email: rhs.email});
-			setGames({games: rhs.games});
-			setWins({wins: rhs.wins});
+			setLost({lost: rhs.gamesLost});
+			setWins({wins: rhs.gamesWon});
 			setRate({rate: rhs.winRate});
 			setRank({rank: rhs.rank});
+			setPlay({play: rhs.gamesPlayed});
+			setScore({score: rhs.score});
 		});
 	}, [navigate]);
 
@@ -107,14 +123,18 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 				setVerified2FA,
 				email,
 				setEmail,
-				games,
-				setGames,
+				lost,
+				setLost,
 				wins,
 				setWins,
 				rate,
 				setRate,
 				rank,
 				setRank,
+				play,
+				setPlay,
+				score,
+				setScore,
 			}}
 		>
 			{children}
