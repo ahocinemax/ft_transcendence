@@ -104,8 +104,7 @@ const Profile = () => {
             <div className="profile_info">
                     <div className="info_container">
 					    <h1 className="info firstinfo">{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
-					    <h1 className="info">#online?</h1>
-					    <h1 className="info">{userInfo.score ? `Score ${userInfo.score}` : "Score 0"}</h1>
+					    <h1 className="info">online</h1>
 					    <h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
                     </div>
                     <a href="/settings" className="nav_link_profile"><img src={SettingsIcon} alt="Logo 5" /></a>
