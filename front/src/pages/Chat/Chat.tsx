@@ -113,16 +113,17 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    /* Récupérer ici tous les channels de notre base de données sous forme d'array*/
-    // Send request
     socket?.emit('get channels', userInfos.email.email, (data: any) => {
       console.log('data1: ', data);
     });
-    // Handle response
-    socket?.on('fetch channels', (data: channelModel[]) => {
+    const fetchChannels = (data: channelModel[]) => {
       console.log('data2: ', data);
       setChannels(data);
-    });
+    };
+    socket?.on('fetch channels', fetchChannels);
+    return () => {
+      socket?.off('fetch channels', fetchChannels);
+    };
   }, [userInfos]);
 
   const [priv_msgs, setPriv_msgs] = useState([
