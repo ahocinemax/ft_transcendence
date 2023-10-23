@@ -90,10 +90,7 @@ export class ChatService {
 					data.push(element);
 				}
 			return data;
-		} catch (error) {
-			console.log('loadMessages error:', error);
-			throw new WsException(error);
-		}
+		} catch (error) { console.log('loadMessages error:', error);}
 	}
 
 	async getRegisteredUsers(channelId: number) {
@@ -122,25 +119,21 @@ export class ChatService {
 					admin: true,
 					member: true,
 					invited: true,
+					chanBanned: true,
 				},
 			});
 			const availableChannels = [];
-			for (const [index, channel] of userData.owner.entries()) {
-				availableChannels.push(channel.id);
-			}
-			for (const [index, channel] of userData.admin.entries()) {
-				availableChannels.push(channel.id);
-			}
-			for (const [index, channel] of userData.member.entries()) {
-				availableChannels.push(channel.id);
-			}
-			for (const [index, channel] of userData.invited.entries()) {
-				availableChannels.push(channel.id);
-			}
-			return availableChannels;
-		} catch (error) {
-			console.log('User\'s not registered to any channel');
-		}
+			for (const [index, channel] of userData.owner.entries())
+				availableChannels.push(channel);
+			for (const [index, channel] of userData.admin.entries())
+				availableChannels.push(channel);
+			for (const [index, channel] of userData.member.entries())
+				availableChannels.push(channel);
+			for (const [index, channel] of userData.invited.entries())
+				availableChannels.push(channel);
+
+			return availableChannels.filter((channel) => !userData.chanBanned.includes(channel));
+		} catch (error) { console.log('User\'s not registered to any channel'); }
 	}
 
 	async	get_message_by_id(id: number) {

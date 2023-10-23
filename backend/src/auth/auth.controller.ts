@@ -11,7 +11,6 @@ import { AuthGuard } from '@nestjs/passport'
 import { WebsocketGateway } from "src/websocket/websocket.gateway";
 // import cookieParser from "cookie-parser";
 
-
 @Controller("auth")
 export class AuthController {
 	constructor(
@@ -29,7 +28,7 @@ export class AuthController {
 	@Post("Oauth42")
 	async userOauthCreationInDataBase(@Req() req: Request, @Res() res: Response, @Body() UserDto: UserDto) {
 		await this.authService.handleDataBaseCreation(req, res, UserDto);
-	} 
+	}
 
 	@Get("callback")
 	async getToken(@Req() req: Request, @Res() res: Response) {
@@ -47,14 +46,14 @@ export class AuthController {
 		this.authService.RedirectionUser(req, res, userExists?.isRegistered, userExists?.email);
 	}
 
-	@Get("logout") 
+	@Get("logout")
 	async deleteCookies(@Req() req: Request, @Res() res: Response) {
 		await this.authService.deleteCookies(res);
 		this.logger.log("LOG OUT");
 		console.log("logout access_token", req.cookies.access_token);
 		const user = await this.authService.getUserByToken(req.cookies.access_token);
-		this.WebsocketGateway.offlineFromService(user.name);
-	} 
+		if (user) this.WebsocketGateway.offlineFromService(user.name);
+	}
 
 	@Get("token")
 	async checkIfTokenValid(@Req() req: Request, @Res() res: Response) {
@@ -71,10 +70,11 @@ export class AuthController {
 		const code = req.query.code as string;
 
 		const googleUser: any = await this.googleAuthService.getGoogleUser(code);
-		console.log("googleUser", googleUser);
-		this.authService.createCookiesGoogle(res, googleUser);
+		this.authService.createCookiesGoogle(req, res, googleUser);
 		const userExists = await this.authService.getUserByEmail(googleUser.email);
-		console.log("userExists: ", userExists?.isRegistered);
+		console.log("userExists: ", userExists);
+		if (userExists && (userExists?.accessToken !== googleUser.accessToken))
+			await this.authService.updateUserAccessToken(userExists?.email, googleUser.accessToken);
 		this.authService.RedirectionUser(req, res, userExists?.isRegistered, userExists?.email);
-	}	
+	}
 }

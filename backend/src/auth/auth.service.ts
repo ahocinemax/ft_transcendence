@@ -110,15 +110,8 @@ async createDataBase42User(
   async getUserByToken(req: Request) : Promise< null | any > {
     try {
       const accessToken = req.cookies.access_token; // problem when user is not logged in => no cookie yet
-      console.log("trying to reach user with accessToken: ", accessToken);
       if (accessToken === undefined) return null;
       const user = await this.prisma.user.findFirst( { where: { accessToken: accessToken } } );
-      console.log("user", user);
-      if (user && user.accessToken === accessToken) {
-        console.log("Matched!");
-      } else {
-        console.log("Not Matched!");
-      }
       return user ? user : null;
     } catch (error) {
       if (error instanceof HttpException) console.log("error getUserByToken: ", error);
@@ -144,15 +137,15 @@ async createDataBase42User(
       });
   }
 
-  async createCookiesGoogle(@Res() res: Response, token: any) {
-    // console.log("token.access_token", token.accessToken);
-      res.cookie("access_token", token.accessToken,
-      {
-        expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
-        httpOnly: false,
-        secure: true,
-        sameSite: "none",
-      });
+  async createCookiesGoogle(@Req() req: Request, @Res() res: Response, token: any) {
+    // console.log("token{}: ", req);
+    res.cookie("access_token", token.accessToken,
+    {
+      expires: new Date(new Date().getTime() + 60 * 24 * 7 * 1000),
+      httpOnly: false,
+      secure: true,
+      sameSite: "none",
+    });
   }
 
   async updateCookies(@Res() res: Response, token: any, userInfos: any) {
@@ -213,16 +206,12 @@ async RedirectionUser(
   @Res() res: Response, 
   isRegistered: boolean | undefined,
   email: string | null | undefined) {
-  if (!isRegistered) // check if user is already registerd
-      res.redirect(301, "http://localhost:3000/checkuser");
-    else
-    {
-      //const user = await this.getUserByToken(req.cookies.access_token);
-      const user = await this.getUserByEmail(email);
-      console.log("user(redirectionUser)", user);
-      //const fetchUrl = process.env.CLIENT_HOST + "user/" + user.name;
-      res.redirect(301, process.env.CLIENT_HOST + "profile"); // redirect to the profile page
-    }
+  if (!isRegistered) res.redirect(301, "http://localhost:3000/checkuser");
+  else res.redirect(301, process.env.CLIENT_HOST + "profile");
+  }
+
+  async updateUserAccessToken(email: string, token: string) {
+    await this.prisma.user.update({ where : { email: email }, data: { accessToken: token } });
   }
 }
 
