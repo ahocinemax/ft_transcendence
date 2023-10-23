@@ -13,44 +13,44 @@ import { channelModel } from '../../interface/global'
 const Chat = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [PasswordNeeded, setPassword] = useState(false);
-  const [activeChannel, setActiveChannel] = useState('');
+  const [activeChannel, setActiveChannel] = useState(0);
   const [messageInput, setMessageInput] = useState(''); // État pour stocker le message en cours de frappe
   const [messagesData, setMessagesData] = useState<MessageData>({});
   const [privateMessagesData, setPrivateMessagesData] = useState<PrivateMessagesData>({});
   const [activePrivateUser, setActivePrivateUser] = useState('');
-  const [activePrivateConversation, setActivePrivateConversation] = useState('');
+  const [activePrivateConversation, setActivePrivateConversation] = useState(0);
   const [selectedUser, setSelectedUser] = useState('');
   const [isUserPopupVisible, setIsUserPopupVisible] = useState(false);
   const { socket } = useContext(SocketContext).SocketState;
   const userInfos = useContext(UserContext);
   const [privatePassword, setPrivatePassword] = useState(''); // État pour le mot de passe privé
-  const [tempActiveChannel, setTempActiveChannel] = useState(''); // État temporaire pour stocker le canal sur lequel vous avez cliqué
+  const [tempActiveChannel, setTempActiveChannel] = useState(0); // État temporaire pour stocker le canal sur lequel vous avez cliqué
   const [channels, setChannels] = useState<any>([]);
+  const [priv_msgs, setPriv_msgs] = useState<any>([]);
 
   const handleSearch = (query: string) => {
     console.log(`Recherche en cours pour : ${query}`);
   };
 
-  const handleChannelClick = (channelName: string) => {
+  const handleChannelClick = (channelId: number) => {
     if (PasswordNeeded)
         return;
-    const channel: channelModel = channels.find((c: any) => c.name === channelName);
+    const channel: channelModel = channels.find((c: any) => c.name === channelId);
     if (channel && channel.isPrivate)
     {
-        setTempActiveChannel(channelName);
-  
+        setTempActiveChannel(channelId);
         // Ensuite, activez le mot de passe
         setPassword(true);
     } else {
       // Salon public, accédez directement
-      setActivePrivateConversation('');
-      setActiveChannel(channelName);
+      setActivePrivateConversation(0);
+      setActiveChannel(channelId);
     }
   };
 
-  const handlePrivMsgClick = (userName: string) => {
-    setActiveChannel('');
-    setActivePrivateConversation(userName);
+  const handlePrivMsgClick = (channelId: number) => {
+    setActiveChannel(0);
+    setActivePrivateConversation(channelId);
   };
 
   const addPrivateUser = (userName: string) => {
@@ -61,30 +61,40 @@ const Chat = () => {
 
   const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     if (messageInput.trim() !== '') {
       const newMessage = {
-        sender: 'Utilisateur',
+        sender: userInfos.userName.userName,
         time: new Date().toLocaleTimeString(),
         content: messageInput,
       };
-
+  
       if (activeChannel) {
-        const updatedMessagesData = { ...messagesData };
-        if (!updatedMessagesData[activeChannel]) {
-          updatedMessagesData[activeChannel] = [];
-        }
-        updatedMessagesData[activeChannel].push(newMessage);
-        setMessagesData(updatedMessagesData);
+        // Send message to backend
+        socket?.emit('new message', {
+          channelId: activeChannel,
+          message: newMessage.content,
+          email: userInfos.email.email,
+        });
+  
+        // wait backend's response (updated messages list)
+        socket?.on('message updated', (updatedMessagesData) => {
+          
+          setMessagesData(updatedMessagesData);
+        });
       } else if (activePrivateConversation) {
-        const updatedPrivateMessagesData = { ...privateMessagesData };
-        if (!updatedPrivateMessagesData[activePrivateConversation]) {
-          updatedPrivateMessagesData[activePrivateConversation] = [];
-        }
-        updatedPrivateMessagesData[activePrivateConversation].push(newMessage);
-        setPrivateMessagesData(updatedPrivateMessagesData);
+        // send message to backend
+        socket?.emit('new private message', {
+          conversation: activePrivateConversation,
+          message: newMessage,
+        });
+  
+        // Attendez une réponse du backend avec la liste actualisée des messages
+        socket?.on('private message updated', (updatedPrivateMessagesData) => {
+          setPrivateMessagesData(updatedPrivateMessagesData);
+        });
       }
-
+  
       setMessageInput('');
     }
   };
@@ -121,15 +131,12 @@ const Chat = () => {
     // Handle response
     socket?.on('fetch channels', (data: channelModel[]) => {
       console.log('data2: ', data);
-      setChannels(data);
+      const dmTrue = data.filter((item) => item.dm === true);
+      const dmFalse = data.filter((item) => item.dm === false);
+      setChannels(dmFalse);
+      setPriv_msgs(dmTrue);
     });
   }, [userInfos]);
-
-  const [priv_msgs, setPriv_msgs] = useState([
-    { name: 'User 1'},
-    { name: 'User 2'},
-    { name: 'User 3'}
-  ]);
 
   interface MessageData 
   {
@@ -181,10 +188,11 @@ const Chat = () => {
       email: userInfos.email.email,
       isProtected: res.private
     };
-     
+
     socket?.emit('new channel', data);
-    socket?.on('add preview', (data: any) => {
-      console.log('data: ', data); // handle new channel info here
+    socket?.on('update channels', (data: any) => {
+      if (data?.dm === false) setChannels(data);
+      else setPriv_msgs(data);
     });
   }
 
@@ -199,12 +207,10 @@ const Chat = () => {
                 <h1 className="h1_channel">#Channels(42)</h1>
                 <h1 className="createchan" onClick={createChannel}>+</h1>
                 {isPopupOpen && <ChannelNamePopup onHandleSubmit={handleSubmit} onClose={closePopup} />}
-                {/* Je n'arrive pas à récupérer les infos saisies dans le popup new channel */}
-                {/* Le console.log() de la ligne 190 affiche undefined */}
               </div>
               <div className="channel_div_container">
                 {channels.map((channel: channelModel, index: number) => (
-                  <div className="channel_div" key={index} onClick={() => handleChannelClick(channel.name)}>
+                  <div className="channel_div" key={index} onClick={() => handleChannelClick(channel.id)}>
                     {PasswordNeeded && (
                       <PrivateChanPopup onClose={PasswordDone} onPasswordSubmit={handlePasswordSubmit} />
                     )}
@@ -221,10 +227,10 @@ const Chat = () => {
             <div className="priv_msg_part">
                 <h1 className="h1_channel">#MP List(42)</h1>
                 <div className="private_users_container">
-                  {priv_msgs.map((user, index) => (
-                  <div className="channel_div privmsg" key={index} onClick={() => handlePrivMsgClick(user.name)}>
+                  {priv_msgs.map((privateChannel: channelModel, index: number) => (
+                  <div className="channel_div privmsg" key={index} onClick={() => handlePrivMsgClick(privateChannel.id)}>
                     <div className="channel_content">
-                      <h1 className="channel_title">#{user.name}</h1>
+                      <h1 className="channel_title">#{privateChannel.name}</h1>
                     </div>
                   </div>
                   ))}

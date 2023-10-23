@@ -108,11 +108,11 @@ model Message {
   id            Int       @id @default(autoincrement())
   owner         User      @relation(fields: [userId], references: [id])
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  content       String
+  updatedAt     DateTime?  @updatedAt
+  content       String    @default("")
   userId        Int
   channel       Channel   @relation(fields: [channelId], references: [id])
   channelId     Int
-  history       String[]
+  history       String[] @default([])
   unsent        Boolean   @default(false)
 }

@@ -17,7 +17,7 @@ import { HttpToWsFilter, ProperWsFilter } from './filter/chat.filter';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { UserService } from 'src/user/user.service';
-import { ChannelDTO } from './dto/chat.dto';
+import { ChannelDTO, MessageDTO } from './dto/chat.dto';
 
 @UsePipes(new ValidationPipe()) 
 @UseFilters(new HttpToWsFilter())
@@ -65,6 +65,17 @@ export class ChatGateway implements OnGatewayConnection {
 			// demande à tous les clients connectés de mettre à jour la liste des channels
 			this.server.in('update channel request').emit('default_all');
 			return data;
+		}
+	}
+
+	@SubscribeMessage('new message')
+	async handleNewMessage(@MessageBody() data: MessageDTO, @ConnectedSocket() client: Socket) {
+		this.logger.log("[NEW MESSAGE]");
+		const message = await this.chatService.new_message(data);
+		if (message == undefined)
+			client.emit('exception', 'failed to create the message, please try again');
+		else {
+			this.server.in((data.channelId as unknown) as string).emit('message updated', message);
 		}
 	}
 

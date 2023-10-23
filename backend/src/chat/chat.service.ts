@@ -198,9 +198,11 @@ export class ChatService {
 	async	new_message(data: MessageDTO) {
 		try {
 			const id = await this.getUserIdByMail(data.email); // Get user id by email
+			/* function isMuted() is not working :
 			const isMuted = await this.isMuted(id, data.channelId); // Check if user is muted
-			if (isMuted) return ; // If user is muted, message is not created
-			const message = await this.prisma.message.create({
+			if (isMuted.length !== 0) return ; // If user is muted, message is not created
+			*/
+			 const message = await this.prisma.message.create({
 				data: {
 					content: data.message,
 					history: [data.message],
@@ -208,10 +210,14 @@ export class ChatService {
 					channel: { connect: { id: data.channelId } },
 				},
 			});
-			// The createdAt value is set when the message is created, but the updatedAt value is not.
+			// Fill missing infos, which aren't in messageDTO.
 			await this.prisma.message.update({
 				where: { id: message.id, },
-				data: { updatedAt: message.createdAt, userId: id, },
+				data: {
+					updatedAt: message.createdAt,
+					userId: id,
+					channelId: data.channelId
+				},
 			});
 			const msg = await this.get_message_by_id(message.id);
 			const msgDTO = await this.create_messageDTO(msg);
@@ -236,10 +242,6 @@ export class ChatService {
 			throw new WsException(error.message);
 		}
 	}
-
-	// mapMembersToIds(members: any[]): any[] {
-	// 	return members?.map((member) => ({ id: member.id }));
-	// }
 
 	async	create_channel(info: ChannelDTO) {
 		try {
