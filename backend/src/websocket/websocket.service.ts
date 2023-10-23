@@ -54,8 +54,6 @@ export class WebsocketService {
 		@ConnectedSocket() client: AuthenticatedSocket,
 		type: string
 		) {
-			this.logger.log("[UPDATE STATUS]");
-			// console.log("update status client: ", client);
 			switch (type) {
 				case 'online':
 					await this.setOnline(client);
@@ -74,7 +72,6 @@ export class WebsocketService {
 
     private async setOnline(@ConnectedSocket() client: AuthenticatedSocket) {
 		try {
-			console.log('trying to set online client: ', client);
 			await this.prisma.user.update({
 				where: {name: client.data.name},
 				data: {status: 'online'}
@@ -83,7 +80,7 @@ export class WebsocketService {
 				status: 'online',
 				user: client.data.name,
 			});
-			console.log(`${client.data.name} is now online`);
+			// console.log(`${client.data.name} is now online`);
 		} catch (error) { console.log('Failed to update status of user to online'); }
 	} 
 
@@ -99,7 +96,7 @@ export class WebsocketService {
 				status: 'ingame',
 				user: client.data.name,
 			});
-			console.log(`${client.data.name} is now ingame`);
+			// console.log(`${client.data.name} is now ingame`);
 		} catch (error) {
 			console.log('Failed to update status of user');
 		}
@@ -119,7 +116,7 @@ export class WebsocketService {
 						status: 'offline',
 						user: client.data.name,
 					});
-					console.log(`${client.data.name} is now offline`);
+					// console.log(`${client.data.name} is now offline`);
 				} catch (error) { console.log('Failed to update status of user'); }
 			}
 		}, 5_000);

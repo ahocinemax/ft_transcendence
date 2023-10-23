@@ -30,36 +30,23 @@ export class UserController {
 	@Get()
 	async getUsers(@Req() req: Request) { return this.userService.getAllUsers(); }
 	
-	@Get(':name')
+	@Get('name/:name')
 	async getUserByName(@Req() req: Request) { return this.userService.getUserByName(req.params.name); }
 
-	@Get(':email')
+	@Get('email/:email')
 	async getUserByEmail(@Req() req: Request) { return this.userService.getUserByEmail(req.params.email); }
 
 	@Patch(':name')
 	async UpdateUser(@Req() req: Request) {
-		if (req.body.image) {
-			const user = this.cloudinaryService.uploadImage(req);
-			return user;
-		}
-		return this.userService.updateUser(req);
+		return (req.body.image) ? this.cloudinaryService.uploadImage(req) : this.userService.updateUser(req);
 	}
 
 	@Delete('deleteall')
-	async DeleteAllUsers() {
-		console.log('delete all received');
-		return this.userService.deleteAllUsers();
-	}
+	async DeleteAllUsers() { return this.userService.deleteAllUsers(); }
 
 	@Get('getLeaderboard')
-	async getLeader() {
-		this.logger.log('getLeaderboard log message');
-		return this.userService.getLeaderBoard();
-	}
+	async getLeader() { return this.userService.getLeaderBoard(); }
 
 	@Get('getGameHistory')
-	async getGameHistory(@Req() req: Request) {
-		this.logger.log('getGameHistory log message');
-		return this.userService.getGameHistory(req.body.id);
-	}
+	async getGameHistory(@Req() req: Request) { return this.userService.getGameHistory(req.body.id); }
 }

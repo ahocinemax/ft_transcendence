@@ -124,8 +124,9 @@ export class UserService
 
 	async getLeaderBoard()
 	{
+		console.log("getLeaderBoard");
 		// return all users id sorted by rank
-		return await this.prisma.user.findMany({
+		const leaderboard = await this.prisma.user.findMany({
 			where: { NOT: { gamesPlayed: { equals: 0 }}},
 			select: {
 				id: true,
@@ -138,6 +139,8 @@ export class UserService
 			},
 			orderBy: {rank: 'asc'},
 		});
+		console.log("leaderboard: ", leaderboard);
+		return leaderboard;
 	}
 		
 	async updateUser(req: Request) {
@@ -178,63 +181,64 @@ export class UserService
 		);
 	}
 	}
-		// Use prisma to find the user on DB
-		async getGameHistory(id: number)
+	// Use prisma to find the user on DB
+	async getGameHistory(id: number)
+	{
+		const user = await this.prisma.user.findUnique({
+			where: { id: id },
+		});
+
+		// Get the size of the game history (number of games played)
+		const gameHistoryInt: number[] = user.gameHistory;
+		if (gameHistoryInt.length === 0) return [];
+
+		// Initialize the game history + push each gameID into the array
+		const gameHistory: Game[] = [];
+		for (const gameID of gameHistoryInt)
+			gameHistory.push(await this.gameService.getGame(gameID));
+
+		const gameDTOs: SubjectiveGameDto[] = [];
+
+		for (const game of gameHistory)
 		{
-			const user = await this.prisma.user.findUnique({
-				where: { id: id },
-			});
-	
-			// Get the size of the game history (number of games played)
-			const gameHistoryInt: number[] = user.gameHistory;
-			if (gameHistoryInt.length === 0) return [];
-	
-			// Initialize the game history + push each gameID into the array
-			const gameHistory: Game[] = [];
-			for (const gameID of gameHistoryInt)
-				gameHistory.push(await this.gameService.getGame(gameID));
-	
-			const gameDTOs: SubjectiveGameDto[] = [];
-	
-			for (const game of gameHistory)
+			let opponentScore: number;
+			let opponentID: number;
+			let userScore: number;
+
+			game.player1 === id ? (opponentID = game.player2) : (opponentID = game.player1);
+			game.player1 === id ? (userScore = game.ScorePlayer1) : (userScore = game.ScorePlayer2);
+			game.player1 === id ? (opponentScore = game.ScorePlayer2) : (opponentScore = game.ScorePlayer1);
+			const opponent: UserDto = await this.getUser(opponentID);
+
+			const gameDTO: SubjectiveGameDto =
 			{
-				let opponentScore: number;
-				let opponentID: number;
-				let userScore: number;
-	
-				game.player1 === id ? (opponentID = game.player2) : (opponentID = game.player1);
-				game.player1 === id ? (userScore = game.ScorePlayer1) : (userScore = game.ScorePlayer2);
-				game.player1 === id ? (opponentScore = game.ScorePlayer2) : (opponentScore = game.ScorePlayer1);
-				const opponent: UserDto = await this.getUser(opponentID);
-	
-				const gameDTO: SubjectiveGameDto =
-				{
-					duration: game.duration,
-	
-					userScore: userScore,
-					userID: id,
-	
-					opponentUsername: opponent.username,
-					opponentAvatar: opponent.avatar,
-					opponentScore: opponentScore,
-					opponentRank: opponent.rank,
-					opponentID: opponent.id,
-					opponentUser: opponent,
-				victory: userScore > opponentScore ? true : false,
-				};
-				gameDTOs.push(gameDTO);
-			}
-			return gameDTOs;
+				duration: game.duration,
+
+				userScore: userScore,
+				userID: id,
+
+				opponentUsername: opponent.username,
+				opponentAvatar: opponent.avatar,
+				opponentScore: opponentScore,
+				opponentRank: opponent.rank,
+				opponentID: opponent.id,
+				opponentUser: opponent,
+			victory: userScore > opponentScore ? true : false,
+			};
+			gameDTOs.push(gameDTO);
 		}
-	
-		async getUser(id: number)
-		{
-			if (id === undefined)
-				throw new BadRequestException('getUser error : id is undefined');
-			const user = await this.prisma.user.findUniqueOrThrow({ where: { id: id } });
-			const dtoUser = plainToClass(UserDto, user);
-			return dtoUser;
-		}
+		return gameDTOs;
+	}
+
+	async getUser(id: number)
+	{
+		console.log("🚀 ~ file: user.service.ts:231 ~ id:", id)
+		if (id === undefined)
+			throw new BadRequestException('getUser error : id is undefined');
+		const user = await this.prisma.user.findUniqueOrThrow({ where: { id: id } });
+		const dtoUser = plainToClass(UserDto, user);
+		return dtoUser;
+	}
 	
 	
 }

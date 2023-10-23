@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { userName, games, image, setImage, doubleAuth, setDoubleAuth, setUserName} = useUserContext();
+  const { userName, lost, image, setImage, doubleAuth, setDoubleAuth, setUserName} = useUserContext();
   const [is2FAEnabled, setIs2FAEnabled] = useState(doubleAuth.doubleAuth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pseudo, setPseudo] = useState('#PlayerPseudo'); // État pour stocker le pseudo
