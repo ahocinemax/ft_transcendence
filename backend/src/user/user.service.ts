@@ -161,26 +161,23 @@ export class UserService
 				data: req.body
 			});
 			if (!user) {
-				throw new HttpException(
-					{
-						status: HttpStatus.BAD_REQUEST,
-						error: 'Error to update user',
-					},
+				throw new HttpException({
+					status: HttpStatus.BAD_REQUEST,
+					error: 'Error to update user'},
 					HttpStatus.BAD_REQUEST
 				);
 			}
 		return user;
 		} catch (error) {
 			console.log(error);
-		throw new HttpException(
-			{
+			throw new HttpException({
 				status: HttpStatus.BAD_REQUEST,
-				error: 'Error to update user',
-			},
-			HttpStatus.BAD_REQUEST
-		);
+				error: 'Error to update user'},
+				HttpStatus.BAD_REQUEST
+			);
+		}
 	}
-	}
+
 	// Use prisma to find the user on DB
 	async getGameHistory(id: number)
 	{

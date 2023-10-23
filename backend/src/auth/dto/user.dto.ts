@@ -1,5 +1,5 @@
 
 export class UserDto {
-  name?: string;
+  name: string;
   isRegistered?: boolean;
 }

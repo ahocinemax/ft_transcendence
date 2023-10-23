@@ -20,8 +20,7 @@ export type oneMessage = {
 	id: number;
 	channelId: number;
 	email: string;
-	username: string;
-	msg: string;
+	message: string;
 	createAt: string;
 	updateAt: string;
 	isInvite: boolean;

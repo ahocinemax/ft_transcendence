@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { MessageDTO, ChannelDTO } from './dto/chat.dto';
 import { chatPreview, oneMessage } from './type/chat.type';
 import * as argon from 'argon2';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class ChatService {
@@ -52,6 +53,7 @@ export class ChatService {
 						where: { unsent: false },
 						orderBy: { createdAt: 'asc' },
 						select: {
+							channelId: true,
 							id: true,
 							content: true,
 							createdAt: true,
@@ -71,20 +73,20 @@ export class ChatService {
 		}
 	}
 
-	async loadMessages(source: any): Promise<oneMessage[]> {
+	async loadMessages(param: any): Promise<oneMessage[]> {
 		try {
+			const source = await param.messages;
 			const data = [];
-			if (source.messages)
-				for (let index = 0; index < source.messages.length; index++) {
+			if (source)
+				for (let index = 0; index < source.length; index++) {
 					const element: oneMessage = {
-						msgId: source.messages[index].id,
-						id: source.messages[index].owner.id,
-						channelId: source.messages[index].channelId,
-						email: source.messages[index].owner.email,
-						username: source.messages[index].owner.username,
-						msg: source.messages[index].msg,
-						createAt: source.messages[index].createdAt,
-						updateAt: source.messages[index].updateAt,
+						msgId: source[index].id,
+						id: source[index].owner.id,
+						channelId: source[index].channelId,
+						email: source[index].owner.email,
+						message: source[index].content,
+						createAt: source[index].createdAt,
+						updateAt: source[index].updateAt,
 						isInvite: false,
 					};
 					data.push(element);
@@ -167,14 +169,13 @@ export class ChatService {
 		if (!source) return (null);
 		const data: oneMessage = {
 			msgId: source.id,
-			msg: source.msg,
+			message: source.content,
 			channelId: source.channelId,
 			createAt: source.createdAt,
 			updateAt: source.updatedAt,
 			isInvite: false,
 			id: source.owner.id,
 			email: source.owner.email,
-			username: source.owner.username,
 		};
 		return data;
 	}
@@ -202,30 +203,27 @@ export class ChatService {
 			const isMuted = await this.isMuted(id, data.channelId); // Check if user is muted
 			if (isMuted.length !== 0) return ; // If user is muted, message is not created
 			*/
-			 const message = await this.prisma.message.create({
+			const message = await this.prisma.message.create({
 				data: {
 					content: data.message,
 					history: [data.message],
-					owner: { connect: { email: data.email, }, },
+					owner: { connect: { email: data.email } },
 					channel: { connect: { id: data.channelId } },
-				},
+				}
 			});
 			// Fill missing infos, which aren't in messageDTO.
 			await this.prisma.message.update({
 				where: { id: message.id, },
 				data: {
-					updatedAt: message.createdAt,
+					updatedAt: message.createdAt, // remove it from db (useless)
 					userId: id,
 					channelId: data.channelId
 				},
 			});
-			const msg = await this.get_message_by_id(message.id);
-			const msgDTO = await this.create_messageDTO(msg);
-			return msgDTO;
+			await this.prisma.channel.update({ where: { id: data.channelId }, data: { updatedAt: new Date() } });
+			return message.id;
 		}
-		catch (error) {
-			throw new WsException(error.message);
-		}        
+		catch (error) { throw new WsException(error.message); }
 	}
 
 	async	isMuted(id: number, channelId: number) {
@@ -264,10 +262,7 @@ export class ChatService {
 		}
 	}
 
-	async	get_channels() {
-		const channels = await this.prisma.channel.findMany({}); // Get all channels
-		return channels;
-	}
+	async	get_channels() { return await this.prisma.channel.findMany({}); }
 
 	async	get_channel_by_id(channelId: number) {
 		try {
@@ -312,7 +307,7 @@ export class ChatService {
 		}
 	}
 
-	async create_preview(source: any, email: string) {
+	async	create_preview(source: any, email: string) {
 		let messageCount = 0;
 		if (source.messages) messageCount = source.messages.length;
 		let dmName = '';
