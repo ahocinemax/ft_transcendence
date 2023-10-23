@@ -72,7 +72,8 @@ export class AuthController {
 		const googleUser: any = await this.googleAuthService.getGoogleUser(code);
 		this.authService.createCookiesGoogle(req, res, googleUser);
 		const userExists = await this.authService.getUserByEmail(googleUser.email);
-		if (userExists?.accessToken !== googleUser.accessToken)
+		console.log("userExists: ", userExists);
+		if (userExists && (userExists?.accessToken !== googleUser.accessToken))
 			await this.authService.updateUserAccessToken(userExists?.email, googleUser.accessToken);
 		this.authService.RedirectionUser(req, res, userExists?.isRegistered, userExists?.email);
 	}
