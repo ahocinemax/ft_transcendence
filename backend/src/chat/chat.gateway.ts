@@ -60,11 +60,10 @@ export class ChatGateway implements OnGatewayConnection {
 		else {
 			const preview = await this.chatService.get_preview(channelId, data.email);
 			await client.join(preview.name);
-			// envoie un résumé du nouveau channel
-			client.emit('add preview', preview);
+			// envoie une list mise à jour des nouveaux channels
+			client.emit('add preview', this.chatService.get_channels());
 			// demande à tous les clients connectés de mettre à jour la liste des channels
 			this.server.in('update channel request').emit('default_all');
-			return data;
 		}
 	}
 

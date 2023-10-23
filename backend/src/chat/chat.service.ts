@@ -264,7 +264,7 @@ export class ChatService {
 		}
 	}
 
-	async	get_channels(email: string) {
+	async	get_channels() {
 		const channels = await this.prisma.channel.findMany({}); // Get all channels
 		return channels;
 	}
