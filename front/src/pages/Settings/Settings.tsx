@@ -23,7 +23,7 @@ const Settings = () => {
 
   const toggle2FA = async () => {
     if (doubleAuth.doubleAuth) {
-      // 2FAが有効な場合、無効にする
+      // si 2FA est activé, on le désactive
       try {
         const user = { name: userName.userName };
         const response = await backFunctions.disableTwoFactor(user);
@@ -38,7 +38,7 @@ const Settings = () => {
         console.error('Failed to disable 2FA:', error);
       }
     } else {
-      // 2FAが無効な場合、有効にする
+      // si 2FA est désactivé, on l'active 
       setIsModalOpen(true);
       try {
         const user = { mail:'mtsuji@student.42.fr', otp_enabled: false, otp_validated: false, otp_verified: false };
@@ -52,9 +52,9 @@ const Settings = () => {
   const closeModal = async () => {
     if (!doubleAuth.doubleAuth) {
       try {
-        const user = { hash: inputCode, name: userName.userName};  // ここでユーザーが入力したコードをオブジェクトに格納
+        const user = { hash: inputCode, name: userName.userName};  // on stock le code et le pseudo dans un objet
         const response = await backFunctions.confirmCodeForTwoFactor(user);
-        if (response.message === 'OK') {  // 仮に成功時に'success'が返ってくると仮定
+        if (response.message === 'OK') {  // si c'est bon, on renvoit un message OK
           console.log('2FA code verified successfully.');
           setIsModalOpen(false);
           setDoubleAuth({doubleAuth:true});
@@ -107,8 +107,25 @@ const Settings = () => {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
+      const reader = new FileReader();
       if (file.type === 'image/jpeg' || file.type === 'image/png'|| file.type === 'image/webp')
+      {
         setSelectedImage(file);
+        //convert file to base64 string
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          setImage({ image: reader.result as string });
+          console.log('Image uploaded:', reader.result as string);
+          const updateUserImage = backFunctions.updateUser(userName.userName, { image: reader.result as string });
+          if (updateUserImage)
+          {
+            console.log("Image updated successfully:", updateUserImage);
+            setImage({ image: reader.result as string }); 
+            //navigate('/profile');
+          }
+          console.log('Image', image.image);
+        };
+      }
       else
         alert("You need to upload either a .jpg, .jpeg or .png file");
     }
@@ -149,15 +166,15 @@ const Settings = () => {
     <div className="settings" onClick={closeModal}>
       <h1 className="Settingsh1">Settings</h1>
       <div className="settings_container">
-       <div 
+       {/*<div 
           className="round_div_settings_img"
           onClick={openImageUploader} 
           style={{ 
            backgroundImage: selectedImage
           ? `url(${URL.createObjectURL(selectedImage)})` 
           : '', 
-         }}></div>
-        {/* <div className="round_div_settings_img" style={{ backgroundImage: `url(${image.image})` }}></div> */}
+         }}></div>*/}
+        <div className="round_div_settings_img" onClick={openImageUploader} style={{ backgroundImage: `url(${image.image})` }}></div>
         <p className="info_settings">{pseudo}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
         <p className="info_settings">#Rank</p>
         <div className="twofa_container">
@@ -174,15 +191,14 @@ const Settings = () => {
       </div>
 
       {/* Swap image */}
-         {/* <div className="change_nick_input"> 
+          <div className="change_nick_input"> 
          <input 
               type="file"
               ref={imageInputRef}
               accept=".jpg, .jpeg, .png, webp"
               style={{ display: 'none' }}
               onChange={handleImageChange}/>
-           <button className="change_pseudo_button" onClick={updatePseudo}>Changer le pseudo</button>
-         </div> */}
+         </div> 
 {/*  */}
       {/* Swap nickname */}
       <div className="change_nick_input">

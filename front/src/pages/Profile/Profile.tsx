@@ -18,18 +18,21 @@ const userInfoInit: userModel = {
 	score: 0,
 	winRate: 0,
 };
+
 	
-	const initializeUser = (result: any, setUserInfo: any) => {
-		userInfoInit.id = result.id;
+	const initializeUser = async (result: any, setUserInfo: any) => {
+		const friendList = await backFunctions.getFriend(result.name);
+        userInfoInit.id = result.id;
 		userInfoInit.name = result.name;
 		userInfoInit.image = result.image;
-		userInfoInit.friends = result.frirends;
+	    userInfoInit.friends = friendList;
 		userInfoInit.gamesLost = result.gamesLost;
 		userInfoInit.gamesPlayed = result.gamesPlayed;
 		userInfoInit.gamesWon = result.gamesWon;
 		userInfoInit.rank = result.rank;
 		userInfoInit.score = result.score;
 		userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
+        console.log("friendList", userInfoInit.friends[0]);
 		setUserInfo(userInfoInit);
 	};
 
@@ -49,7 +52,7 @@ const Profile = () => {
 				if (!isFetched && userData.userName.userName !== undefined) {
 					result = await backFunctions.getUserByToken();
 					if (result === undefined) return ;
-					initializeUser(result, setUserInfo);
+					await initializeUser(result, setUserInfo);
 					setIsFetched(true);
 					setIsUser(false);
 					setIsUserDataUpdated(false);
@@ -68,6 +71,7 @@ const Profile = () => {
 					<h1 className="info">#whichTeam?</h1>
 					<h1 className="info">{userInfo.score ? `${userInfo.score}` : "#Score?"}</h1>
 					<h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
+					<h1 className="info">{userInfo.friends[0] ? `Friend #${userInfo.friends[0].name}` : "#friends?"}</h1>
 				</div>
             <a href="/settings" className="nav-link_profile"><img src={SettingsIcon} alt="Logo 5" /></a>
 			</div>
