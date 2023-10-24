@@ -7,6 +7,7 @@ import Sidebar from './Sidebar/Sidebar';
 import Leaderboard from './Leaderboard/Leaderboard';
 import Chat from './Chat/Chat';
 import Profile from './Profile/Profile';
+import FriendProfile from './FriendProfile/FriendProfile';
 import Settings from './Settings/Settings';
 import Gamepage from './Gamepage/Gamepage';
 import CreateProfile from './CreateProfile/CreateProfile';
@@ -38,6 +39,7 @@ function App() {
                     <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/chat" element={<Chat />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/friendprofile" element={<FriendProfile />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/gamepage" element={<Gamepage />} />
                     <Route path="/create" element={<CreateProfile />} />

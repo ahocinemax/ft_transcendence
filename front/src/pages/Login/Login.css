@@ -43,6 +43,18 @@
     z-index: 1;
   }
 
+.main_logo{
+  position: absolute;
+  top: 7%;
+  height: 15vh;
+  width: 45vw;
+  background-image: url(../../../public/42PongWhiteTransparent.png);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  z-index: 2;
+}
+
 .Connexion_popup_container {
   display: flex;
   flex-direction: column; /* Stack children vertically */
