@@ -257,7 +257,7 @@ const Chat = () => {
           <div className="message_list">
               <h1 className="channel_title active_channel_title">#{channelName}</h1>
           <ul>
-            {messagesData?.map((message: MessageData, index: number) => {
+            {messagesData?.[activeChannel]?.map((message: { sender: string; time: string; content: string; }, index: number) => {
               console.log(`message: ${message}, index: ${index}`);
               return (
                 <li key={index}>
