@@ -37,7 +37,8 @@ const Chat = () => {
     if (PasswordNeeded)
         return;
     const channel: channelModel = channels.find((c: any) => c.id === channelId);
-    console.log("🚀 ~ file: Chat.tsx:40 ~ handleChannelClick ~ channel:", channel)
+    console.log("🚀 channel:", channel)
+    console.log("🚀 active channel:", activeChannel)
     if (channel && channel.isPrivate)
     {
         setTempActiveChannel(channelId);
@@ -63,12 +64,28 @@ const Chat = () => {
     setPriv_msgs(updatedPrivateUsers);
   };
 
+
+  //TO DELETE/////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    console.log("messagesData :", messagesData);
+    console.log("🚀 active channel:", activeChannel);
+    console.log("🚀 messagesData??[activeChannel]:", messagesData??[activeChannel]);
+    console.log("_________");
+    if(messagesData)
+    {
+        Object.values(messagesData).forEach(value => {
+            console.log(value);
+        });
+    }
+  }, [messagesData]);
+
+
+
   useEffect(() => {
     if (activeChannel) socket?.emit('get messages', activeChannel, (data: any) => {});
     socket?.on('fetch messages', (updatedMessagesData) => {
-      setMessagesData(updatedMessagesData);
-      console.log("🚀 ~ file: Chat.tsx:70 ~ socketListener ~ updateMessagesData:", updatedMessagesData)
-      console.log("🚀 ~ messagesData:", messagesData)
+        console.log("Received messages data:", updatedMessagesData);
+        setMessagesData(updatedMessagesData);
     });
     socket?.on('private message updated', (updatedPrivateMessagesData) => {
       setPrivateMessagesData(updatedPrivateMessagesData);
@@ -152,15 +169,19 @@ const Chat = () => {
     };
   }, [socket]);
 
-  interface MessageData 
+  interface MessageData  
   {
     [key: string]: {
-      sender: string;
-      time: string;
-      content: string;
+	msgId: number;
+	id: number;
+	channelId: number;
+	email: string;
+	message: string;
+	createAt: string;
+	updateAt: string;
+	isInvite: boolean;
     }[];
   }
-
   interface PrivateMessagesData 
   {
     [key: string]: {
@@ -257,23 +278,23 @@ const Chat = () => {
           <div className="message_list">
               <h1 className="channel_title active_channel_title">#{channelName}</h1>
           <ul>
-            {messagesData?.[activeChannel]?.map((message: { sender: string; time: string; content: string; }, index: number) => {
-              console.log(`message: ${message}, index: ${index}`);
+          { activeChannel && messagesData && Array.isArray(messagesData[activeChannel]) && messagesData[activeChannel].map((message, index) => {
+              console.log("GIGA TEST")
               return (
                 <li key={index}>
                   <div
-                    className={`message_bubble ${message.sender !== undefined ? 'user' : 'not_user'}`}
+                    className={`message_bubble ${message.id !== undefined ? 'user' : 'not_user'}`}
                     style={{
-                      width: `${Math.min(100, message.content.length)}%`, // Adjust the maximum width as needed
+                      width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
                     }}
                   >
                     <span
                       className="message_sender"
-                      onClick={() => handleUserClick(message.sender)} // Gérer le clic sur le nom de l'utilisateur
+                      onClick={() => handleUserClick(message.email)} // Gérer le clic sur le nom de l'utilisateur
                     >
-                      <strong>{message.sender} </strong>
+                      <strong>{message.id} </strong>
                     </span>
-                    ({message.time}): {message.content}
+                    ({message.createAt}): {message.createAt}
                   </div>
                 </li>
               );
@@ -292,7 +313,7 @@ const Chat = () => {
               />
             </form>
         )} 
-        {activePrivateConversation && (
+        {/* {activePrivateConversation && (
         <div className="message_list">
           <h1 className="channel_title active_channel_title">#{activePrivateConversation}</h1>
           <ul>
@@ -318,8 +339,8 @@ const Chat = () => {
             ))}
           </ul>
         </div>
-        )}
-        {activePrivateConversation && (
+        )} */}
+        {/* {activePrivateConversation && (
             <form onSubmit={handleSendMessage}>
               <input
                 type="text"
@@ -329,7 +350,7 @@ const Chat = () => {
                 className="send_msg"
               />
             </form>
-        )}
+        )} */}
       </div>
       <div className={`user_popup ${isUserPopupVisible && selectedUser ? 'visible' : ''}`}>
         <div className="close_button" onClick={closeUserPopup}>
