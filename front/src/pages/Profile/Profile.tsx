@@ -11,30 +11,42 @@ const userInfoInit: userModel = {
 	name: "",
 	image: "",
 	friends: [],
+    blocked: [],
 	gamesLost: 0,
 	gamesPlayed: 0,
 	gamesWon: 0,
 	rank: 0,
 	score: 0,
 	winRate: 0,
+    gameHistory: []
 };
 
-	
-	const initializeUser = async (result: any, setUserInfo: any) => {
-		const friendList = await backFunctions.getFriend(result.name);
-        userInfoInit.id = result.id;
-		userInfoInit.name = result.name;
-		userInfoInit.image = result.image;
-	    userInfoInit.friends = friendList;
-		userInfoInit.gamesLost = result.gamesLost;
-		userInfoInit.gamesPlayed = result.gamesPlayed;
-		userInfoInit.gamesWon = result.gamesWon;
-		userInfoInit.rank = result.rank;
-		userInfoInit.score = result.score;
-		userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
-        console.log("friendList", userInfoInit.friends[0]);
-		setUserInfo(userInfoInit);
-	};
+// function setGameHistory = (gameHistoryList: any) => {
+//     userInfoInit.gameHistory.player1 = gameHistoryList.;
+// }
+
+const initializeUser = async (result: any, setUserInfo: any) => {
+    const friendList = await backFunctions.getFriend(result.name);
+    const blockedList = await backFunctions.getBlockedUser(result.name);
+    const gameHistoryList = await backFunctions.getGameHistory(result.id);
+    userInfoInit.id = result.id;
+    userInfoInit.name = result.name;
+    userInfoInit.image = result.image;
+    userInfoInit.friends = friendList;
+    userInfoInit.blocked = blockedList;
+    // setGameHistory(gameHistoryList);
+    userInfoInit.gameHistory = gameHistoryList;
+    userInfoInit.gamesLost = result.gamesLost;
+    userInfoInit.gamesPlayed = result.gamesPlayed;
+    userInfoInit.gamesWon = result.gamesWon;
+    userInfoInit.rank = result.rank;
+    userInfoInit.score = result.score;
+    userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
+    console.log("friendList", userInfoInit.friends);
+    console.log("blockedList", userInfoInit.blocked);
+    console.log("gameHistoryList", userInfoInit.gameHistory);
+    setUserInfo(userInfoInit);
+};
 
 const Profile = () => {
 	const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
@@ -106,8 +118,8 @@ const Profile = () => {
 			</div>
         <div className='friendlist'>
             <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player2</div>
+                <div className='friend_profile_img' style={{ backgroundImage: `url(${userInfo.friends[0] ? userInfo.friends[0].image : 'friend_profile_img'})` }}></div>
+                <div className='friend_profile_name'>{userInfo.friends[0] ? userInfo.friends[0].name : 'Player2'}</div>
             </div>
             <div className='friend'>
                 <div className='friend_profile_img'></div>
@@ -170,10 +182,12 @@ const Profile = () => {
                 <div className='friend_profile_name'>Player5</div>
             </div>
         </div>
+        {/* <div className='friend_profile_img' style={{ backgroundImage: `url(${userInfo.friends[0] ? userInfo.friends[0].image : 'friend_profile_img'})` }}></div> */}
+                {/* <div className='friend_profile_name'>{userInfo.friends[0] ? userInfo.friends[0].name : 'Player2'}</div> */}
         <div className='match_history'>
             <div className='win'>
-                <div className='match_infos'>EnemyName</div>
-                <div className='match_infos'>7 - 2</div>
+                <div className='match_infos'>{userInfo.gameHistory[0] ? userInfo.gameHistory[0].opponentUser.name : 'EnemyName'}</div>
+                <div className='match_infos'>{userInfo.gameHistory[0] ? userInfo.gameHistory[0].ScorePlayer1 : 'MyScore'} - {userInfo.gameHistory[0] ? userInfo.gameHistory[0].ScorePlayer2 : 'EnemyScore'}</div>
                 <div className='match_infos'>Hard Mode</div>
                 <div className='match_infos'>Win</div>
             </div>

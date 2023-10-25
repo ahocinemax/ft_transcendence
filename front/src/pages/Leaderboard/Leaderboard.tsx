@@ -225,7 +225,6 @@
 //  	}
 //   export default Leaderboard;
 
- 
 
   import React from 'react';
   import './Leaderboard.css'; 

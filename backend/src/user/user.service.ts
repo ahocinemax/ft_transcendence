@@ -201,29 +201,30 @@ export class UserService
 
 		for (const game of gameHistory)
 		{
-			let opponentScore: number;
-			let opponentID: number;
-			let userScore: number;
+			let ScorePlayer2: number;
+			let player2: number;
+			let ScorePlayer1: number;
 
-			game.player1 === id ? (opponentID = game.player2) : (opponentID = game.player1);
-			game.player1 === id ? (userScore = game.ScorePlayer1) : (userScore = game.ScorePlayer2);
-			game.player1 === id ? (opponentScore = game.ScorePlayer2) : (opponentScore = game.ScorePlayer1);
-			const opponent: UserDto = await this.getUser(opponentID);
+			game.player1 === id ? (player2 = game.player2) : (player2 = game.player1);
+			game.player1 === id ? (ScorePlayer1 = game.ScorePlayer1) : (ScorePlayer1 = game.ScorePlayer2);
+			game.player1 === id ? (ScorePlayer2 = game.ScorePlayer2) : (ScorePlayer2 = game.ScorePlayer1);
+			const opponent: UserDto = await this.getUser(player2);
 
 			const gameDTO: SubjectiveGameDto =
 			{
+				id: game.id,
 				duration: game.duration,
 
-				userScore: userScore,
-				userID: id,
+				ScorePlayer1: ScorePlayer1,
+				player1: id,
 
 				opponentUsername: opponent.username,
 				opponentAvatar: opponent.avatar,
-				opponentScore: opponentScore,
+				ScorePlayer2: ScorePlayer2,
 				opponentRank: opponent.rank,
-				opponentID: opponent.id,
+				player2: opponent.id,
 				opponentUser: opponent,
-			victory: userScore > opponentScore ? true : false,
+			victory: ScorePlayer1 > ScorePlayer2 ? true : false,
 			};
 			gameDTOs.push(gameDTO);
 		}

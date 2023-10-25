@@ -4,11 +4,15 @@ import { IsNotEmpty, IsString, IsNumber, MaxLength } from 'class-validator';
 export class SubjectiveGameDto {
 	@IsNumber()
 	@IsNotEmpty()
-	userID: number;
+	id: number;
 
 	@IsNumber()
 	@IsNotEmpty()
-	opponentID: number;
+	player1: number;
+
+	@IsNumber()
+	@IsNotEmpty()
+	player2: number;
 
 	@IsString()
 	@IsNotEmpty()
@@ -33,11 +37,11 @@ export class SubjectiveGameDto {
 
 	@IsNumber()
 	@IsNotEmpty()
-	userScore: number;
+	ScorePlayer1: number;
 
 	@IsNumber()
 	@IsNotEmpty()
-	opponentScore: number;
+	ScorePlayer2: number;
 
 	@IsNotEmpty()
 	victory: boolean;

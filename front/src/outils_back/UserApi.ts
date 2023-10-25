@@ -39,9 +39,29 @@ export const UserApi = {
 			} catch (error) { return console.log("error fetchGet", error); }
 		}
 	},
-
+	async fetchGetWithBody(url: string, body:any, callback: any) {
+		let fetchUrl = process.env.REACT_APP_SERVER_HOST + url;
+		console.log("fetchGetWithBody: ", body);
+		// console.log("Preparing fetch [GET]:", fetchUrl);
+		const headers = await this.authHeader();
+		if (localStorage.getItem("userToken") !== null) {
+			try {
+				const response = await fetch(fetchUrl, {
+					method: "GET",
+					headers,
+					//I want to sent body as "id: 1(number)
+					body: JSON.stringify(body as number),
+					redirect: "follow",
+					credentials: "include",
+				});
+				const result_1 = await response.json();
+				return (!response.ok) ? "error" : callback(result_1);
+			} catch (error) { return console.log("error fetchGet", error); }
+		}
+	},
 	async fetchPost(url: string, data: unknown, callback: any) {
 		//console.log("Fetch [POST]:", `${process.env.REACT_APP_SERVER_HOST}${url}`);
+		console.log("data:", data);
 		const headers = await this.authHeader();
 			try {
 				console.log("Fetch [POST]:", `${process.env.REACT_APP_SERVER_HOST}${url}`);

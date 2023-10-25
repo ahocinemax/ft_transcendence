@@ -8,7 +8,44 @@ import { backFunctions } from '../../outils_back/BackFunctions';
 import UserContext from '../../context/userContent';
 import { channelModel } from '../../interface/global'
 // import { act } from '@testing-library/react';
+import { userModel } from '../../interface/global';
 
+const userInfoInit: userModel = {
+	id: 0,
+	name: "",
+	image: "",
+	friends: [],
+    blocked: [],
+	gamesLost: 0,
+	gamesPlayed: 0,
+	gamesWon: 0,
+	rank: 0,
+	score: 0,
+	winRate: 0,
+    gameHistory: []
+};
+
+const initializeUser = async (result: any, setUserInfo: any) => {
+  const friendList = await backFunctions.getFriend(result.name);
+  const blockedList = await backFunctions.getBlockedUser(result.name);
+  const gameHistoryList = await backFunctions.getGameHistory(result.id);
+  userInfoInit.id = result.id;
+  userInfoInit.name = result.name;
+  userInfoInit.image = result.image;
+  userInfoInit.friends = friendList;
+  userInfoInit.blocked = blockedList;
+  userInfoInit.gameHistory = gameHistoryList;
+  userInfoInit.gamesLost = result.gamesLost;
+  userInfoInit.gamesPlayed = result.gamesPlayed;
+  userInfoInit.gamesWon = result.gamesWon;
+  userInfoInit.rank = result.rank;
+  userInfoInit.score = result.score;
+  userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
+  console.log("friendList", userInfoInit.friends);
+  console.log("blockedList", userInfoInit.blocked);
+  console.log("gameHistoryList", userInfoInit.gameHistory);
+  setUserInfo(userInfoInit);
+};
 
 const Chat = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -27,6 +64,8 @@ const Chat = () => {
   const [tempActiveChannel, setTempActiveChannel] = useState(0); // État temporaire pour stocker le canal sur lequel vous avez cliqué
   const [channels, setChannels] = useState<any>([]);
   const [priv_msgs, setPriv_msgs] = useState<any>([]);
+  const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
+  const [isFetched, setIsFetched] = useState(false);
 
   const handleSearch = (query: string) => {
     console.log(`Recherche en cours pour : ${query}`);
@@ -136,6 +175,18 @@ const Chat = () => {
       setChannels(dmFalse);
       setPriv_msgs(dmTrue);
     });
+    const fetchIsUser = async () => {
+      let result;
+      console.log("userInfos.userName.userName::", userInfos.userName.userName);
+      if (!isFetched && userInfos.userName.userName !== undefined) {
+        result = await backFunctions.getUserByToken();
+        console.log("result::", result);
+        if (result === undefined) return ;
+        await initializeUser(result, setUserInfo);
+        setIsFetched(true);
+      }
+    };
+    fetchIsUser();
   }, [userInfos]);
 
   interface MessageData 
