@@ -37,11 +37,11 @@ export class ChatGateway implements OnGatewayConnection {
 		this.logger.log('[NEW CONNECTION]: ' + user.name);
 
 		const email = user?.email;
-		const channels = await this.chatService.getUsersChannels(email);
+		const channels = await this.chatService.get_channels();
 		await client?.join('default_all');
 		if (channels)
 			for (const channel of channels)
-				await client?.join(channel);
+				await client?.join(channel.name);
 	}
 
 	@SubscribeMessage('new channel')
@@ -58,7 +58,7 @@ export class ChatGateway implements OnGatewayConnection {
 			const preview = await this.chatService.get_preview(channelId, data.email);
 			await client.join(preview.name);
 			// envoie une list mise à jour des nouveaux channels
-			client.emit('fetch channels', this.chatService.get_channels());
+			// client.emit('fetch channels', this.chatService.get_channels());
 			// demande à tous les clients connectés de mettre à jour la liste des channels
 			this.server.to('default_all').emit('update channel request');
 		}
@@ -72,35 +72,40 @@ export class ChatGateway implements OnGatewayConnection {
 			client.emit('exception', 'failed to create the message, please try again');
 		else {
 			const all_msg = await this.chatService.fetch_messages(data.channelId);
-			console.log("🚀 ~ file: chat.gateway.ts:78 ~ ChatGateway ~ handleNewMessage ~ all_msg:", all_msg)
 			client.emit('fetch messages', all_msg);
 		}
 	}
 
-	@SubscribeMessage('add preview') // display channels list available for the user
-	async handleChatSearch(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-		const preview = await this.chatService.get_preview(data.channelId, data.email, );
-		await client.join(preview.name);
-		client.emit('add preview', preview);
+	@SubscribeMessage('new private message')
+	async handleNewPrivateMessage(@MessageBody() data, @ConnectedSocket() client: Socket) {
+		this.logger.log("[NEW PRIVATE  MESSAGE]");
+		console.log("🚀 ~ handleNewPrivateMessage ~ data", data);
 	}
 
 	@SubscribeMessage('get messages')
 	async handleGetMessages(@MessageBody() channelId: number, @ConnectedSocket() client: Socket) {
 		const data = await this.chatService.fetch_messages(channelId); 
-		// console.log("🚀 ~  What I will send to the front ~ data:", data);
 		client.emit('fetch messages', data);
 	}
 
 	@SubscribeMessage('get channels')
 	async handleFetchChannels(@MessageBody() email: string, @ConnectedSocket() client: Socket) {
 		this.logger.log("[GET CHANNELS]");
-		const data = await this.chatService.getUsersChannels(email);
+		const data = await this.chatService.get_channels();
 		client.emit('fetch channels', data);
 	}
 
-	@SubscribeMessage('users in')
-	async getUsersIn(channelId: number) {
-		const data = await this.chatService.getRegisteredUsers(channelId);
-		return data;
+	@SubscribeMessage('get mp')
+	async handleFetchMP(@MessageBody() email: string, @ConnectedSocket() client: Socket) {
+		this.logger.log("[GET MP]");
+		const data = await this.chatService.getUsersMPs(email);
+		console.log("🚀 ~ Sending to front MPs:", data.owner)
+		client.emit('fetch mp', data.owner);
 	}
+
+	// @SubscribeMessage('users in')
+	// async getUsersIn(channelId: number) {
+	// 	const data = await this.chatService.getRegisteredUsers(channelId);
+	// 	return data;
+	// }
 }

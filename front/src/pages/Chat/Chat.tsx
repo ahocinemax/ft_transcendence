@@ -52,53 +52,43 @@ const Chat = () => {
   }
 
   // HOOKS
-  useEffect(() => {
-    console.log(messagesData);
-}, [messagesData]);
 
-  useEffect(() => {
-    /* Récupérer ici tous les channels de notre base de données sous forme d'array*/
-    // Send request
-    socket?.emit('get channels', userInfos.email.email, (data: any) => {
-      console.log('data1: ', data);
-    });
-    // Handle response
+  useEffect(() => { // Handle events : 'fetch channels', 'fetch mp'
+
+    // Send channel list request
+    socket?.emit('get channels', userInfos.email.email, (data: any) => {}); // 1st load of channels
     socket?.on('fetch channels', (data: channelModel[]) => {
-      if (!Array.isArray(data)) {
-        // Convert data to an array
-        data = Array.from(data);
-      }
-      const dmTrue = data.filter((item) => item.dm === true);
-      const dmFalse = data.filter((item) => item.dm === false);
-      setChannels(dmFalse);
-      setPriv_msgs(dmTrue);
+      data = !Array.isArray(data) ? Array.from(data) : data;
+      setChannels(data);
+    });
+
+    // Send MP list request
+    socket?.emit('get mp', userInfos.email.email, (data: any) => {});
+    socket?.on('fetch mp', (data: channelModel[]) => {
+      data = !Array.isArray(data) ? Array.from(data) : data;
+      console.log("🚀 ~ Recieved MPs:", data)
+      setPriv_msgs(data);
     });
     return () => {
       socket?.off('fetch channels');
+      socket?.off('fetch mp');
     };
   }, [socket]);
 
-  useEffect(() => {
-    if (activeChannel) socket?.emit('get messages', activeChannel, (data: any) => {});
-    socket?.on('fetch messages', (updatedMessagesData) => {
-        console.log("Received messages data:", updatedMessagesData);
+  useEffect(() => { // handle events : 'fetch message', 'update channel request'
+    if (activeChannel && socket) socket.emit('get messages', activeChannel, (data: any) => {});
+    socket?.on('fetch messages', (updatedMessagesData) => { // Just clicked on chan, must fetch messages
         setMessagesData(updatedMessagesData);
     });
-    socket?.on('private message updated', (updatedPrivateMessagesData) => {
+    socket?.on('update private request', (updatedPrivateMessagesData) => {
       setPrivateMessagesData(updatedPrivateMessagesData);
     });
     socket?.on('update channel request', (data: any) => {
-      console.log("callback new channel");
       socket?.emit('get channels');
     });
-    socket?.on('fetch channels', (data:any) => {
-      console.log("recieved: ", data);
-      if (data?.dm === false) setChannels(data);
-      else setPriv_msgs(data);
-    })
     return () => {
       socket?.off('fetch messages');
-      socket?.off('private message updated');
+      socket?.off('update private request');
       socket?.off('update channel request');
     };
   }, [socket, activeChannel]);
@@ -112,8 +102,6 @@ const Chat = () => {
     if (PasswordNeeded)
         return;
     const channel: channelModel = channels.find((c: any) => c.id === channelId);
-    console.log("🚀 channel:", channel)
-    console.log("🚀 active channel:", activeChannel)
     if (channel && channel.isPrivate)
     {
         setTempActiveChannel(channelId);
@@ -274,7 +262,6 @@ const Chat = () => {
               <h1 className="channel_title active_channel_title">#{channelName}</h1>
           <ul>
           {activeChannel && messagesData && messagesData.map((message: MessageData, index: number) => {
-              console.log("GIGA TEST")
               return (
                 <li key={index}>
                   <div

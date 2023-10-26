@@ -24,4 +24,5 @@ export type oneMessage = {
 	createAt: string;
 	updateAt: string;
 	isInvite: boolean;
+	name: string;
 };
