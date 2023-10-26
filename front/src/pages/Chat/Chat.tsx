@@ -287,7 +287,7 @@ const Chat = () => {
               return (
                 <li key={index}>
                   <div
-                    className={`message_bubble ${message.name !== undefined ? 'user' : 'not_user'}`}
+                    className={`message_bubble ${message.name !== userInfos.userName.userName ? 'user' : 'not_user'}`}
                     style={{
                       width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
                     }}
