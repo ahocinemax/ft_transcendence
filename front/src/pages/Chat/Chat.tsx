@@ -29,6 +29,81 @@ const Chat = () => {
   const [channels, setChannels] = useState<any>([]);
   const [priv_msgs, setPriv_msgs] = useState<any>([]);
 
+  // TYPES DEFINITIONS
+  type MessageData = {
+    msgId: number;
+    id: number;
+    channelId: number;
+    email: string;
+    message: string;
+    createAt: string;
+    updateAt: string;
+    isInvite: boolean;
+  };
+
+  type MessagesArray = MessageData[];
+  interface PrivateMessagesData 
+  {
+    [key: string]: {
+      sender: string;
+      time: string;
+      content: string;
+    }[];
+  }
+
+  // HOOKS
+  useEffect(() => {
+    console.log(messagesData);
+}, [messagesData]);
+
+  useEffect(() => {
+    /* Récupérer ici tous les channels de notre base de données sous forme d'array*/
+    // Send request
+    socket?.emit('get channels', userInfos.email.email, (data: any) => {
+      console.log('data1: ', data);
+    });
+    // Handle response
+    socket?.on('fetch channels', (data: channelModel[]) => {
+      if (!Array.isArray(data)) {
+        // Convert data to an array
+        data = Array.from(data);
+      }
+      const dmTrue = data.filter((item) => item.dm === true);
+      const dmFalse = data.filter((item) => item.dm === false);
+      setChannels(dmFalse);
+      setPriv_msgs(dmTrue);
+    });
+    return () => {
+      socket?.off('fetch channels');
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (activeChannel) socket?.emit('get messages', activeChannel, (data: any) => {});
+    socket?.on('fetch messages', (updatedMessagesData) => {
+        console.log("Received messages data:", updatedMessagesData);
+        setMessagesData(updatedMessagesData);
+    });
+    socket?.on('private message updated', (updatedPrivateMessagesData) => {
+      setPrivateMessagesData(updatedPrivateMessagesData);
+    });
+    socket?.on('update channel request', (data: any) => {
+      console.log("callback new channel");
+      socket?.emit('get channels');
+    });
+    socket?.on('fetch channels', (data:any) => {
+      console.log("recieved: ", data);
+      if (data?.dm === false) setChannels(data);
+      else setPriv_msgs(data);
+    })
+    return () => {
+      socket?.off('fetch messages');
+      socket?.off('private message updated');
+      socket?.off('update channel request');
+    };
+  }, [socket, activeChannel]);
+
+  // EVENT HANDLERS
   const handleSearch = (query: string) => {
     console.log(`Recherche en cours pour : ${query}`);
   };
@@ -63,39 +138,6 @@ const Chat = () => {
     const updatedPrivateUsers = [...priv_msgs, { name: userName }];
     setPriv_msgs(updatedPrivateUsers);
   };
-
-
-  //TO DELETE/////////////////////////////////////////////////////////////////
-  useEffect(() => {
-    console.log(messagesData);
-}, [messagesData]);
-
-
-
-  useEffect(() => {
-    if (activeChannel) socket?.emit('get messages', activeChannel, (data: any) => {});
-    socket?.on('fetch messages', (updatedMessagesData) => {
-        console.log("Received messages data:", updatedMessagesData);
-        setMessagesData(updatedMessagesData);
-    });
-    socket?.on('private message updated', (updatedPrivateMessagesData) => {
-      setPrivateMessagesData(updatedPrivateMessagesData);
-    });
-    socket?.on('update channel request', (data: any) => {
-      console.log("callback new channel");
-      socket?.emit('get channels');
-    });
-    socket?.on('fetch channels', (data:any) => {
-      console.log("recieved: ", data);
-      if (data?.dm === false) setChannels(data);
-      else setPriv_msgs(data);
-    })
-    return () => {
-      socket?.off('fetch messages');
-      socket?.off('private message updated');
-      socket?.off('update channel request');
-    };
-  }, [socket, activeChannel]);
 
   const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) =>{
     e.preventDefault();
@@ -147,63 +189,6 @@ const Chat = () => {
       console.log('Mot de passe incorrect');
     }
   };
-
-  useEffect(() => {
-    /* Récupérer ici tous les channels de notre base de données sous forme d'array*/
-    // Send request
-    socket?.emit('get channels', userInfos.email.email, (data: any) => {
-      console.log('data1: ', data);
-    });
-    // Handle response
-    socket?.on('fetch channels', (data: channelModel[]) => {
-      if (!Array.isArray(data)) {
-        // Convert data to an array
-        data = Array.from(data);
-      }
-      const dmTrue = data.filter((item) => item.dm === true);
-      const dmFalse = data.filter((item) => item.dm === false);
-      setChannels(dmFalse);
-      setPriv_msgs(dmTrue);
-    });
-    return () => {
-      socket?.off('fetch channels');
-    };
-  }, [socket]);
-
-  /* interface MessageData  
-  {
-    [key: string]: {
-      msgId: number;
-      id: number;
-      channelId: number;
-      email: string;
-      message: string;
-      createAt: string;
-      updateAt: string;
-      isInvite: boolean;
-    }[];
-  } */
-
-  type MessageData = {
-    msgId: number;
-    id: number;
-    channelId: number;
-    email: string;
-    message: string;
-    createAt: string;
-    updateAt: string;
-    isInvite: boolean;
-};
-
-type MessagesArray = MessageData[];
-  interface PrivateMessagesData 
-  {
-    [key: string]: {
-      sender: string;
-      time: string;
-      content: string;
-    }[];
-  }
 
   const createChannel = () => 
   {
