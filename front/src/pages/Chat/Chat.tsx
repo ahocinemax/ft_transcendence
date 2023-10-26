@@ -69,9 +69,9 @@ const Chat = () => {
   useEffect(() => {
     console.log("messagesData :", messagesData);
     console.log("🚀 active channel:", activeChannel);
-    console.log("🚀 messagesData??[activeChannel]:", messagesData??[activeChannel]);
+console.log("🚀 messagesData??[activeChannel]:", messagesData??[activeChannel]);
     console.log("_________");
-    if(messagesData)
+    if (messagesData)
     {
         Object.values(messagesData).forEach(value => {
             console.log(value);
@@ -90,9 +90,19 @@ const Chat = () => {
     socket?.on('private message updated', (updatedPrivateMessagesData) => {
       setPrivateMessagesData(updatedPrivateMessagesData);
     });
+    socket?.on('update channel request', (data: any) => {
+      console.log("callback new channel");
+      socket?.emit('get channels');
+    });
+    socket?.on('fetch channels', (data:any) => {
+      console.log("recieved: ", data);
+      if (data?.dm === false) setChannels(data);
+      else setPriv_msgs(data);
+    })
     return () => {
       socket?.off('fetch messages');
       socket?.off('private message updated');
+      socket?.off('update channel request');
     };
   }, [socket, activeChannel]);
 
@@ -172,14 +182,14 @@ const Chat = () => {
   interface MessageData  
   {
     [key: string]: {
-	msgId: number;
-	id: number;
-	channelId: number;
-	email: string;
-	message: string;
-	createAt: string;
-	updateAt: string;
-	isInvite: boolean;
+      msgId: number;
+      id: number;
+      channelId: number;
+      email: string;
+      message: string;
+      createAt: string;
+      updateAt: string;
+      isInvite: boolean;
     }[];
   }
   interface PrivateMessagesData 
@@ -226,10 +236,6 @@ const Chat = () => {
     };
 
     socket?.emit('new channel', data);
-    socket?.on('update channels', (data: any) => {
-      if (data?.dm === false) setChannels(data);
-      else setPriv_msgs(data);
-    });
   }
 
   return (
@@ -240,7 +246,7 @@ const Chat = () => {
               <SearchComponent onSearch={handleSearch} />
             </div>
             <div className="channel_top_div">
-              <h1 className="h1_channel">#Channels(42)</h1>
+              <h1 className="h1_channel">#Channels({channels ? channels.length : 0})</h1>
               <h1 className="createchan" onClick={createChannel}>+</h1>
               {isPopupOpen && <ChannelNamePopup onHandleSubmit={handleSubmit} onClose={closePopup} />}
             </div>
@@ -261,7 +267,7 @@ const Chat = () => {
             </div>
           </div>
           <div className="priv_msg_part">
-            <h1 className="h1_channel">#MP List(42)</h1>
+            <h1 className="h1_channel">#MP List({priv_msgs ? priv_msgs.length : 0})</h1>
             <div className="private_users_container">
               {priv_msgs.map((privateChannel: channelModel, index: number) => (
               <div className="channel_div privmsg" key={index} onClick={() => handlePrivMsgClick(privateChannel.id)}>
@@ -277,29 +283,29 @@ const Chat = () => {
         {activeChannel && (
           <div className="message_list">
               <h1 className="channel_title active_channel_title">#{channelName}</h1>
-          <ul>
-          { activeChannel && messagesData && Array.isArray(messagesData[activeChannel]) && messagesData[activeChannel].map((message, index) => {
-              console.log("GIGA TEST")
-              return (
-                <li key={index}>
-                  <div
-                    className={`message_bubble ${message.id !== undefined ? 'user' : 'not_user'}`}
-                    style={{
-                      width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
-                    }}
-                  >
-                    <span
-                      className="message_sender"
-                      onClick={() => handleUserClick(message.email)} // Gérer le clic sur le nom de l'utilisateur
-                    >
-                      <strong>{message.id} </strong>
-                    </span>
-                    ({message.createAt}): {message.createAt}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+              <ul>
+                { activeChannel && messagesData && Array.isArray(messagesData[activeChannel]) && messagesData[activeChannel].map((message, index) => {
+console.log("GIGA TEST")
+                    return (
+                      <li key={index}>
+                        <div
+                          className={`message_bubble ${message.id !== undefined ? 'user' : 'not_user'}`}
+                          style={{
+                            width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
+                            }}
+                          >
+                            <span
+                              className="message_sender"
+                              onClick={() => handleUserClick(message.email)} // Gérer le clic sur le nom de l'utilisateur
+                            >
+                              <strong>{message.id} </strong>
+                            </span>
+                            ({message.createAt}): {message.createAt}
+                          </div>
+                        </li>
+                      );
+                    })}
+              </ul>
         </div>
         )}
         {activeChannel && (
