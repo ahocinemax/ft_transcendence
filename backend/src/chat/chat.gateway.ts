@@ -34,7 +34,7 @@ export class ChatGateway implements OnGatewayConnection {
 
 	async handleConnection(@ConnectedSocket() client: Socket) { // client is undefined
 		const user = await this.UserService.getUserByName(client.data.name as string);
-		this.logger.log('[NEW CONNECTION]:  ' + user.name);
+		this.logger.log('[NEW CONNECTION]: ' + user.name);
 
 		const email = user?.email;
 		const channels = await this.chatService.getUsersChannels(email);
@@ -43,7 +43,7 @@ export class ChatGateway implements OnGatewayConnection {
 			for (const channel of channels)
 				await client?.join(channel);
 	}
- 
+
 	@SubscribeMessage('new channel')
 	async handleNewChannel(
 		@MessageBody() data: ChannelDTO,
@@ -53,17 +53,14 @@ export class ChatGateway implements OnGatewayConnection {
 
 		const channelId = await this.chatService.create_channel(data);
 		if (channelId == undefined)
-			client.emit(
-				'exception',
-				'failed to create the channel, please try again',
-			);
+			client.emit('exception', 'failed to create the channel, please try again');
 		else {
 			const preview = await this.chatService.get_preview(channelId, data.email);
 			await client.join(preview.name);
 			// envoie une list mise à jour des nouveaux channels
 			client.emit('fetch channels', this.chatService.get_channels());
 			// demande à tous les clients connectés de mettre à jour la liste des channels
-			this.server.in('update channel request').emit('default_all');
+			this.server.to('default_all').emit('update channel request');
 		}
 	}
 
