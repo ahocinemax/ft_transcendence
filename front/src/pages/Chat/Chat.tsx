@@ -15,7 +15,7 @@ const Chat = () => {
   const [PasswordNeeded, setPassword] = useState(false);
   const [activeChannel, setActiveChannel] = useState(0);
   const [messageInput, setMessageInput] = useState(''); // État pour stocker le message en cours de frappe
-  const [messagesData, setMessagesData] = useState<MessageData>();
+  const [messagesData, setMessagesData] = useState<MessagesArray>([]);
   const [channelName, setChannelName] = useState(''); // État pour stocker le nom du canal en cours de création
   const [privateMessagesData, setPrivateMessagesData] = useState<PrivateMessagesData>({});
   const [activePrivateUser, setActivePrivateUser] = useState('');
@@ -67,17 +67,8 @@ const Chat = () => {
 
   //TO DELETE/////////////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log("messagesData :", messagesData);
-    console.log("🚀 active channel:", activeChannel);
-console.log("🚀 messagesData??[activeChannel]:", messagesData??[activeChannel]);
-    console.log("_________");
-    if (messagesData)
-    {
-        Object.values(messagesData).forEach(value => {
-            console.log(value);
-        });
-    }
-  }, [messagesData]);
+    console.log(messagesData);
+}, [messagesData]);
 
 
 
@@ -179,7 +170,7 @@ console.log("🚀 messagesData??[activeChannel]:", messagesData??[activeChannel]
     };
   }, [socket]);
 
-  interface MessageData  
+  /* interface MessageData  
   {
     [key: string]: {
       msgId: number;
@@ -191,7 +182,20 @@ console.log("🚀 messagesData??[activeChannel]:", messagesData??[activeChannel]
       updateAt: string;
       isInvite: boolean;
     }[];
-  }
+  } */
+
+  type MessageData = {
+    msgId: number;
+    id: number;
+    channelId: number;
+    email: string;
+    message: string;
+    createAt: string;
+    updateAt: string;
+    isInvite: boolean;
+};
+
+type MessagesArray = MessageData[];
   interface PrivateMessagesData 
   {
     [key: string]: {
@@ -283,29 +287,29 @@ console.log("🚀 messagesData??[activeChannel]:", messagesData??[activeChannel]
         {activeChannel && (
           <div className="message_list">
               <h1 className="channel_title active_channel_title">#{channelName}</h1>
-              <ul>
-                { activeChannel && messagesData && Array.isArray(messagesData[activeChannel]) && messagesData[activeChannel].map((message, index) => {
-console.log("GIGA TEST")
-                    return (
-                      <li key={index}>
-                        <div
-                          className={`message_bubble ${message.id !== undefined ? 'user' : 'not_user'}`}
-                          style={{
-                            width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
-                            }}
-                          >
-                            <span
-                              className="message_sender"
-                              onClick={() => handleUserClick(message.email)} // Gérer le clic sur le nom de l'utilisateur
-                            >
-                              <strong>{message.id} </strong>
-                            </span>
-                            ({message.createAt}): {message.createAt}
-                          </div>
-                        </li>
-                      );
-                    })}
-              </ul>
+          <ul>
+          {activeChannel && messagesData && messagesData.map((message: MessageData, index: number) => {
+              console.log("GIGA TEST")
+              return (
+                <li key={index}>
+                  <div
+                    className={`message_bubble ${message.id !== undefined ? 'user' : 'not_user'}`}
+                    style={{
+                      width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
+                    }}
+                  >
+                    <span
+                      className="message_sender"
+                      onClick={() => handleUserClick(message.email)} // Gérer le clic sur le nom de l'utilisateur
+                    >
+                      <strong>{message.id} </strong>
+                    </span>
+                    ({message.createAt}): {message.createAt}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         </div>
         )}
         {activeChannel && (
