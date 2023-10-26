@@ -32,16 +32,17 @@ export class ChatGateway implements OnGatewayConnection {
 
 	constructor(private chatService: ChatService, private UserService: UserService) {}
 
-	async handleConnection(@ConnectedSocket() client: Socket) { // client is undefined
+	async handleConnection(@ConnectedSocket() client: Socket) {
 		const user = await this.UserService.getUserByName(client.data.name as string);
 		this.logger.log('[NEW CONNECTION]: ' + user.name);
 
 		const email = user?.email;
 		const channels = await this.chatService.get_channels();
-		await client?.join('default_all');
-		if (channels)
-			for (const channel of channels)
-				await client?.join(channel.name);
+		const MPs = await this.chatService.getUsersMPs(email);
+		if (channels) for (const channel of channels)
+			await client?.join(channel.name);
+		if (MPs) for (const MP of MPs)
+			await client?.join(MP.name);
 	}
 
 	@SubscribeMessage('new channel')
@@ -55,10 +56,7 @@ export class ChatGateway implements OnGatewayConnection {
 		if (channelId == undefined)
 			client.emit('exception', 'failed to create the channel, please try again');
 		else {
-			const preview = await this.chatService.get_preview(channelId, data.email);
-			await client.join(preview.name);
-			// envoie une list mise à jour des nouveaux channels
-			// client.emit('fetch channels', this.chatService.get_channels());
+			await client.join(data.name);
 			// demande à tous les clients connectés de mettre à jour la liste des channels
 			this.server.to('default_all').emit('update channel request');
 		}
@@ -67,19 +65,30 @@ export class ChatGateway implements OnGatewayConnection {
 	@SubscribeMessage('new message')
 	async handleNewMessage(@MessageBody() data, @ConnectedSocket() client: Socket) {
 		this.logger.log("[NEW  MESSAGE]");
+		const channelId = data.channelId;
+		const channel = await this.chatService.get_channel_by_id(channelId);
 		const to_send = await this.chatService.new_message(data) === undefined
 		if (to_send === undefined)
 			client.emit('exception', 'failed to create the message, please try again');
 		else {
 			const all_msg = await this.chatService.fetch_messages(data.channelId);
-			client.emit('fetch messages', all_msg);
+			// client.emit('fetch messages', all_msg);
+			this.server.to(channel.name).emit('update message request');
 		}
 	}
 
-	@SubscribeMessage('new private message')
-	async handleNewPrivateMessage(@MessageBody() data, @ConnectedSocket() client: Socket) {
-		this.logger.log("[NEW PRIVATE  MESSAGE]");
-		console.log("🚀 ~ handleNewPrivateMessage ~ data", data);
+	@SubscribeMessage('new mp')
+	async handleNewPrivateMessage(
+			@MessageBody() data: any,
+			@ConnectedSocket() client: Socket) {
+		this.logger.log("[NEW PRIVATE MESSAGE SESSION]");
+		const to_send = await this.chatService.create_mp(data[0], data[1]);
+		if (to_send === undefined)
+			client.emit('exception', 'failed to create the message, please try again');
+		else {
+			const all_msg = await this.chatService.fetch_messages(to_send);
+			client.emit('fetch mp', all_msg);
+		}
 	}
 
 	@SubscribeMessage('get messages')
@@ -99,8 +108,7 @@ export class ChatGateway implements OnGatewayConnection {
 	async handleFetchMP(@MessageBody() email: string, @ConnectedSocket() client: Socket) {
 		this.logger.log("[GET MP]");
 		const data = await this.chatService.getUsersMPs(email);
-		console.log("🚀 ~ Sending to front MPs:", data.owner)
-		client.emit('fetch mp', data.owner);
+		client.emit('fetch mp', data);
 	}
 
 	// @SubscribeMessage('users in')
