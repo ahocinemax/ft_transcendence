@@ -29,6 +29,21 @@ const Chat = () => {
   const [channels, setChannels] = useState<any>([]);
   const [priv_msgs, setPriv_msgs] = useState<any>([]);
 
+  const formatDate = (date: Date) => {
+    const datePart = date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit',
+    });
+  
+    const timePart = date.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  
+    return `${datePart} ${timePart}`;
+  };
+
   // TYPES DEFINITIONS
   type MessageData = {
     msgId: number;
@@ -39,6 +54,7 @@ const Chat = () => {
     createAt: string;
     updateAt: string;
     isInvite: boolean;
+    name: string;
   };
 
   type MessagesArray = MessageData[];
@@ -271,18 +287,22 @@ const Chat = () => {
               return (
                 <li key={index}>
                   <div
-                    className={`message_bubble ${message.id !== undefined ? 'user' : 'not_user'}`}
+                    className={`message_bubble ${message.name !== undefined ? 'user' : 'not_user'}`}
                     style={{
                       width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
                     }}
                   >
                     <span
-                      className="message_sender"
-                      onClick={() => handleUserClick(message.email)} // Gérer le clic sur le nom de l'utilisateur
+                        className="message_sender"
+                        onClick={() => handleUserClick(message.name)}
+                        style={{color: message.name === "Admin" ? "red" : "#8f35de"}}
                     >
-                      <strong>{message.id} </strong>
+                        <strong>{message.name} </strong>
                     </span>
-                    ({message.createAt}): {message.createAt}
+                    <span style={{color: '#c0b9c7'}}>
+                        ({formatDate(new Date(message.createAt))}):&nbsp;
+                    </span>
+                    {message.message}
                   </div>
                 </li>
               );

@@ -9,6 +9,12 @@
     background-color: black;
     background-image: url(../../../public/pixelartchat.gif);
     background-size: cover;
+    overflow-y: auto;
+  }
+
+  .message_list {
+    max-height: 90%; 
+    overflow-y: auto; 
   }
 
   .chan_privmsg_container {
@@ -149,6 +155,21 @@
   
   /* Draggable part color on hover*/
   .priv_msg_part::-webkit-scrollbar-thumb:hover {
+    background: #691c7887;
+  }
+
+  .message_list::-webkit-scrollbar {
+    width: 7.5px;
+  }
+  
+  /* Draggable part color */
+  .message_list::-webkit-scrollbar-thumb {
+    background: #4a095787;
+    border-radius: 5px;
+  }
+  
+  /* Draggable part color on hover*/
+  .message_list::-webkit-scrollbar-thumb:hover {
     background: #691c7887;
   }
   
