@@ -27,11 +27,10 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		console.info(`Sending handshake to server...`);
 
 		socket.emit('handshake');
-		socket.on('handshake', (name: string, users: string[]) => {
-			console.info(`Handshake received.`)
+		socket.on('handshake', (users: any) => {
+			// console.log("🚀 ~ file: socket.tsx:30 ~ socket.on ~ params:", name, users) // cannot get userslist
 			SocketDispatch({type: 'update_name', payload: name});
 			SocketDispatch({type: 'update_users', payload: users});
-			setLoading(false);
 			console.info(`Handshake completed.`);
 		});
 	};
@@ -47,7 +46,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 			console.error(`Reconnection error: `, error);
 		});
 		socket.io.on('reconnect_failed', () => {
-			alert(`We are unable to connect you to the websocket.`);
+			alert(`unable to connect to the websocket.`);
 		});
 		socket.io.on('error', (error) => {
 			console.error(`Socket error: `, error);

@@ -6,12 +6,21 @@ import {
 import { PrismaService } from 'prisma/prisma.service';
 import { Server } from 'socket.io';
 import { UserService } from '../user/user.service';
-import { SchedulerRegistry } from '@nestjs/schedule';
+// import { SchedulerRegistry } from '@nestjs/schedule';
 import { Mutex } from 'async-mutex';
 import { Room } from './interface/room.interface';
-import { GameData } from './interface/game-data.interface';
+// import { GameData } from './interface/game-data.interface';
+import { waitingPlayer } from './interface/player.interface';
 
 const paddleSpeed = 1;
+
+type Waitlist = waitingPlayer[];
+
+type Waitlists = {
+	normal: Waitlist;
+	hard: Waitlist;
+	hardcore: Waitlist;
+};
 @Injectable()
 export class GameService {
 	ballSpeed = 0.25;
@@ -23,6 +32,12 @@ export class GameService {
 	) {}
 
 	static rooms: Room[] = [];
+	static waitlists: Waitlists = {
+		normal: [],
+		hard: [],
+		hardcore: [],
+	};
+	
 
 	/**
 	* Call this method when the game is over to save infos in the database
@@ -285,5 +300,82 @@ export class GameService {
 		});
 
 		return games;
+	}
+
+	isInRoom(client: any) {
+		const username = client.data.name;
+		for (const room of GameService.rooms)
+			if (room.NamePlayer1 === username || room.NamePlayer2 === username) return false; // change back tu true after testing
+		return false;
+	}
+
+	isInWaitlist(client: any, mode: string) {
+		const username = client.data.name;
+		for (const player of GameService.waitlists[mode])
+			if (player.name === username) return true;
+		return false;
+	}
+
+	async addToWaitlist(client: any, mode: string) {
+		const username = client.data.name;
+		const avatar = await this.userService.getUserByName(username).then((user) => user.image);
+		const element: waitingPlayer = { name: username, socket: client, avatar: avatar };
+		GameService.waitlists[mode].push(element);
+		// console.log("🚀 ~ GameService ~ addToWaitlist ", GameService.waitlists[mode])
+	}
+
+	removeFromWaitlist(client: any, mode: string) {
+		const username = client.data.name;
+		GameService.waitlists[mode] = GameService.waitlists[mode].filter((player) => player.name !== username);
+	}
+
+	getWaitlist(mode: string) { return GameService.waitlists[mode]; }
+
+	generateRoomId() {
+		let id = 0;
+		let roomId = "room_";
+		while (GameService.rooms.find((room) => room.id === id) !== undefined) id++;
+		return {name: roomId + id, id: id};
+	}
+
+	createRoomAddPlayers(roomInfo: {name, id}, mode: string) {
+		const player1 = GameService.waitlists[mode][0];
+		const player2 = GameService.waitlists[mode][1];
+		const room: Room = {
+
+			name: roomInfo.name,
+			NamePlayer1: player1.name,
+			player1: player1.socket,
+			NamePlayer2: player2.name,
+			player2: player2.socket,
+			AvatarPlayer1: player1.avatar,
+			AvatarPlayer2: player2.avatar,
+			paddleLeft: 45,
+			paddleRight: 45,
+			paddleLeftDir: 0,
+			paddleRightDir: 0,
+			xball: 0,
+			yball: 0,
+			ballSpeed: 0,
+			xSpeed: 0,
+			ySpeed: 0,
+			ScorePlayer1: 0,
+			ScorePlayer2: 0,
+			mode: mode,
+			private: false,
+			id: roomInfo.id,
+		}; 
+		GameService.rooms.push(room);
+	}
+
+	removeUsersFromWaitlist(mode: string) {
+		GameService.waitlists[mode].splice(0, 2);
+	}
+
+	sendRoomIdToUsers(roomId: {name: string, id: number}, mode: string) {
+		const player1: waitingPlayer = GameService.waitlists[mode][0];
+		const player2: waitingPlayer = GameService.waitlists[mode][1];
+		player1.socket.emit('get room id', roomId);
+		player2.socket.emit('get room id', roomId);
 	}
 }

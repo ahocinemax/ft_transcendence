@@ -17,7 +17,7 @@ export class WebsocketService {
 	private logger: Logger = new Logger('Websocket Service');
 
     public removeUser(@ConnectedSocket() client: AuthenticatedSocket) {
-		this.clients.delete(client.data.name);
+		return this.clients.delete(client.data.name);
 	}
 
     public getClient(username: string): AuthenticatedSocket | undefined {
@@ -127,7 +127,7 @@ export class WebsocketService {
 		event: string,
 		payload?: Object
 	) {
-		console.info(`Emitting event [${event}] to connected clients`);
+		this.logger.log(`Emitting event [${event}] to connected clients`);
 		payload ? client.broadcast.emit(event, payload) : client.broadcast.emit(event);
 	}
 }

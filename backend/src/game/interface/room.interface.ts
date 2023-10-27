@@ -29,4 +29,5 @@ export interface Room {
 
 	private: boolean;
 	ballSpeed?: number;
+	mode: string;
 }

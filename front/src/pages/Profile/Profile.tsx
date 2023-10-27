@@ -19,19 +19,19 @@ const userInfoInit: userModel = {
 	winRate: 0,
 };
 	
-	const initializeUser = (result: any, setUserInfo: any) => {
-		userInfoInit.id = result.id;
-		userInfoInit.name = result.name;
-		userInfoInit.image = result.image;
-		userInfoInit.friends = result.frirends;
-		userInfoInit.gamesLost = result.gamesLost;
-		userInfoInit.gamesPlayed = result.gamesPlayed;
-		userInfoInit.gamesWon = result.gamesWon;
-		userInfoInit.rank = result.rank;
-		userInfoInit.score = result.score;
-		userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
-		setUserInfo(userInfoInit);
-	};
+const initializeUser = (result: any, setUserInfo: any) => {
+	userInfoInit.id = result.id;
+	userInfoInit.name = result.name;
+	userInfoInit.image = result.image;
+	userInfoInit.friends = result.frirends;
+	userInfoInit.gamesLost = result.gamesLost;
+	userInfoInit.gamesPlayed = result.gamesPlayed;
+	userInfoInit.gamesWon = result.gamesWon;
+	userInfoInit.rank = result.rank;
+	userInfoInit.score = result.score;
+	userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
+	setUserInfo(userInfoInit);
+};
 
 const friends = [
     { name: 'Player1', profile_img: require('../../avatar.png')},
@@ -53,13 +53,13 @@ const friends = [
 const match_history = [
     { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
     { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
+    { opponentName: 'EnemyName', score: '2 - 7', mode: 'Hard Mode', result: 'Loose' },
     { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
+    { opponentName: 'EnemyName', score: '2 - 7', mode: 'Hard Mode', result: 'Loose' },
     { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
     { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
+    { opponentName: 'EnemyName', score: '2 - 7', mode: 'Hard Mode', result: 'Loose' },
+    { opponentName: 'EnemyName', score: '2 - 7', mode: 'Hard Mode', result: 'Loose' },
     { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
     { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
     { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },

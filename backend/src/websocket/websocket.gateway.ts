@@ -34,6 +34,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 { 
   @WebSocketServer()
   server: Server;
+  constructor(private websocketService: WebsocketService) {}
 
   userStatusMap = new Map<string, Status>();
   clientSocket = new Map<string, Socket>();
@@ -63,7 +64,6 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
     this.server.emit('update-status', serializedMap);
   }
 
-  constructor(private websocketService: WebsocketService) {}
   private logger: Logger = new Logger('WebsocketGateway Log');
 
 	afterInit(server: Server) {
@@ -89,34 +89,19 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   @SubscribeMessage('handshake')
 	async handleHandshake(
 		@ConnectedSocket() client: AuthenticatedSocket,
-		@MessageBody() data: string 
 	) {
 		this.logger.log(`Handshake received from [${client.data.name}]`);
 
 		const reconnected = this.websocketService.getClient(client.data.name);
 
-		if (reconnected) {
-			console.info(`User [${client.data.name}] has reconnected`);
-			return;
-		}
+		if (reconnected) this.logger.log(`User [${client.data.name}] has reconnected`);
+    else this.websocketService.addUser(client);
+		const users = this.websocketService.clients;
+		console.log("🚀 ~ file: websocket.gateway.ts:100 ~ users:", Object.keys(users))
 
-		this.websocketService.addUser(client);
-		const users = Object.keys(this.websocketService.clients);
-
-		console.info('Sending callback for handshake...');
-		this.server.to(client.id).emit('handshake', client.data.name, users);
+		this.logger.log('Sending response for handshake...');
+		client?.emit('handshake', client.data.name, Object.keys(users)); // not working
 		this.websocketService.sendMessage(client, 'user_connected', users);
 		await this.websocketService.updateStatus(client, 'online');
 	}
-
-  @SubscribeMessage('register to lobby')
-  async handleRegisterToLobby(
-    @ConnectedSocket() client: AuthenticatedSocket,
-    @MessageBody() data: string
-  ) {
-    console.log("register to lobby with mode: ", data);
-    console.log("client: ", client);
-    // this.websocketService.registerToLobby(client);
-  }
-
 }
