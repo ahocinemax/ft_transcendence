@@ -4,7 +4,7 @@ import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
 import { useParams, useNavigate } from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
-import SettingsIcon from '../../Settings_Icon.png';
+import SettingsIcon from '../../PencilPixel.png';
 
 const userInfoInit: userModel = {
 	id: 0,

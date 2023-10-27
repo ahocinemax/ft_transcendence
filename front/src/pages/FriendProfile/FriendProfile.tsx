@@ -103,14 +103,14 @@ const FriendProfile = () => {
 		<div className="profile">
 			<div className="bande">
 			<div className="profile_img" style={{ backgroundImage: `url(${userInfo.image})` }}></div>
-            <div className="profile_info">
-                    <div className="info_container">
-					    <h1 className="info firstinfo">{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
-					    <h1 className="info">online</h1>
-                    </div>
-					    <h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
-                    <a href="/settings" className="nav_link_profile"><img src={BlockIcon} alt="Logo 5" /></a>
-                    <a href="/settings" className="nav_link_profile"><img src={AddIcon} alt="Logo 6" /></a>
+				<div className="profile_info">
+						<div className="info_container">
+							<h1 className="info firstinfo">{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
+							<h1 className="info">online/offline</h1>
+							<h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
+						</div>
+							<a href="/settings" className="block_friend_button"><img src={BlockIcon} alt="Logo 5" /></a>
+							<a href="/settings" className="add_friend_button"><img src={AddIcon} alt="Logo 6" /></a>
 				</div>
 			</div>
 			<div className="centered_div_container">

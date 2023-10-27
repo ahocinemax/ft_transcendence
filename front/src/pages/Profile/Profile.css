@@ -338,13 +338,13 @@
 }
 
 .nav_link_profile {
-  width: 5%;
+  width: 15%;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   align-self: center;
-  left : 40%;
+  left : 30%;
 }
 
 
