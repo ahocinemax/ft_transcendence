@@ -15,7 +15,7 @@ const Chat = () => {
   const [PasswordNeeded, setPassword] = useState(false);
   const [activeChannel, setActiveChannel] = useState(0);
   const [messageInput, setMessageInput] = useState(''); // État pour stocker le message en cours de frappe
-  const [messagesData, setMessagesData] = useState<MessageData>();
+  const [messagesData, setMessagesData] = useState<MessagesArray>([]);
   const [channelName, setChannelName] = useState(''); // État pour stocker le nom du canal en cours de création
   const [privateMessagesData, setPrivateMessagesData] = useState<PrivateMessagesData>({});
   const [activePrivateUser, setActivePrivateUser] = useState('');
@@ -67,17 +67,8 @@ const Chat = () => {
 
   //TO DELETE/////////////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log("messagesData :", messagesData);
-    console.log("🚀 active channel:", activeChannel);
-    console.log("🚀 messagesData??[activeChannel]:", messagesData??[activeChannel]);
-    console.log("_________");
-    if(messagesData)
-    {
-        Object.values(messagesData).forEach(value => {
-            console.log(value);
-        });
-    }
-  }, [messagesData]);
+    console.log(messagesData);
+}, [messagesData]);
 
 
 
@@ -169,7 +160,7 @@ const Chat = () => {
     };
   }, [socket]);
 
-  interface MessageData  
+  /* interface MessageData  
   {
     [key: string]: {
 	msgId: number;
@@ -181,7 +172,20 @@ const Chat = () => {
 	updateAt: string;
 	isInvite: boolean;
     }[];
-  }
+  } */
+
+  type MessageData = {
+    msgId: number;
+    id: number;
+    channelId: number;
+    email: string;
+    message: string;
+    createAt: string;
+    updateAt: string;
+    isInvite: boolean;
+};
+
+type MessagesArray = MessageData[];
   interface PrivateMessagesData 
   {
     [key: string]: {
@@ -278,7 +282,7 @@ const Chat = () => {
           <div className="message_list">
               <h1 className="channel_title active_channel_title">#{channelName}</h1>
           <ul>
-          { activeChannel && messagesData && Array.isArray(messagesData[activeChannel]) && messagesData[activeChannel].map((message, index) => {
+          {activeChannel && messagesData && messagesData.map((message: MessageData, index: number) => {
               console.log("GIGA TEST")
               return (
                 <li key={index}>
