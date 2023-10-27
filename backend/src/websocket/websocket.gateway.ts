@@ -89,7 +89,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   @SubscribeMessage('handshake')
 	async handleHandshake(
 		@ConnectedSocket() client: AuthenticatedSocket,
-		@MessageBody() data: string
+		@MessageBody() data: string 
 	) {
 		this.logger.log(`Handshake received from [${client.data.name}]`);
 
@@ -108,4 +108,15 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 		this.websocketService.sendMessage(client, 'user_connected', users);
 		await this.websocketService.updateStatus(client, 'online');
 	}
+
+  @SubscribeMessage('register to lobby')
+  async handleRegisterToLobby(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: string
+  ) {
+    console.log("register to lobby with mode: ", data);
+    console.log("client: ", client);
+    // this.websocketService.registerToLobby(client);
+  }
+
 }

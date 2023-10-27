@@ -9,7 +9,7 @@ const Settings = () => {
   const { userName, lost, image, setImage, doubleAuth, setDoubleAuth, setUserName} = useUserContext();
   const [is2FAEnabled, setIs2FAEnabled] = useState(doubleAuth.doubleAuth);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [pseudo, setPseudo] = useState('#PlayerPseudo'); // État pour stocker le pseudo
+  const [pseudo, setPseudo] = useState(''); // État pour stocker le pseudo
   const [newPseudo, setNewPseudo] = useState(''); // État pour stocker le nouveau pseudo
   const { setEmail, setVerified2FA } = useUserContext(); 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -140,7 +140,6 @@ const Settings = () => {
         console.error('Failed to get 2FA status:', error);
       }
     }
-  
     fetchDoubleAuthStatus();
   }, []);
 
@@ -158,7 +157,7 @@ const Settings = () => {
           : '', 
          }}></div>
         {/* <div className="round_div_settings_img" style={{ backgroundImage: `url(${image.image})` }}></div> */}
-        <p className="info_settings">{pseudo}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
+        <p className="info_settings">{userName.userName}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
         <p className="info_settings">#Rank</p>
         <div className="twofa_container">
           <span
