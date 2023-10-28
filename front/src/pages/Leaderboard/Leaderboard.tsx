@@ -296,8 +296,8 @@
    							<p>PlayTime: {play.play}</p>
 							<p>Score: {score.score}</p>
    							<p>Victoires: {wins.wins}</p>
-   							<p>WinRate: {rate.rate * 100}</p>
-							<p>(↑PlayTime + score: example d'affichage. vous pouvez changer!)</p>
+   							<p>WinRate: {rate.rate * 100} %</p>
+							{/* <p>(↑PlayTime + score: example d'affichage. vous pouvez changer!)</p> */}
    						</div>
    					</div>
   			</div>

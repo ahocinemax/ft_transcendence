@@ -11,6 +11,7 @@ function Login() {
           <source src="/aurores.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video> */}
+        <div className="main_logo"></div>
         <div className="Overlay"></div>
         <div className="Connexion_popup_container">
           <div className="logins_logos">

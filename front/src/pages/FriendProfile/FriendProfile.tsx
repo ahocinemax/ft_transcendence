@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import './Profile.css';
+import './FriendProfile.css';
 import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
 import { useParams, useNavigate } from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
-import SettingsIcon from '../../PencilPixel.png';
+import SettingsIcon from '../../Settings_Icon.png';
+import BlockIcon from '../../BlockUserPixel.png';
+import AddIcon from '../../AddUserPixel.png';
 
 const userInfoInit: userModel = {
 	id: 0,
@@ -71,7 +73,7 @@ const match_history = [
     { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
             ];
 
-const Profile = () => {
+const FriendProfile = () => {
 	const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
     const userData = useUserContext();
     const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
@@ -101,13 +103,14 @@ const Profile = () => {
 		<div className="profile">
 			<div className="bande">
 			<div className="profile_img" style={{ backgroundImage: `url(${userInfo.image})` }}></div>
-            <div className="profile_info">
-                    <div className="info_container">
-					    <h1 className="info firstinfo">{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
-					    <h1 className="info">online</h1>
-					    <h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
-                    </div>
-                    <a href="/settings" className="nav_link_profile"><img src={SettingsIcon} alt="Logo 5" /></a>
+				<div className="profile_info">
+						<div className="info_container">
+							<h1 className="info firstinfo">{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
+							<h1 className="info">online/offline</h1>
+							<h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
+						</div>
+							<a href="/settings" className="block_friend_button"><img src={BlockIcon} alt="Logo 5" /></a>
+							<a href="/settings" className="add_friend_button"><img src={AddIcon} alt="Logo 6" /></a>
 				</div>
 			</div>
 			<div className="centered_div_container">
@@ -161,4 +164,4 @@ const Profile = () => {
 	);
 }
 
-export default Profile;
+export default FriendProfile;

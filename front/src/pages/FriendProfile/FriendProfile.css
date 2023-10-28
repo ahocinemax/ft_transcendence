@@ -37,15 +37,16 @@
     border: 0.6vh solid rgb(0, 0, 0);
     flex-grow: 0;
     flex-shrink: 0;
-    /* margin-right: 5%; */
+    margin-left: 20%;
   }
   
   .profile_info {
     display: flex;
     flex-direction: row;
-    /* text-align: center; */
+    text-align: center;
     justify-content: flex-start;
     align-items: center;
+    margin-left: 30%;
   }
   
   .info {
@@ -59,7 +60,7 @@
   }
   
   .info.firstinfo {
-    margin-left: 15%;
+    margin-left: -100%;
   }
 
   .info_container
@@ -67,9 +68,10 @@
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
+    /* margin-left: 10%; */
   }
 
-  .info.nav_link_profile
+  .info.nav_link_friend_profile
   {
     height: 5%;
     width: 5%;
@@ -337,16 +339,27 @@
   padding-left: 2%;
 }
 
-.nav_link_profile {
-  width: 15%;
+.add_friend_button {
+  width: 5%;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   align-self: center;
-  left : 30%;
+  /* left : 85%; */
+  background-color: white;
 }
 
+.block_friend_button {
+  width: 5%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  /* left : 89%; */
+  background-color: white;
+}
 
 .scores_div:nth-child(2) .scores_round_div
 {
