@@ -288,7 +288,7 @@ const Chat = () => {
               <h1 className="channel_title active_channel_title">#{channelName}</h1>
           <ul>
           {activeChannel && messagesData && messagesData.map((message: MessageData, index: number) => {
-              const textColor = check_user(message.email) ? "#8f35de" : "#275ec4";
+              const textColor = check_user(message.email) ? "#8f35de" : "#275ec4";//"#8f35de" : "#275ec4"
               return (
                 <li key={index}>
                   <div
