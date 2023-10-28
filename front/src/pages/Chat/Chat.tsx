@@ -98,12 +98,16 @@ const Chat = () => {
     socket?.on('update private request', (updatedPrivateMessagesData) => {
       setPrivateMessagesData(updatedPrivateMessagesData);
     });
+    socket?.on('update message request', (data: any) => {
+      socket?.emit('get messages', activeChannel);
+    });
     socket?.on('update channel request', (data: any) => {
       socket?.emit('get channels');
     });
     return () => {
       socket?.off('fetch messages');
       socket?.off('update private request');
+      socket?.off('update message request');
       socket?.off('update channel request');
     };
   }, [socket, activeChannel]);
@@ -137,9 +141,12 @@ const Chat = () => {
   };
 
   const addPrivateUser = (userName: string) => {
-    // Créez une copie de la liste priv_msgs avec le nouvel utilisateur ajouté
-    const updatedPrivateUsers = [...priv_msgs, { name: userName }];
-    setPriv_msgs(updatedPrivateUsers);
+    const data: any = {
+      name: userName,
+      dm: true,
+      ownerEmail: userInfos.email.email,
+    };
+    socket?.emit('new mp', userInfos.userName.userName, data);
   };
 
   const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) =>{
@@ -285,7 +292,7 @@ const Chat = () => {
               return (
                 <li key={index}>
                   <div
-                    className={`message_bubble ${message.name !== undefined ? 'user' : 'not_user'}`}
+                    className={`message_bubble ${message.name !== userInfos.userName.userName ? 'user' : 'not_user'}`}
                     style={{
                       width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
                     }}
@@ -309,15 +316,15 @@ const Chat = () => {
         </div>
         )}
         {activeChannel && (
-            <form onSubmit={handleSendMessage}>
-              <input
-                type="text"
-                placeholder="Message"
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                className="send_msg"
-              />
-            </form>
+          <form onSubmit={handleSendMessage}>
+            <input
+              type="text"
+              placeholder="Message"
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              className="send_msg"
+            />
+          </form>
         )} 
         {/* {activePrivateConversation && (
         <div className="message_list">

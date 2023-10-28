@@ -3,7 +3,7 @@ import { UserService } from 'src/user/user.service';
 import { ConnectedSocket, WsException } from '@nestjs/websockets';
 import { Injectable } from '@nestjs/common';
 import { MessageDTO, ChannelDTO } from './dto/chat.dto';
-import { chatPreview, oneMessage } from './type/chat.type';
+import { oneMessage } from './type/chat.type';
 import * as argon from 'argon2';
 import { UserDto } from 'src/user/dto/user.dto';
 
@@ -120,7 +120,7 @@ export class ChatService {
 				select: { owner: { where: { dm: true } } }
 			});
 
-			return listOfMPs;
+			return listOfMPs.owner;
 		} catch (error) { console.log('User\'s not registered to any channel'); }
 	}
 
@@ -239,14 +239,31 @@ export class ChatService {
 					password: password,
 					owners : { connect: { email: info.email, }, },
 					admins : { connect: { email: info.email, }, },
-					// members: { connect: this.mapMembersToIds(info.members) }
 				},
 			});
+			this.prisma.channel.update({ where: { id: channel.id }, data: { updatedAt: new Date() } });
 			return channel.id;
 		} catch (error) {
 			console.log("Failed to create new channel: ", error);
 			throw new WsException(error);
 		}
+	}
+
+	async create_mp(creator: string, info: ChannelDTO) {
+		try {
+			const channel = await this.prisma.channel.create({  
+				data: {
+					name: info.name,
+					private: true,
+					dm: true,
+					isProtected: info.isProtected,
+					password: '',
+					owners : { connect: { email: info.email, name: creator} },
+				},
+			});
+			this.prisma.channel.update({ where: { id: channel.id }, data: { updatedAt: new Date() } });
+			return channel.id;
+		} catch (error) { console.log("Failed to create new channel: ", error); }
 	}
 
 	async	get_channels() { return await this.prisma.channel.findMany({ where: {dm: false } } ); }
@@ -281,46 +298,6 @@ export class ChatService {
 			console.log('get_channel_by_id error:', error);
 			throw new WsException(error);
 		}
-	}
-
-	async	get_preview(channelId: number, email: string) : Promise<chatPreview> {
-		try {
-			const channel = await this.get_channel_by_id(channelId);
-			const preview = await this.create_preview(channel, email);
-			return preview;
-		} catch (error) {
-			console.log("Failed to get channel preview: ", error);
-			throw new WsException(error);
-		}
-	}
-
-	async	create_preview(source: any, email: string) {
-		let messageCount = 0;
-		if (source.messages) messageCount = source.messages.length;
-		let dmName = '';
-		let own = source.owners; // may break if point to wrong place
-		if (own.length > 1) {
-			dmName = own[0].email === email ? own[1].username : own[0].username;
-		} else dmName = 'Empty Chat';
-		let otherId = -1;
-		if (own.length > 1) {
-			otherId =
-				own[0].email === email
-					? own[1].id
-					: own[0].id;
-		} else otherId = own[0].id;
-		const data: chatPreview = {
-			id: source.id,
-			dm: source.dm,
-			name: source.dm ? dmName : source.name,
-			isPassword: source.isPassword,
-			updateAt: source.updateAt,
-			// eslint-disable-next-line unicorn/no-nested-ternary, prettier/prettier
-			lastMsg: source.isPassword ? '' : (messageCount > 0 ? source.messages[0].msg : ''),
-			ownerEmail: own.length > 0 ? own[0].email : '',
-			ownerId: otherId,
-		};
-		return data;
 	}
 
 	async	get_members_of_channel() {

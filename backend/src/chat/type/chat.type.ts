@@ -3,18 +3,6 @@ export type Pair = {
 	name: string;
 };
 
-export type chatPreview = {
-	id: number;
-	dm: boolean;
-	name: string;
-	isPassword: boolean;
-	updateAt: string;
-	lastMsg: string;
-	unreadCount?: number;
-	ownerEmail: string;
-	ownerId: number;
-};
-
 export type oneMessage = {
 	msgId: number;
 	id: number;
