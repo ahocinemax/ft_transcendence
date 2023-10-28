@@ -5,7 +5,7 @@ import ChannelNamePopup from '../../components/channel_name_popup/channel_name_p
 import PrivateChanPopup from '../../components/Private_chan_popup/private_chan_popup';
 import SocketContext from '../../context/socketContext';
 import { backFunctions } from '../../outils_back/BackFunctions';
-import UserContext from '../../context/userContent';
+import UserContext, { Email } from '../../context/userContent';
 import { channelModel } from '../../interface/global'
 // import { act } from '@testing-library/react';
 
@@ -82,7 +82,6 @@ const Chat = () => {
     socket?.emit('get mp', userInfos.email.email, (data: any) => {});
     socket?.on('fetch mp', (data: channelModel[]) => {
       data = !Array.isArray(data) ? Array.from(data) : data;
-      console.log("🚀 ~ Recieved MPs:", data)
       setPriv_msgs(data);
     });
     return () => {
@@ -231,6 +230,10 @@ const Chat = () => {
     socket?.emit('new channel', data);
   }
 
+  const check_user = (email: string): boolean => {
+    return email === userInfos.email.email;
+  }
+
   return (
     <div className="chat">
       <div className="chan_privmsg_container">
@@ -278,6 +281,7 @@ const Chat = () => {
               <h1 className="channel_title active_channel_title">#{channelName}</h1>
           <ul>
           {activeChannel && messagesData && messagesData.map((message: MessageData, index: number) => {
+              const textColor = check_user(message.email) ? "#8f35de" : "#275ec4";
               return (
                 <li key={index}>
                   <div
@@ -289,7 +293,7 @@ const Chat = () => {
                     <span
                         className="message_sender"
                         onClick={() => handleUserClick(message.name)}
-                        style={{color: message.name === "Admin" ? "red" : "#8f35de"}}
+                        style={{color: textColor}}
                     >
                         <strong>{message.name} </strong>
                     </span>
