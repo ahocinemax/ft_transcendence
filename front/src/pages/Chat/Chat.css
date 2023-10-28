@@ -241,7 +241,7 @@
     
     /* Styles pour les messages de l'utilisateur 2 */
     .not_user {
-      background-color: rgba(87, 21, 157, 0.85); /* Couleur de fond pour l'utilisateur 2 */
+      background-color: rgba(75, 26, 126, 0.802); /* Couleur de fond pour l'utilisateur 2 */
       color: white; /* Couleur du texte pour l'utilisateur 2 */
       align-self: flex-end; /* Alignement à droite pour l'utilisateur 2 */
       text-shadow: 2px 2px 2px rgb(0, 0, 0);
