@@ -10,64 +10,235 @@
     flex-direction: column;
   }
 
+  /* WAITING POPUP ANIMATION */
   .waiting_popup {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.604);
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-  }
-
-  .game_mode_title {
-    color: rgb(107, 2, 236);
-    font-size: 2em;
-    text-shadow: 2px 2px 2px rgb(249, 249, 249),
-      5px 5px 5px rgba(242, 238, 7, 0.924),
-      6px 6px 6px rgba(234, 170, 53, 0.997);
-    font-family: 'Press Start 2P', sans-serif;
-    text-align: center;
-    cursor: pointer;
-    padding-top: 2.5%;
+    backdrop-filter: blur(5px);
   }
 
   .waiting_popup_container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    background-color: #0a0909e4;
-    border-radius: 0 0 10px 10px;
+    background-color: #1a1a1a;
+    border-radius: 10px;
     padding: 20px;
-    box-shadow: 0px 0px 10px rgba(128, 16, 177, 0.3);
-    height: auto;
-    width: auto;
+    box-shadow: 0 0 20px rgba(107, 2, 236, 0.7);
+    width: 25%;
+    text-align: center;
+  }
+
+  .game_mode_title {
+    color: #6b02ec;
+    font-size: 2em;
+    font-family: 'Press Start 2P', sans-serif;
+    text-align: center;
+    margin-top: 20px;
   }
 
   .h1_popup_waiting {
-    color: rgb(255, 255, 255);
-    font: bold;
+    color: #ffffff;
     font-size: 1.75em;
     font-family: 'Press Start 2P', sans-serif;
-    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
-    padding-bottom: 2.5%;
-    padding-top: 10%;
+    margin-top: 20px;
   }
 
-
   .popup_close {
-    position: absolute; /* La croix est positionnée en haut à droite du pop-up */
-    right: 2%;
-    top: 2%;
-    font-size: 3em;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 1.5em;
     color: #ffffff;
     cursor: pointer;
   }
-  
+
+  .waiting_popup_container { /* Ajout d'une animation pour le popup */
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .pong-animation {
+    width: 100%;
+    height: 200px; /* Ajustez la hauteur de l'animation en fonction de vos besoins */
+    position: relative;
+    padding-bottom: 8%;
+  }
+
+  .player {
+    width: 20px; /* Ajustez la largeur des joueurs */
+    height: 60px; /* Ajustez la hauteur des joueurs */
+    background-color: #ffffff; /* Couleur des joueurs */
+    position: absolute;
+    top: 70px; /* Ajustez la position verticale des joueurs */
+  }
+
+  .player1 {
+    left: 10px; /* Ajustez la position horizontale du joueur 1 */
+    animation: ping 5s infinite linear;
+  }
+
+  .player2 {
+    right: 10px; /* Ajustez la position horizontale du joueur 2 */
+    animation: pong 5s infinite linear;
+  }
+
+  .ball {
+    width: 20px; /* Ajustez la taille de la balle */
+    height: 20px; /* Ajustez la taille de la balle */
+    background-color: #ffffff; /* Couleur de la balle */
+    border-radius: 50%; /* Forme ronde */
+    position: absolute;
+    top: 90px; /* Ajustez la position verticale initiale de la balle */
+    left: 50%; /* Ajustez la position horizontale initiale de la balle */
+    transform: translateX(-50%); /* Centrage horizontal */
+    animation: bounce 5s infinite linear; /* Ajustez la durée de l'animation si nécessaire */
+  }
+
+  @keyframes bounce {
+    0% {
+      top: 34%;
+      left: 52%;
+    }
+    8.3% {
+      top: 52%;
+      left: 90%;
+    }
+    24.9% {
+      top: 85%;
+      left: 8%;
+    }
+    30% {
+      top: 98%;
+      left: 27%;
+    }
+    41.5% {
+      top: 70%;
+      left: 90%;
+    }
+    58.1% {
+      top: 55%;
+      left: 8%;
+    }
+    74.7% {
+      top: 13%;
+      left: 90%;
+    }
+    79% {
+      top: 1%;
+      left: 70%;
+    }
+    91.3% {
+      top: 22%;
+      left: 8%;
+    }
+    100% {
+      top: 34%;
+      left: 52%;
+    }
+  }
+
+  @keyframes ping {
+    0% {
+      top: 10%;
+    }
+    5% {
+      top: 10%;
+    }
+    9% {
+      top: 24%;
+    }
+    13% {
+      top: 17%;
+    }
+    24.9% {
+      top: 82%;
+    }
+    47% {
+      top: 37%;
+    }
+    52% {
+      top: 41%;
+    }
+    56% {
+      top: 64%;
+    }
+    58.1% {
+      top: 54%;
+    }
+    70% {
+      top: 74%;
+    }
+    84% {
+      top: 12%;
+    }
+    91.3% {
+      top: 18%;
+    }
+    100% {
+      top: 10%;
+    }
+  }
+
+  @keyframes pong {
+    0% {
+      top: 90%;
+    }
+    8.3% {
+      top: 51%;
+    }
+    20% {
+      top: 60%;
+    }
+    25% {
+      top: 34%;
+    }
+    41.5% {
+      top: 68%;
+    }
+    46% {
+      top: 36%;
+    }
+    52% {
+      top: 18%;
+    }
+    58.1% {
+      top: 53%;
+    }
+    66% {
+      top: 14%;
+    }
+    70% {
+      top: 20%;
+    }
+    74.7% {
+      top: 10%;
+    }
+    91.3% {
+      top: 10%;
+    }
+    100% {
+      top: 90%;
+    }
+  }
+
+  /* END OF POPUP ANIMATION */
+
   .start_heading {
     color: rgb(107, 2, 236);
     font-size: 4.5em;
@@ -87,11 +258,11 @@
     overflow: hidden;
     transition: max-height 1s ease;
   }
-  
+
   .show {
     max-height: 6em; /* Adjust the value as needed */
   }
-  
+
   .gamemode {
     color: rgb(107, 2, 236);
     font: bold;
@@ -102,12 +273,12 @@
     font-family: 'Press Start 2P', sans-serif;
     padding-bottom: 5px;
   }
-  
+
   .gamemode:hover
   {
     cursor: pointer;
   }
-  
+
   .gamemode.Hard
   {
     text-shadow: 0.5px 0.5px 0.5px rgb(249, 249, 249),
@@ -115,7 +286,7 @@
       3px 3px 3px rgb(234, 162, 53);
       font-size: 1.125em;
   }
-  
+
   .gamemode.Hardcore
   {
     text-shadow: 0.5px 0.5px 0.5px rgb(249, 249, 249),

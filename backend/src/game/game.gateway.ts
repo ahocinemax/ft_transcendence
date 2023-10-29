@@ -23,7 +23,6 @@ export class GameGateway implements OnGatewayDisconnect {
 		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() mode: string
 	) {
-		console.log("🚀 ~ file: game.gateway.ts:26 ~ GameGateway ~ mode: ", mode)
 		// s'il est déjà dans une waitlist, on peut décider de l'enlever de la waitlist et le mettre dans une autre
 		// a chaque fois qu'il quitte une waitlist et en rejoint une autre, il revient en haut de la pile, donc il devra attendre plus longtemps
 		if (this.gameService.isInRoom(client) || this.gameService.isInWaitlist(client, mode)) {
@@ -32,7 +31,7 @@ export class GameGateway implements OnGatewayDisconnect {
 		}
 		await this.gameService.addToWaitlist(client, mode);
 		console.log("user ", client.data.name, " added to waitlist", mode);
-		console.log("waitlist [", mode, "]: ", this.gameService.getWaitlist(mode));
+		console.log("waitlist [", mode, "]: ", this.gameService.getWaitlist(mode).map(player => player.name));
 		if (this.gameService.getWaitlist(mode).length >= 2) {
 			const roomId: {id: number, name: string} = this.gameService.generateRoomId();
 			this.gameService.createRoomAddPlayers(roomId, mode);

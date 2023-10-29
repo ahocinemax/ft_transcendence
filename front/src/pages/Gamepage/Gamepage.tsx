@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { useUserContext } from '../../context/userContent';
 import './Gamepage.css';
 
 function Gamepage() {
@@ -9,7 +10,8 @@ function Gamepage() {
 	// eslint-disable-next-line
 	const [ballSpeedX, setBallSpeedX] = useState(50); // Vitesse horizontale de la balle
 	const [ballSpeedY, setBallSpeedY] = useState(50); // Vitesse verticale de la balle
-
+	const { roomID } = useUserContext();
+	// console.log("room récupérée depuis gamepage: ", roomID.roomID);
 	const handleMouseMove1 = (event: any) => {
 		const mouseY = event.clientY; // Obtenez la position verticale de la souris
 		setPlayerBar1Y(Math.min(Math.max(mouseY - 200, 0), 535)); // Ajustez la position de la première barre du joueur
@@ -63,7 +65,6 @@ function Gamepage() {
 			window.removeEventListener('mousemove', handleMouseMove2);
 		};
 	}, [ballX, ballY, ballSpeedX, ballSpeedY]);
-
 
 	return (
 		<div className="Gamebackground">

@@ -11,6 +11,7 @@ import { Mutex } from 'async-mutex';
 import { Room } from './interface/room.interface';
 // import { GameData } from './interface/game-data.interface';
 import { waitingPlayer } from './interface/player.interface';
+import { GameData } from './interface/game-data.interface';
 
 const paddleSpeed = 1;
 
@@ -274,18 +275,19 @@ export class GameService {
 	{ return await this.prisma.game.findUniqueOrThrow({ where: { id: id, }, });	}
 
 	async startGame(roomID: number, server: Server){
-		const gameData = {
+		const gameData: GameData = {
 			paddleLeft: 0,
 			paddleRight: 0,
-			ballX: 0,
-			ballY: 0,
-			ScorePlayer1: 0,
-			ScorePlayer2: 0,
-			NamePlayer1: GameService.rooms.find((room) => room.id === roomID).NamePlayer1,
-			NamePlayer2: GameService.rooms.find((room) => room.id === roomID).NamePlayer2,
-			AvatarPlayer1: GameService.rooms.find((room) => room.id === roomID).AvatarPlayer1,
-			AvatarPlayer2: GameService.rooms.find((room) => room.id === roomID).AvatarPlayer2,
+			xBall: 0,
+			yBall: 0,
+			player1Score: 0,
+			player2Score: 0,
+			player1Name: GameService.rooms.find((room) => room.id === roomID).NamePlayer1,
+			player2Name: GameService.rooms.find((room) => room.id === roomID).NamePlayer2,
+			player1Avatar: GameService.rooms.find((room) => room.id === roomID).AvatarPlayer1,
+			player2Avatar: GameService.rooms.find((room) => room.id === roomID).AvatarPlayer2,
 			startTime: new Date(),
+			gameID: roomID,
 		};
 		const mutex = new Mutex();
 		// init ball (roomID)
@@ -321,7 +323,6 @@ export class GameService {
 		const avatar = await this.userService.getUserByName(username).then((user) => user.image);
 		const element: waitingPlayer = { name: username, socket: client, avatar: avatar };
 		GameService.waitlists[mode].push(element);
-		// console.log("🚀 ~ GameService ~ addToWaitlist ", GameService.waitlists[mode])
 	}
 
 	removeFromWaitlist(client: any, mode: string) {
