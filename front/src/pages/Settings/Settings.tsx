@@ -155,10 +155,10 @@ const Settings = () => {
            backgroundImage: selectedImage
           ? `url(${URL.createObjectURL(selectedImage)})` 
           : '', 
-         }}></div>
-        {/* <div className="round_div_settings_img" style={{ backgroundImage: `url(${image.image})` }}></div> */}
+         }}></div>*/}
+        <div className="round_div_settings_img" onClick={openImageUploader} style={{ backgroundImage: `url(${image.image})` }}></div>
         <p className="info_settings">{userName.userName}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
-        <p className="info_settings">#Rank</p>
+        <p className="info_settings"></p>
         <div className="twofa_container">
           <span
             className={`twoFA_status ${!is2FAEnabled ? 'clickable' : ''}`}
