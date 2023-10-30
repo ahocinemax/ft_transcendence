@@ -83,7 +83,7 @@ export const backFunctions = {
     },
 
     async addFriend(name: string, friend: string, UpdateUser: unknown): Promise<any> {
-        const response = await UserApi.fetchPost('/friend/add/' + name + '/' + friend, UpdateUser, addFriendCallback);
+        const response = await UserApi.fetchPatch('/friend/add/' + name + '/' + friend, UpdateUser, addFriendCallback);
         return await response;
     },
 
@@ -104,7 +104,7 @@ export const backFunctions = {
     },
 
     async blockUser(name: string, blockUser: string, UpdateUser: unknown): Promise<any> {
-        const response = await UserApi.fetchPost('/block/' + name + '/' + blockUser, UpdateUser, blockCallback);
+        const response = await UserApi.fetchPatch('/block/' + name + '/' + blockUser, UpdateUser, blockCallback);
         return await response;
     },
 
