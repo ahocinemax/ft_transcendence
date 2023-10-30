@@ -8,6 +8,7 @@ import {
 	ConnectedSocket,
 	MessageBody,
 	OnGatewayConnection,
+	OnGatewayDisconnect,
 	SubscribeMessage, 
 	WebSocketGateway,
 	WebSocketServer,
@@ -25,7 +26,7 @@ import { AuthenticatedSocket } from 'src/websocket/types/websocket.type';
 @UseFilters(new ProperWsFilter())
 
 @WebSocketGateway()
-export class ChatGateway implements OnGatewayConnection {
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer() 
 	server: Server;
 
@@ -46,6 +47,11 @@ export class ChatGateway implements OnGatewayConnection {
 			await client?.join(MP.name);
 	}
 
+	async handleDisconnect(@ConnectedSocket() client: AuthenticatedSocket) {
+		this.logger.log('[DISCONNECTED]: ' + client.data.name);
+		client.removeAllListeners();
+	}
+
 	@SubscribeMessage('new channel')
 	async handleNewChannel(
 		@MessageBody() data: ChannelDTO,
@@ -63,6 +69,13 @@ export class ChatGateway implements OnGatewayConnection {
 		}
 	}
 
+	@SubscribeMessage('get channels')
+	async handleFetchChannels(@MessageBody() email: string, @ConnectedSocket() client: Socket) {
+		this.logger.log("[GET CHANNELS]");
+		const data = await this.chatService.get_channels();
+		client.emit('fetch channels', data);
+	}
+
 	@SubscribeMessage('new message')
 	async handleNewMessage(@MessageBody() data, @ConnectedSocket() client: Socket) {
 		this.logger.log("[NEW  MESSAGE]");
@@ -76,31 +89,24 @@ export class ChatGateway implements OnGatewayConnection {
 		}
 	}
 
-	@SubscribeMessage('new mp')
+	@SubscribeMessage('get messages')
+	async handleGetMessages(@MessageBody() channelId: number, @ConnectedSocket() client: Socket) {
+		const data = await this.chatService.messages_from_channel_id(channelId); 
+		client.emit('fetch messages', data);
+	}
+
+	@SubscribeMessage('new mp') // mp is a private channel between two users
 	async handleNewPrivateMessage(
 			@MessageBody() data: any,
 			@ConnectedSocket() client: Socket) {
-		this.logger.log("[NEW PRIVATE MESSAGE SESSION]");
+		this.logger.log("[NEW PRIVATE MESSAGE CHANNEL]");
 		const to_send = await this.chatService.create_mp(data[0], data[1]);
 		if (to_send === undefined)
 			client.emit('exception', 'failed to create the message, please try again');
 		else {
-			const all_msg = await this.chatService.fetch_messages(to_send);
-			client.emit('fetch mp', all_msg);
+			client.join(data[1].name);
+			client.emit('update private request');
 		}
-	}
-
-	@SubscribeMessage('get messages')
-	async handleGetMessages(@MessageBody() channelId: number, @ConnectedSocket() client: Socket) {
-		const data = await this.chatService.fetch_messages(channelId); 
-		client.emit('fetch messages', data);
-	}
-
-	@SubscribeMessage('get channels')
-	async handleFetchChannels(@MessageBody() email: string, @ConnectedSocket() client: Socket) {
-		this.logger.log("[GET CHANNELS]");
-		const data = await this.chatService.get_channels();
-		client.emit('fetch channels', data);
 	}
 
 	@SubscribeMessage('get mp')
