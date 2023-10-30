@@ -291,12 +291,12 @@
 					<div className="profile_picture" style={{ backgroundImage: `url(${image.image})` }}></div>
    					<h1 className="user_pseudo">{userName.userName}</h1>
    					<div className="user_stats">
-   						<h1 className="user_rank">Rank: {rank.rank}</h1>
+   						<h1 className="user_rank">Rank #{rank.rank}</h1>
    						<div className="user_info">
-   							<p>PlayTime: {play.play}</p>
+   							{/* <p>PlayTime: {play.play}</p> */}
 							<p>Score: {score.score}</p>
    							<p>Victoires: {wins.wins}</p>
-   							<p>WinRate: {rate.rate * 100} %</p>
+   							<p>WinRate: {rate.rate} %</p>
 							{/* <p>(↑PlayTime + score: example d'affichage. vous pouvez changer!)</p> */}
    						</div>
    					</div>
@@ -305,19 +305,19 @@
   			  {leaderboardData ? leaderboardData.map((user: User, index: number) => (
   				<div className={`rank_div ${index === 0 ? 'rank_div_gold' : index === 1 ? 'rank_div_silver' : index === 2 ? 'rank_div_bronze' : ''}`} key={index}>
   				  <div className="position">
-  					<h1 className="h1">#{index + 1}</h1>
+  					<h1 className="h1 leaderboard">#{index + 1}</h1>
   				  </div>
   				  <div className="pseudo_div">
-  					<h1 className="h1">{user.name}</h1>
+  					<h1 className="h1 leaderboard">{user.name}</h1>
   				  </div>
   				  <div className="games_div">
-  					<h1 className="h1">{user.gamesPlayed}</h1>
+  					<h1 className="h1 leaderboard">Games: {user.gamesPlayed}</h1>
   				  </div>
   				  <div className="pseudo_div">
-  					<h1 className="h1">{user.gamesWon}</h1>
+  					<h1 className="h1 leaderboard">Wins: {user.gamesWon}</h1>
   				  </div>
   				  <div className="pseudo_div">
-  					<h1 className="h1">{user.winRate * 100}%</h1>
+  					<h1 className="h1 leaderboard">Ratio: {user.winRate}%</h1>
   				  </div>
   				</div>
   			  )) : 'Loading...'}
