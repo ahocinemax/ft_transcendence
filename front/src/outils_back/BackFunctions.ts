@@ -93,7 +93,7 @@ export const backFunctions = {
     },
 
     /*block*/
-    async getBlockUser(name: string): Promise<any> {
+    async getBlockedUser(name: string): Promise<any> {
         const response = await UserApi.fetchGet('/block/' + name, getBlockCallback);
         return await response;
     },  
@@ -112,6 +112,12 @@ export const backFunctions = {
         const response = await UserApi.fetchDelete('/block/remove/' + name + '/' + blockUser, removeBlockCallback);
         return await response;
     },
+
+    async getGameHistory(id: number): Promise<any> {
+        // console.log("fetching getGameHistory...");
+        return await UserApi.fetchPost('/user/getGameHistory', {id: id}, getGameHitoryCallback);
+    }
+    
     
 };
 
@@ -188,5 +194,10 @@ export const blockCallback = (result: any) => {
 
 export const removeBlockCallback = (result: any) => {
     console.log("removeFriendCallback: ", result);
+    return result;
+}
+
+    export const getGameHitoryCallback = (result: any) => {
+    console.log("getGameHitoryCallback: ", result);
     return result;
 }

@@ -2,6 +2,7 @@ import {
 	Controller,
 	Delete,
 	Get,
+	Post,
 	Param,
 	Patch,
 	Req,
@@ -47,6 +48,6 @@ export class UserController {
 	@Get('getLeaderboard')
 	async getLeader() { return this.userService.getLeaderBoard(); }
 
-	@Get('getGameHistory')
+	@Post('getGameHistory')
 	async getGameHistory(@Req() req: Request) { return this.userService.getGameHistory(req.body.id); }
 }

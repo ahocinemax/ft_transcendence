@@ -42,6 +42,7 @@ export const UserApi = {
 
 	async fetchPost(url: string, data: unknown, callback: any) {
 		//console.log("Fetch [POST]:", `${process.env.REACT_APP_SERVER_HOST}${url}`);
+		console.log("data:", data);
 		const headers = await this.authHeader();
 			try {
 				console.log("Fetch [POST]:", `${process.env.REACT_APP_SERVER_HOST}${url}`);

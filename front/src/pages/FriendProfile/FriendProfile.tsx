@@ -13,25 +13,36 @@ const userInfoInit: userModel = {
 	name: "",
 	image: "",
 	friends: [],
+    blocked: [],
 	gamesLost: 0,
 	gamesPlayed: 0,
 	gamesWon: 0,
 	rank: 0,
 	score: 0,
 	winRate: 0,
+    gameHistory: []
 };
 	
-	const initializeUser = (result: any, setUserInfo: any) => {
+	const initializeUser = async  (result: any, setUserInfo: any) => {
+		const friendList = await backFunctions.getFriend(result.name);
+		const blockedList = await backFunctions.getBlockedUser(result.name);
+		const gameHistoryList = await backFunctions.getGameHistory(result.id);
 		userInfoInit.id = result.id;
 		userInfoInit.name = result.name;
 		userInfoInit.image = result.image;
-		userInfoInit.friends = result.frirends;
+		userInfoInit.friends = friendList;
+		userInfoInit.blocked = blockedList;
+		// setGameHistory(gameHistoryList);
+		userInfoInit.gameHistory = gameHistoryList;
 		userInfoInit.gamesLost = result.gamesLost;
 		userInfoInit.gamesPlayed = result.gamesPlayed;
 		userInfoInit.gamesWon = result.gamesWon;
 		userInfoInit.rank = result.rank;
 		userInfoInit.score = result.score;
 		userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
+		console.log("friendList", userInfoInit.friends);
+		console.log("blockedList", userInfoInit.blocked);
+		console.log("gameHistoryList", userInfoInit.gameHistory);
 		setUserInfo(userInfoInit);
 	};
 
