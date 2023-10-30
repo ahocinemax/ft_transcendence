@@ -28,7 +28,6 @@ const CheckUser = () => {
 		return true;
 	}
 
-
 	useEffect(() => {
 		async function initialize() {
 			// まずトークンの有効性を確認

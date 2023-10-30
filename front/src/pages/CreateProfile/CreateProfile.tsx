@@ -20,7 +20,6 @@ const Settings = () => {
     setImage,
   } = useUserContext();
 
-
   async function createUser(value: string) {
     let UserCreation = {
       name: value,

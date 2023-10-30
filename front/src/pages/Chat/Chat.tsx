@@ -75,6 +75,7 @@ const Chat = () => {
     socket?.emit('get channels', userInfos.email.email, (data: any) => {}); // 1st load of channels
     socket?.on('fetch channels', (data: channelModel[]) => {
       data = !Array.isArray(data) ? Array.from(data) : data;
+      console.log("updating channels: ", data);
       setChannels(data);
     });
 
@@ -90,7 +91,7 @@ const Chat = () => {
     };
   }, [socket]);
 
-  useEffect(() => { // handle events : 'fetch message', 'update channel request'
+  useEffect(() => { // handle events : 'fetch message', 'update requests'
     if (activeChannel && socket) socket.emit('get messages', activeChannel, (data: any) => {});
     socket?.on('fetch messages', (updatedMessagesData) => { // Just clicked on chan, must fetch messages
         setMessagesData(updatedMessagesData);
@@ -234,7 +235,7 @@ const Chat = () => {
       isProtected: res.private
     };
 
-    socket?.emit('new channel', data);
+    socket?.emit('new channel', data); 
   }
 
   const check_user = (email: string): boolean => {

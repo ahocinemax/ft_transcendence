@@ -4,14 +4,20 @@ import { Logger } from '@nestjs/common';
 import { AuthenticatedSocket } from 'src/websocket/types/websocket.type';
 import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
 import { GameService } from './game.service';
+import { Room } from './interface/room.interface';
 
 @WebSocketGateway()
 export class GameGateway implements OnGatewayDisconnect {
 	constructor(
 		private websocketService: WebsocketService,
 		private gameService: GameService
-	) {}
+	) {} 
 	private logger: Logger = new Logger('GameGateway');
+
+	// async handleConnection(client: AuthenticatedSocket) {
+	// 	this.logger.log(`Client connected to Game `);
+	// 	this.websocketService.updateStatus(client, 'busy');
+	// }
 
 	handleDisconnect(client: any) {
 		this.websocketService.updateStatus(client, 'online');
@@ -53,7 +59,21 @@ export class GameGateway implements OnGatewayDisconnect {
 		}
 	}
 
-	// @SubscribeMessage('set mode one')
+	@SubscribeMessage('room infos request')
+	async handleGettingRoomInfos(
+		@ConnectedSocket() client: AuthenticatedSocket,
+		@MessageBody() roomId: string
+	) {
+		const room: Room = this.gameService.getRoomById(roomId);
+		if (room === null) {
+			console.log("room not found!");
+			return;
+		}
+		console.log("🚀 ~ file: GameGateway ~ room:", Object.keys(room).length);
+		// client.emit('room infos response', room);
+	}
+
+	// @SubscribeMessage('set mode one') 
 	// @SubscribeMessage('set mode two')
 	// @SubscribeMessage('set mode three')
 }

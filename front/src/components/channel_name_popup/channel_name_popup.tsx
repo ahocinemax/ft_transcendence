@@ -1,4 +1,4 @@
-import  { useState, useContext, useEffect, useCallback } from 'react';
+import  { useState, useEffect, useCallback } from 'react';
 import './channel_name_popup.css';
 import { backFunctions } from '../../outils_back/BackFunctions';
 

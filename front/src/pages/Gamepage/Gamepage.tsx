@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
+import SocketContext from '../../context/socketContext';
 import { useUserContext } from '../../context/userContent';
+import { Room } from '../../interface/BackInterface';
 import './Gamepage.css';
 
 function Gamepage() {
+	const { socket } = useContext(SocketContext).SocketState;
 	const [playerBar1Y, setPlayerBar1Y] = useState(150);
 	const [playerBar2Y, setPlayerBar2Y] = useState(150);
 	const [ballX, setBallX] = useState(0); // Position horizontale de la balle
@@ -21,6 +24,25 @@ function Gamepage() {
 		const mouseY = event.clientY; // Obtenez la position verticale de la souris
 		setPlayerBar2Y(Math.min(Math.max(mouseY - 200, 0), 535)); // Ajustez la position de la deuxième barre du joueur
 	};
+
+	// send request only once:
+	const [requestSent, setRequestSent] = useState(false);
+	useEffect(() => {
+	if (!requestSent) {
+		socket?.emit("room infos request", roomID.roomID);
+		setRequestSent(true);
+	}
+	}, [requestSent]);
+
+
+	useEffect(() => {
+		socket?.on("room infos response", (response: Room) => {
+			console.log("room infos: ", response);
+		});
+		return () => {
+			socket?.off("room infos response");
+		}
+	}, [socket]);
 
 	let lastTimestamp = 0;
 

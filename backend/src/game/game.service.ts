@@ -330,8 +330,6 @@ export class GameService {
 		GameService.waitlists[mode] = GameService.waitlists[mode].filter((player) => player.name !== username);
 	}
 
-	getWaitlist(mode: string) { return GameService.waitlists[mode]; }
-
 	generateRoomId() {
 		let id = 0;
 		let roomId = "room_";
@@ -379,4 +377,19 @@ export class GameService {
 		player1.socket.emit('get room id', roomId);
 		player2.socket.emit('get room id', roomId);
 	}
+
+	getRoomById(roomId: string) : Room | null {
+		// console.log("Parcours la liste et cherche [", roomId, "]:");
+		// GameService.rooms.forEach((room) => {
+		// 	console.log(room.name);
+		// 	if (room.name === roomId) {
+		// 		console.log("room found");
+		// 		return room;
+		// 	}
+		// });
+		// return null;
+		return GameService.rooms.find((room) => room.name === roomId);
+	}
+
+	getWaitlist(mode: string) { return GameService.waitlists[mode]; }
 }

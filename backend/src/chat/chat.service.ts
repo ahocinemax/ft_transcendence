@@ -75,6 +75,7 @@ export class ChatService {
 
 	async	loadMessages(param: any): Promise<oneMessage[]> {
 		try {
+			if (!param) return (null);
 			const source = await param.messages;
 			const data = [];
 			if (source)

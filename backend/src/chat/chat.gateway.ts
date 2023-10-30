@@ -18,6 +18,7 @@ import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { UserService } from 'src/user/user.service';
 import { ChannelDTO, MessageDTO } from './dto/chat.dto';
+import { AuthenticatedSocket } from 'src/websocket/types/websocket.type';
 
 @UsePipes(new ValidationPipe()) 
 @UseFilters(new HttpToWsFilter())
@@ -32,7 +33,7 @@ export class ChatGateway implements OnGatewayConnection {
 
 	constructor(private chatService: ChatService, private UserService: UserService) {}
 
-	async handleConnection(@ConnectedSocket() client: Socket) {
+	async handleConnection(@ConnectedSocket() client: AuthenticatedSocket) {
 		const user = await this.UserService.getUserByName(client.data.name as string);
 		this.logger.log('[NEW CONNECTION]: ' + user.name);
 
@@ -71,8 +72,6 @@ export class ChatGateway implements OnGatewayConnection {
 		if (to_send === undefined)
 			client.emit('exception', 'failed to create the message, please try again');
 		else {
-			const all_msg = await this.chatService.fetch_messages(data.channelId);
-			// client.emit('fetch messages', all_msg);
 			this.server.to(channel.name).emit('update message request');
 		}
 	}

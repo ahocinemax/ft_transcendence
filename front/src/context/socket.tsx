@@ -56,10 +56,11 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 	useEffect(() => {
 		if (!name) return setLoading(false);
 		socket.io.opts.query!.name = name; // rajouter le header cors ici
-		socket.connect();
+		if (!socket.connected) socket.connect();
 		SocketDispatch({type: 'update_socket', payload: socket});
 		StartListeners();
 		SendHandshake();
+		console.log("tset::::::::::::::::::::::");
 	}, [name, socket]);
 
 	useEffect(() => {
