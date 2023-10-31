@@ -427,8 +427,8 @@ const Chat = () => {
           <div className="chat_button_container">
             <div className="chat_buttons DUEL"></div>
             <div className="chat_buttons MSG" onClick={() => addPrivateUser(selectedUser)}></div>
-            <div className="chat_buttons ADD_FRIEND"></div>
-            <div className="chat_buttons BLOCK"></div>
+            <div className="chat_buttons ADD_FRIEND" onClick={() => backFunctions.addFriend(userInfos.userName.userName, selectedUser, userInfos)}></div>
+            <div className="chat_buttons BLOCK"  onClick={() => backFunctions.blockUser(userInfos.userName.userName, selectedUser, userInfos)}></div>
           </div>
           <div className="chat_button_container">
             <div className="chat_buttons MUTE"></div>
