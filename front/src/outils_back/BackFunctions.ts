@@ -3,11 +3,10 @@ import { User } from "../interface/BackInterface";
 
 export const backFunctions = {
     /* user */
-    async getUser(name: string): Promise<User | null> {
-        try{ return await UserApi.fetchGet('/user/' + name, getUserCallback); }
-        catch(err) {
-            return null;
-        }
+    async getUserByName(name: string): Promise<User | null> {
+        // console.log("fetching getUser...");
+        try{ return await UserApi.fetchGet('/user/name/' + name, getUserCallback); }
+        catch(err) { return null; }
     },
     async createUser(user: {name: string, isRegistered: boolean}): Promise<any> {
 		return await UserApi.fetchPost('/auth/Oauth42', user, createUserCallback);
