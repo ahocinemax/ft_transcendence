@@ -146,7 +146,7 @@
     align-items: center;
     justify-content: center;
     height: 30%;
-    width: 200%;
+    width: 250%;
     box-shadow: 0 5px 4px rgba(0, 0, 0, 0.2);
     border: 0.6vh solid rgb(0, 0, 0);
     border-radius: 10%;
@@ -178,14 +178,14 @@
     background-position: center;
 }
 
-.scores_div_bottom_main_profile 
+.scores_div_bottom
 {
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 70%;
     width: 100%;
-    margin-top: 10%;
+    /* margin-top: 10%; */
 }
 
 .friendlist 
@@ -235,34 +235,26 @@
   border-bottom-right-radius: 30px;
   height: 80%;
   width: 10%;
-  margin: 0.5%;
+  display: flex;
+  flex-direction: column;
 }
 
 .friend_profile_img {
-  position: relative;
-  background-color: black;
-  height: 5vh;
-  width: 5vh;
-  left: 30%;
-  top: 5%;
   border-radius: 50%;
-  border: 0.2vh solid rgb(255, 255, 255);
-  background-image: url(../../../public/profile_img/avatar.png);
+  border: 0.2vh solid rgb(203, 7, 7);
+  /* background-image: url(../../../public/profile_img/avatar.png); */
   background-size: cover;
   background-position: center;
-  flex-grow: 0;
-  flex-shrink: 0;
-  margin-right: 5%;
 }
 
 .friend_profile_name{
   color: rgb(255, 255, 255);
   text-align: center;
   font-weight: bold;
-  font-size: 0.8em;
+  font-size: 2em;
   text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
   font-family: 'Press Start 2P', sans-serif;
-  /* margin-top: 15%; */
+  margin-top: 5%;
 }
 
 .match_history 
@@ -349,24 +341,34 @@
 }
 
 .nav_link_profile {
-  width: 15%;
+  width: 14%;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   align-self: center;
-  left : 30%;
+  left : 10%;
 }
 
 
-.scores_div:nth-child(2) .scores_round_div
+.scores_div_main_profile:nth-child(2) .scores_round_div
 {
     height: 5vw;
     width: 5vw;
     background-image: url("/public/crown.png");
 }
 
-.scores_div:nth-child(3) .scores_round_div
+.scores_div_main_profile:nth-child(3) .scores_round_div
 {
     background-image: url("/public/south_park.png");
+}
+
+.info.main
+{
+    font-size: 1.15em;
+}
+
+.scores_div_main_profile_bottom.main
+{
+    width: 100%;
 }
