@@ -2,16 +2,19 @@ import { SubscribeMessage, WebSocketGateway, OnGatewayDisconnect, OnGatewayConne
 import { WebsocketService } from 'src/websocket/websocket.service';
 import { Logger } from '@nestjs/common';
 import { AuthenticatedSocket } from 'src/websocket/types/websocket.type';
-import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, WebSocketServer } from '@nestjs/websockets';
 import { GameService } from './game.service';
 import { Room } from './interface/room.interface';
+import { Server } from 'socket.io';
 
 @WebSocketGateway()
 export class GameGateway implements OnGatewayDisconnect {
 	constructor(
 		private websocketService: WebsocketService,
 		private gameService: GameService
-	) {} 
+	) {}
+	@WebSocketServer()
+	server: Server;
 	private logger: Logger = new Logger('GameGateway');
 
 	// async handleConnection(client: AuthenticatedSocket) {

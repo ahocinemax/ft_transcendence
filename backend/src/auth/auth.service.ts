@@ -54,7 +54,7 @@ async createDataBase42User(
     const user = await this.getUserByToken_(token);
     console.log("handleDataBaseCreation::: user", user);
     if (user) {
-      this.websocketGateway.onlineFromService(UserDto.name);
+      // this.websocketGateway.onlineFromService(UserDto.name);
       return res.status(200).json({statusCode: 200, path: user});
     }
     if (user42infos)
@@ -83,7 +83,7 @@ async createDataBase42User(
       };
   }
   console.log("finalUser", finalUser);
-  this.websocketGateway.onlineFromService(finalUser.name);
+  // this.websocketGateway.onlineFromService(finalUser.name);
   return res.status(200).json({statusCode: 200, path: finalUser});
 };
 

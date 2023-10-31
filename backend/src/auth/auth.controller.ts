@@ -52,7 +52,7 @@ export class AuthController {
 		this.logger.log("LOG OUT");
 		console.log("logout access_token", req.cookies.access_token);
 		const user = await this.authService.getUserByToken(req.cookies.access_token);
-		if (user) this.WebsocketGateway.offlineFromService(user.name);
+		// if (user) this.WebsocketGateway.offlineFromService(user.name);
 	}
 
 	@Get("token")

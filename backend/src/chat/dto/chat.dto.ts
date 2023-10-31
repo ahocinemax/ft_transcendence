@@ -36,7 +36,7 @@ export class ChannelDTO {
     email: string;
 
     @IsBoolean()
-    private: boolean;
+    dm: boolean;
 
     @IsBoolean()
     isProtected: boolean;

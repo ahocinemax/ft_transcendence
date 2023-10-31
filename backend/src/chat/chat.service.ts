@@ -208,7 +208,7 @@ export class ChatService {
 				},
 			});
 			await this.prisma.channel.update({ where: { id: data.channelId }, data: { updatedAt: new Date() } });
-			return message.id;
+			return message?.id;
 		}
 		catch (error) { throw new WsException(error.message); }
 	}
@@ -234,7 +234,7 @@ export class ChatService {
 			const channel = await this.prisma.channel.create({  
 				data: {
 					name: info.name,
-					private: info.private,
+					private: info.dm,
 					isProtected: info.isProtected,
 					password: password,
 					owners : { connect: { email: info.email, }, },
@@ -249,16 +249,18 @@ export class ChatService {
 		}
 	}
 
-	async create_mp(creator: string, info: ChannelDTO) {
+	async create_mp(creator: string, otherClient: ChannelDTO) {
 		try {
+			let ids: number[] = [];
+			ids.push(await this.userService.getUserByEmail(creator).then((user) => user.id), await this.getUserIdByMail(otherClient.email));
 			const channel = await this.prisma.channel.create({  
 				data: {
-					name: info.name,
+					name: otherClient.name,
 					private: true,
 					dm: true,
-					isProtected: info.isProtected,
+					isProtected: otherClient.isProtected,
 					password: '',
-					owners : { connect: { email: info.email, name: creator} },
+					owners : { connect: ids.map((id) => ({ id: id })), },
 				},
 			});
 			this.prisma.channel.update({ where: { id: channel.id }, data: { updatedAt: new Date() } });
