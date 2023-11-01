@@ -66,12 +66,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() roomId: string
 	) {
 		console.log("🚀 ~ file: GameGateway ~ handleGetRoomInfos ~ roomId", roomId)
-		const room: Room = this.gameService.getRoomById(roomId);
+		const room: Room = this.gameService.getRoomById(roomId, client);
 		if (room === null) {
 			console.log("room not found!");
 			return;
 		}
-		console.log("🚀 ~ sending back room:", room.name);
+		// console.log("🚀 ~ sending back room:", room);
 		client.emit('room infos response', room);
 	}
 
