@@ -101,6 +101,8 @@ model Mute {
   muted         User      @relation(fields: [userId], references: [id])
   channel       Channel   @relation(fields: [channelId], references: [id])
   channelId     Int
+
+  @@unique([userId, channelId])
 }
 
 model Message {

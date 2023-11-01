@@ -113,6 +113,24 @@ export const backFunctions = {
         return await response;
     },
 
+    /*mute*/
+    async getMutedUser(name: string): Promise<any> {
+        const response = await UserApi.fetchGet('/mute/' + name, getMutedCallback);
+        return await response;
+    },
+
+    async addMute(name: string, muteUser: string, UpdateUser: unknown): Promise<any> {
+        const response = await UserApi.fetchPatch('/mute/add/' + name + '/' + muteUser, UpdateUser, addMuteCallback);
+        return await response;
+    }
+
+    ,async removeMute(name: string, muteUser: string): Promise<any> {
+        const response = await UserApi.fetchDelete('/mute/remove/' + name + '/' + muteUser, removeMuteCallback);
+        return await response;
+    },
+
+
+    /* Game History */
     async getGameHistory(id: number): Promise<any> {
         // console.log("fetching getGameHistory...");
         return await UserApi.fetchPost('/user/getGameHistory', {id: id}, getGameHitoryCallback);
@@ -197,7 +215,22 @@ export const removeBlockCallback = (result: any) => {
     return result;
 }
 
-    export const getGameHitoryCallback = (result: any) => {
+export const getMutedCallback = (result: any) => {
+    console.log("getMutedCallback: ", result);
+    return result;
+}
+
+export const addMuteCallback = (result: any) => {
+    console.log("addMuteCallback: ", result);
+    return result;
+}
+
+export const removeMuteCallback = (result: any) => {
+    console.log("removeMuteCallback: ", result);
+    return result;
+}
+
+export const getGameHitoryCallback = (result: any) => {
     console.log("getGameHitoryCallback: ", result);
     return result;
 }

@@ -140,6 +140,9 @@ CREATE UNIQUE INDEX "Channel_name_key" ON "Channel"("name");
 CREATE UNIQUE INDEX "Channel_id_key" ON "Channel"("id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Mute_userId_channelId_key" ON "Mute"("userId", "channelId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "_friends_AB_unique" ON "_friends"("A", "B");
 
 -- CreateIndex
