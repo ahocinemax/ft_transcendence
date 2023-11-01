@@ -33,13 +33,12 @@ export class ChatService {
 		return ;
 	}
 
-	async	fetch_messages(channelId: number): Promise<oneMessage[]> {
+	async	messages_from_channel_id(channelId: number): Promise<oneMessage[]> {
 		try {
 			const source = await this.getAllMessages(channelId);
-			const data = await this.loadMessages(source);
-			return data;
+			return await this.loadMessages(source);
 		} catch (error) {
-			console.log('fetch_messages error:', error);
+			console.log('messages_from_channel_id error:', error);
 			throw new WsException(error);
 		}
 	}

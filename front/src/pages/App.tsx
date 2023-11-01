@@ -36,7 +36,8 @@ function App() {
                             <Route path="/leaderboard" element={<Leaderboard />} />
                             <Route path="/chat" element={<Chat />} />
                             <Route path="/profile" element={<Profile />} />
-                            <Route path="/friendprofile" element={<FriendProfile />} />
+                            {/* <Route path="/friendprofile" element={<FriendProfile />} /> */}
+                            <Route path="/friendprofile/:friendName" element={<FriendProfile />} />
                             <Route path="/settings" element={<Settings />} />
                             <Route path="/gamepage" element={<Gamepage />} />
                             <Route path="/create" element={<CreateProfile />} />

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Profile.css';
 import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import SettingsIcon from '../../PencilPixel.png';
 import { userInfo } from 'os';
@@ -118,7 +118,11 @@ const Profile = () => {
                 {userInfo.friends.map((friend, index) => (
                     <div key={index} className='friend'>
                         <div className='friend_profile_img' style={{ backgroundImage: `url(${friend.image})` }}></div>
+                        {/* <div className='friend_profile_name'>{friend.name}</div> */}
+                        <Link to={`/friendProfile/${friend.name}`}>
                         <div className='friend_profile_name'>{friend.name}</div>
+                        </Link>
+
                     </div>
                 ))}
             </div>
