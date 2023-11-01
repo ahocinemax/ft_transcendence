@@ -8,6 +8,7 @@ import SettingsIcon from '../../Settings_Icon.png';
 import BlockIcon from '../../BlockUserPixel.png';
 import AddIcon from '../../AddUserPixel.png';
 
+
 const userInfoInit: userModel = {
 	id: 0,
 	name: "",
@@ -22,28 +23,31 @@ const userInfoInit: userModel = {
 	winRate: 0,
     gameHistory: []
 };
-	
+
 	const initializeUser = async  (result: any, setUserInfo: any) => {
 		const friendList = await backFunctions.getFriend(result.name);
 		const blockedList = await backFunctions.getBlockedUser(result.name);
 		const gameHistoryList = await backFunctions.getGameHistory(result.id);
-		userInfoInit.id = result.id;
-		userInfoInit.name = result.name;
-		userInfoInit.image = result.image;
-		userInfoInit.friends = friendList;
-		userInfoInit.blocked = blockedList;
-		// setGameHistory(gameHistoryList);
-		userInfoInit.gameHistory = gameHistoryList;
-		userInfoInit.gamesLost = result.gamesLost;
-		userInfoInit.gamesPlayed = result.gamesPlayed;
-		userInfoInit.gamesWon = result.gamesWon;
-		userInfoInit.rank = result.rank;
-		userInfoInit.score = result.score;
-		userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
+
+		const newUserInfo = {
+			...userInfoInit,
+			id: result.id,
+			name: result.name,
+			image: result.image,
+			friends: friendList,
+			blocked: blockedList,
+			gameHistory: gameHistoryList,
+			gamesLost: result.gamesLost,
+			gamesPlayed: result.gamesPlayed,
+			gamesWon: result.gamesWon,
+			rank: result.rank,
+			score: result.score,
+			winRate: result.winRate === null ? 0 : result.winRate,
+		};
+		setUserInfo(newUserInfo);
 		console.log("friendList", userInfoInit.friends);
 		console.log("blockedList", userInfoInit.blocked);
 		console.log("gameHistoryList", userInfoInit.gameHistory);
-		setUserInfo(userInfoInit);
 	};
 
 const friends = [
@@ -90,23 +94,25 @@ const FriendProfile = () => {
     const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
     const [isFetched, setIsFetched] = useState(false);
     const [isUser, setIsUser] = useState(true);
-    let params = useParams();
+    //let params = useParams();
 
     //console.log("name:     ", userInfo.name);
 
+	let params =  useParams<{ friendName: string }>();
+	let friendName = params.friendName;
 		useEffect(() => {
-			const fetchIsUser = async () => {
+			const fetchFriendData = async () => {
 				let result;
-				if (!isFetched && userData.userName.userName !== undefined) {
-					result = await backFunctions.getUserByToken();
+				if (!isFetched && friendName !== undefined) {
+					result = await backFunctions.getUserByName(friendName);
 					if (result === undefined) return ;
+					console.log("getUserByName", result);
 					initializeUser(result, setUserInfo);
 					setIsFetched(true);
-					setIsUser(false);
 					setIsUserDataUpdated(false);
 				}
 			};
-			fetchIsUser();
+			fetchFriendData();
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [isFetched, userData, isUserDataUpdated]);
 
@@ -154,9 +160,9 @@ const FriendProfile = () => {
 				</div>
 			</div>
             <div className='friendlist'>
-                {friends.map((friend, index) => (
+                {userInfo.friends.map((friend, index) => (
                   <div key={index} className='friend'>
-                    <div className='friend_profile_img' style={{ backgroundImage: `url(${friend.profile_img})` }}></div>
+                    <div className='friend_profile_img' style={{ backgroundImage: `url(${friend.image})` }}></div>
                     <div className='friend_profile_name'>{friend.name}</div>
                   </div>
                 ))}

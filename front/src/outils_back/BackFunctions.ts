@@ -4,9 +4,9 @@ import { User } from "../interface/BackInterface";
 export const backFunctions = {
 
     /* user */
-    async getUser(name: string): Promise<User | null> {
+    async getUserByName(name: string): Promise<User | null> {
         // console.log("fetching getUser...");
-        try{ return await UserApi.fetchGet('/user/' + name, getUserCallback); }
+        try{ return await UserApi.fetchGet('/user/name/' + name, getUserCallback); }
         catch(err) {
             console.log(err);
             return null;
