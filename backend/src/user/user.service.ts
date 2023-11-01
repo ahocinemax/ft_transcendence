@@ -161,26 +161,23 @@ export class UserService
 				data: req.body
 			});
 			if (!user) {
-				throw new HttpException(
-					{
-						status: HttpStatus.BAD_REQUEST,
-						error: 'Error to update user',
-					},
+				throw new HttpException({
+					status: HttpStatus.BAD_REQUEST,
+					error: 'Error to update user'},
 					HttpStatus.BAD_REQUEST
 				);
 			}
 		return user;
 		} catch (error) {
 			console.log(error);
-		throw new HttpException(
-			{
+			throw new HttpException({
 				status: HttpStatus.BAD_REQUEST,
-				error: 'Error to update user',
-			},
-			HttpStatus.BAD_REQUEST
-		);
+				error: 'Error to update user'},
+				HttpStatus.BAD_REQUEST
+			);
+		}
 	}
-	}
+
 	// Use prisma to find the user on DB
 	async getGameHistory(id: number)
 	{
@@ -201,30 +198,29 @@ export class UserService
 
 		for (const game of gameHistory)
 		{
-			let ScorePlayer2: number;
-			let player2: number;
-			let ScorePlayer1: number;
+			let opponentScore: number;
+			let opponentID: number;
+			let userScore: number;
 
-			game.player1 === id ? (player2 = game.player2) : (player2 = game.player1);
-			game.player1 === id ? (ScorePlayer1 = game.ScorePlayer1) : (ScorePlayer1 = game.ScorePlayer2);
-			game.player1 === id ? (ScorePlayer2 = game.ScorePlayer2) : (ScorePlayer2 = game.ScorePlayer1);
-			const opponent: UserDto = await this.getUser(player2);
+			game.player1 === id ? (opponentID = game.player2) : (opponentID = game.player1);
+			game.player1 === id ? (userScore = game.ScorePlayer1) : (userScore = game.ScorePlayer2);
+			game.player1 === id ? (opponentScore = game.ScorePlayer2) : (opponentScore = game.ScorePlayer1);
+			const opponent: UserDto = await this.getUser(opponentID);
 
 			const gameDTO: SubjectiveGameDto =
 			{
-				id: game.id,
 				duration: game.duration,
 
-				ScorePlayer1: ScorePlayer1,
-				player1: id,
+				userScore: userScore,
+				userID: id,
 
 				opponentUsername: opponent.username,
 				opponentAvatar: opponent.avatar,
-				ScorePlayer2: ScorePlayer2,
+				opponentScore: opponentScore,
 				opponentRank: opponent.rank,
-				player2: opponent.id,
+				opponentID: opponent.id,
 				opponentUser: opponent,
-			victory: ScorePlayer1 > ScorePlayer2 ? true : false,
+			victory: userScore > opponentScore ? true : false,
 			};
 			gameDTOs.push(gameDTO);
 		}

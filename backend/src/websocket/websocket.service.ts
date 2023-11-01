@@ -17,7 +17,7 @@ export class WebsocketService {
 	private logger: Logger = new Logger('Websocket Service');
 
     public removeUser(@ConnectedSocket() client: AuthenticatedSocket) {
-		this.clients.delete(client.data.name);
+		return this.clients.delete(client.data.name);
 	}
 
     public getClient(username: string): AuthenticatedSocket | undefined {
@@ -35,9 +35,9 @@ export class WebsocketService {
 		this.server
 			.to(client.id)
 			.emit(ServerChatEvents.UserList, {
-				users: userList /*.filter((user: any) => !blacklist.includes(user.name))*/,
 				lobbyId,
-			}); 
+				users: userList //.filter((user: any) => !blanned.includes(user.name)),
+			});
 	}
 
 	public async emitUserListToLobby(userList: User[], lobbyId: string) {
@@ -76,10 +76,10 @@ export class WebsocketService {
 				where: {name: client.data.name},
 				data: {status: 'online'}
 			});
-			this.sendMessage(client, 'update_status', {
-				status: 'online',
-				user: client.data.name,
-			});
+			// this.sendMessage(client, 'update_status', {
+			// 	status: 'online',
+			// 	user: client.data.name,
+			// });
 			// console.log(`${client.data.name} is now online`);
 		} catch (error) { console.log('Failed to update status of user to online'); }
 	} 
@@ -92,10 +92,10 @@ export class WebsocketService {
 					status: 'ingame',
 				},
 			});
-			this.sendMessage(client, 'update_status', {
-				status: 'ingame',
-				user: client.data.name,
-			});
+			// this.sendMessage(client, 'update_status', {
+			// 	status: 'ingame',
+			// 	user: client.data.name,
+			// });
 			// console.log(`${client.data.name} is now ingame`);
 		} catch (error) {
 			console.log('Failed to update status of user');
@@ -112,10 +112,10 @@ export class WebsocketService {
 							status: 'offline',
 						},
 					});
-					this.sendMessage(client, 'update_status', {
-						status: 'offline',
-						user: client.data.name,
-					});
+					// this.sendMessage(client, 'update_status', {
+					// 	status: 'offline',
+					// 	user: client.data.name,
+					// });
 					// console.log(`${client.data.name} is now offline`);
 				} catch (error) { console.log('Failed to update status of user'); }
 			}
@@ -127,7 +127,7 @@ export class WebsocketService {
 		event: string,
 		payload?: Object
 	) {
-		console.info(`Emitting event [${event}] to connected clients`);
+		this.logger.log(`Emitting event [${event}] to connected clients`);
 		payload ? client.broadcast.emit(event, payload) : client.broadcast.emit(event);
 	}
 }

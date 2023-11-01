@@ -60,10 +60,10 @@ async createDataBase42User(
     if (user42infos)
     {
       finalUser = await this.Auth42.createDataBase42User(user42infos,
-      token,
-      UserDto.name,
-      UserDto.isRegistered
-    );}
+        token,
+        UserDto.name,
+        UserDto.isRegistered)
+    ;}
     else {
       try {
         const userGoogleInfos = await this.googleAuthService.getGoogleUserByCookies(req)
@@ -201,13 +201,13 @@ async createDataBase42User(
     }
 }
 
-async RedirectionUser(
-  @Req() req: Request, 
-  @Res() res: Response, 
-  isRegistered: boolean | undefined,
-  email: string | null | undefined) {
-  if (!isRegistered) res.redirect(301, "http://localhost:3000/checkuser");
-  else res.redirect(301, process.env.CLIENT_HOST + "profile");
+  async RedirectionUser(
+    @Req() req: Request, 
+    @Res() res: Response, 
+    isRegistered: boolean | undefined,
+    email: string | null | undefined) {
+    if (!isRegistered) res.redirect(301, "http://localhost:3000/checkuser");
+    else res.redirect(301, process.env.CLIENT_HOST + "profile");
   }
 
   async updateUserAccessToken(email: string, token: string) {

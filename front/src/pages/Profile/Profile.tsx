@@ -4,7 +4,8 @@ import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
 import { useParams, useNavigate } from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
-import SettingsIcon from '../../Settings_Icon.png';
+import SettingsIcon from '../../PencilPixel.png';
+import { userInfo } from 'os';
 
 const userInfoInit: userModel = {
 	id: 0,
@@ -48,6 +49,31 @@ const initializeUser = async (result: any, setUserInfo: any) => {
     setUserInfo(userInfoInit);
 };
 
+const test = () => {
+    console.log("AMIS : ", userInfoInit.friends[0].name);
+}
+
+const match_history = [
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
+            ];
+
 const Profile = () => {
 	const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
     const userData = useUserContext();
@@ -56,199 +82,87 @@ const Profile = () => {
     const [isUser, setIsUser] = useState(true);
     let params = useParams();
 
-    //console.log("name:     ", userInfo.name);
-
-		useEffect(() => {
-			const fetchIsUser = async () => {
-				let result;
-				if (!isFetched && userData.userName.userName !== undefined) {
-					result = await backFunctions.getUserByToken();
-					if (result === undefined) return ;
-					await initializeUser(result, setUserInfo);
-					setIsFetched(true);
-					setIsUser(false);
-					setIsUserDataUpdated(false);
-				}
+    
+    useEffect(() => {
+        const fetchIsUser = async () => {
+            let result;
+            if (!isFetched && userData.userName.userName !== undefined) {
+                result = await backFunctions.getUserByToken();
+                if (result === undefined) return ;
+                await initializeUser(result, setUserInfo);
+                console.log("name:     ", userInfo.name);
+                setIsFetched(true);
+                setIsUser(false);
+                setIsUserDataUpdated(false);
+            }
 			};
 			fetchIsUser();
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [isFetched, userData, isUserDataUpdated]);
 
 		return (
-		<div className="profile">
-			<div className="bande">
-			<div className="profile_img" style={{ backgroundImage: `url(${userInfo.image})` }}></div>
-				<div className="profile_info">
-					<h1 className="info">{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
-					<h1 className="info">#whichTeam?</h1>
-					<h1 className="info">{userInfo.score ? `${userInfo.score}` : "#Score?"}</h1>
-					<h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
-					<h1 className="info">{userInfo.friends[0] ? `Friend #${userInfo.friends[0].name}` : "#friends?"}</h1>
-				</div>
-            <a href="/settings" className="nav-link_profile"><img src={SettingsIcon} alt="Logo 5" /></a>
-			</div>
-			<div className="centered_div_container">
-				<div className="scores_div">
-					<div className="scores_div_top">
-						<div className="scores_round_div"></div>
-					</div>
-					<div className="scores_div_bottom">
-						<h1 className="info">Games</h1>
-						<h1 className="stat">{userInfo.gamesPlayed}</h1>
-					</div>
-				</div>
-				<div className="scores_div">
-					<div className="scores_div_top">
-						<div className="scores_round_div"></div>
-					</div>
-					<div className="scores_div_bottom">
-						<h1 className="info">Wins</h1>
-						<h1 className="stat">{userInfo.gamesWon}</h1>
-					</div>
-				</div>
-				<div className="scores_div">
-					<div className="scores_div_top">
-						<div className="scores_round_div"></div>
-					</div>
-					<div className="scores_div_bottom">
-						<h1 className="info">Winrate</h1>
-						<h1 className="stat">{userInfo.winRate ? userInfo.winRate + "%" : "(none)"}</h1>
-					</div>
-				</div>
-			</div>
-        <div className='friendlist'>
-            <div className='friend'>
-                <div className='friend_profile_img' style={{ backgroundImage: `url(${userInfo.friends[0] ? userInfo.friends[0].image : 'friend_profile_img'})` }}></div>
-                <div className='friend_profile_name'>{userInfo.friends[0] ? userInfo.friends[0].name : 'Player2'}</div>
+            <div className="profile">
+                <div className="bande">
+                <div className="profile_img" style={{ backgroundImage: `url(${userInfo.image})` }}></div>
+                <div className="profile_info">
+                        <div className="info_container">
+                            <h1 className="info firstinfo"onClick={test}>{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
+                            <h1 className="info">online</h1>
+                            <h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
+                        </div>
+                        <a href="/settings" className="nav_link_profile"><img src={SettingsIcon} alt="Logo 5" /></a>
+                    </div>
+                </div>
+                <div className="centered_div_container">
+                    <div className="scores_div_main_profile">
+                        <div className="scores_div_top">
+                            <div className="scores_round_div"></div>
+                        </div>
+                        <div className="scores_div_bottom main">
+                            <h1 className="info right">Games</h1>
+                            <h1 className="stat main">{userInfo.gamesPlayed}</h1>
+                        </div>
+                    </div>
+                    <div className="scores_div_main_profile">
+                        <div className="scores_div_top">
+                            <div className="scores_round_div"></div>
+                        </div>
+                        <div className="scores_div_bottom main">
+                            <h1 className="info right">Wins</h1>
+                            <h1 className="stat main">{userInfo.gamesWon}</h1>
+                        </div>
+                    </div>
+                    <div className="scores_div_main_profile">
+                        <div className="scores_div_top">
+                            <div className="scores_round_div"></div>
+                        </div>
+                        <div className="scores_div_bottom main">
+                            <h1 className="info right">Winrate</h1>
+                            <h1 className="stat main">{userInfo.winRate ? userInfo.winRate + "%" : "X"}</h1>
+                        </div>
+                    </div>
+                </div>
+                <div className='friendlist'>
+                {userInfoInit.friends.map((friend, index) => (
+                    <div key={index} className='friend'>
+                        <div className='friend_profile_img' style={{ backgroundImage: `url(${friend.image})` }}></div>
+                        <div className='friend_profile_name'>{friend.name}</div>
+                    </div>
+                ))}
             </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player3</div>
+                <div className='match_history'>
+                    {match_history.map((match, index) => (
+                      <div key={index} className={match.result}>
+                        <div className='match_infos'>{match.opponentName}</div>
+                        <div className='match_infos'>{match.score}</div>
+                        <div className='match_infos'>{match.mode}</div>
+                        <div className='match_infos'>{match.result.charAt(0).toUpperCase() + match.result.slice(1)}</div>
+                      </div>
+                    ))}
+                    </div>
             </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player4</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player5</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player6</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player7</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player8</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player9</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player10</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player5</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player5</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player5</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player5</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player5</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player5</div>
-            </div>
-            <div className='friend'>
-                <div className='friend_profile_img'></div>
-                <div className='friend_profile_name'>Player5</div>
-            </div>
-        </div>
-        {/* <div className='friend_profile_img' style={{ backgroundImage: `url(${userInfo.friends[0] ? userInfo.friends[0].image : 'friend_profile_img'})` }}></div> */}
-                {/* <div className='friend_profile_name'>{userInfo.friends[0] ? userInfo.friends[0].name : 'Player2'}</div> */}
-        <div className='match_history'>
-            <div className='win'>
-                <div className='match_infos'>{userInfo.gameHistory[0] ? userInfo.gameHistory[0].opponentUser.name : 'EnemyName'}</div>
-                <div className='match_infos'>{userInfo.gameHistory[0] ? userInfo.gameHistory[0].ScorePlayer1 : 'MyScore'} - {userInfo.gameHistory[0] ? userInfo.gameHistory[0].ScorePlayer2 : 'EnemyScore'}</div>
-                <div className='match_infos'>Hard Mode</div>
-                <div className='match_infos'>Win</div>
-            </div>
-            <div className='loose'>
-                <div className='match_infos'>EnemyName</div>
-                <div className='match_infos'>7 - 2</div>
-                <div className='match_infos'>Normal Mode</div>
-                <div className='match_infos'>Loose</div>
-            </div>
-            <div className='win'>
-                <div className='match_infos'>EnemyName</div>
-                <div className='match_infos'>7 - 2</div>
-                <div className='match_infos'>Hard Mode</div>
-                <div className='match_infos'>Win</div>
-            </div>
-            <div className='loose'>
-                <div className='match_infos'>EnemyName</div>
-                <div className='match_infos'>7 - 2</div>
-                <div className='match_infos'>Normal Mode</div>
-                <div className='match_infos'>Loose</div>
-            </div>
-            <div className='win'>
-                <div className='match_infos'>EnemyName</div>
-                <div className='match_infos'>7 - 2</div>
-                <div className='match_infos'>Hard Mode</div>
-                <div className='match_infos'>Win</div>
-            </div>
-            <div className='loose'>
-                <div className='match_infos'>EnemyName</div>
-                <div className='match_infos'>7 - 2</div>
-                <div className='match_infos'>Normal Mode</div>
-                <div className='match_infos'>Loose</div>
-            </div>
-            <div className='win'>
-                <div className='match_infos'>EnemyName</div>
-                <div className='match_infos'>7 - 2</div>
-                <div className='match_infos'>Hard Mode</div>
-                <div className='match_infos'>Win</div>
-            </div>
-            <div className='loose'>
-                <div className='match_infos'>EnemyName</div>
-                <div className='match_infos'>7 - 2</div>
-                <div className='match_infos'>Normal Mode</div>
-                <div className='match_infos'>Loose</div>
-            </div>
-            <div className='win'>
-                <div className='match_infos'>EnemyName</div>
-                <div className='match_infos'>7 - 2</div>
-                <div className='match_infos'>Hard Mode</div>
-                <div className='match_infos'>Win</div>
-            </div>
-            <div className='loose'>
-                <div className='match_infos'>EnemyName</div>
-                <div className='match_infos'>7 - 2</div>
-                <div className='match_infos'>Normal Mode</div>
-                <div className='match_infos'>Loose</div>
-            </div>
-            
-        </div>
-		</div>
-	);
-}
+        );
+    }
+    
 
 export default Profile;

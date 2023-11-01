@@ -97,12 +97,6 @@
     height: 90vh; /* Définissez la hauteur de votre div */
     background-size: cover;
     background-position: center;
-    /* background-color: rgba(0, 0, 0, 0.559);
-    border-image: url(../../public/sun.png) 2 repeat; */
-  
-    /* Ajustez ces valeurs selon vos préférences pour obtenir l'effet pixel art souhaité */
-    border-image-slice: 100;
-    border-image-width: 2.5px;
     display : flex;
     align-items: center;
     justify-content: center;
@@ -113,7 +107,7 @@
 .rank_div{
     width: 85%;
     height: 6.5%;
-    background-color: rgb(0, 0, 0, 0.7);
+    background-color: rgb(0, 0, 0, 0.85);
     box-shadow: rgb(0, 0, 0);
     /* box-shadow: 0px 0px 6px rgb(234, 166, 8); */
     /* border-radius: 20%; */
@@ -136,7 +130,7 @@
 .rank_div_gold{
     width: 98%;
     height: 9%;
-    background-color: rgb(255, 215, 0, 0.7);
+    background-color: rgb(255, 215, 0, 0.95);
     box-shadow: rgb(0, 0, 0);
     /* box-shadow: 0px 0px 6px rgb(234, 166, 8); */
     /* border-radius: 20%; */
@@ -159,7 +153,7 @@
 .rank_div_silver{
     width: 94%;
     height: 8%;
-    background-color: rgb(192, 192, 192, 0.7);
+    background-color: rgb(192, 192, 192, 0.95);
     box-shadow: rgb(0, 0, 0);
     /* box-shadow: 0px 0px 6px rgb(234, 166, 8); */
     /* border-radius: 20%; */
@@ -182,7 +176,7 @@
 .rank_div_bronze{
     width: 88%;
     height: 7.5%;
-    background-color: rgb(205, 127, 50, 0.7);
+    background-color: rgb(205, 127, 50, 0.95);
     box-shadow: rgb(0, 0, 0);
     /* box-shadow: 0px 0px 6px rgb(234, 166, 8); */
     /* border-radius: 20%; */
@@ -243,4 +237,10 @@
     font-family: 'Press Start 2P', sans-serif;
     text-shadow:
       2px 2px 2px rgb(243, 152, 6);
+    white-space: nowrap;
+}
+
+h1.leaderboard
+{
+    font-size: 1.10em;
 }

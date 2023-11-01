@@ -5,24 +5,24 @@ import ChannelNamePopup from '../../components/channel_name_popup/channel_name_p
 import PrivateChanPopup from '../../components/Private_chan_popup/private_chan_popup';
 import SocketContext from '../../context/socketContext';
 import { backFunctions } from '../../outils_back/BackFunctions';
-import UserContext from '../../context/userContent';
-import { channelModel } from '../../interface/global'
-// import { act } from '@testing-library/react';
+import UserContext, { Email } from '../../context/userContent';
+import { channelModel } from '../../interface/global';
 import { userModel } from '../../interface/global';
+// import { act } from '@testing-library/react';
 
 const userInfoInit: userModel = {
-	id: 0,
-	name: "",
-	image: "",
-	friends: [],
-    blocked: [],
-	gamesLost: 0,
-	gamesPlayed: 0,
-	gamesWon: 0,
-	rank: 0,
-	score: 0,
-	winRate: 0,
-    gameHistory: []
+  id: 0,
+  name: "",
+  image: "",
+  friends: [],
+  blocked: [],
+  gamesLost: 0,
+  gamesPlayed: 0,
+  gamesWon: 0,
+  rank: 0,
+  score: 0,
+  winRate: 0,
+  gameHistory: []
 };
 
 const initializeUser = async (result: any, setUserInfo: any) => {
@@ -52,7 +52,8 @@ const Chat = () => {
   const [PasswordNeeded, setPassword] = useState(false);
   const [activeChannel, setActiveChannel] = useState(0);
   const [messageInput, setMessageInput] = useState(''); // État pour stocker le message en cours de frappe
-  const [messagesData, setMessagesData] = useState<MessageData>({});
+  const [messagesData, setMessagesData] = useState<MessagesArray>([]);
+  const [channelName, setChannelName] = useState(''); // État pour stocker le nom du canal en cours de création
   const [privateMessagesData, setPrivateMessagesData] = useState<PrivateMessagesData>({});
   const [activePrivateUser, setActivePrivateUser] = useState('');
   const [activePrivateConversation, setActivePrivateConversation] = useState(0);
@@ -67,6 +68,103 @@ const Chat = () => {
   const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
   const [isFetched, setIsFetched] = useState(false);
 
+
+  const formatDate = (date: Date) => {
+    const datePart = date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit',
+    });
+  
+    const timePart = date.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  
+    return `${datePart} ${timePart}`;
+  };
+
+  // TYPES DEFINITIONS
+  type MessageData = {
+    msgId: number;
+    id: number;
+    channelId: number;
+    email: string;
+    message: string;
+    createAt: string;
+    updateAt: string;
+    isInvite: boolean;
+    name: string;
+  };
+
+  type MessagesArray = MessageData[];
+  interface PrivateMessagesData 
+  {
+    [key: string]: {
+      sender: string;
+      time: string;
+      content: string;
+    }[];
+  }
+
+  // HOOKS
+
+  useEffect(() => { // Handle events : 'fetch channels', 'fetch mp'
+    const fetchIsUser = async () => {
+      let result;
+      console.log("userInfos.userName.userName::", userInfos.userName.userName);
+      if (!isFetched && userInfos.userName.userName !== undefined) {
+        result = await backFunctions.getUserByToken();
+        console.log("result::", result);
+        if (result === undefined) return ;
+        await initializeUser(result, setUserInfo);
+        setIsFetched(true);
+      }
+    };
+    fetchIsUser();
+    // Send channel list request
+    socket?.emit('get channels', userInfos.email.email, (data: any) => {}); // 1st load of channels
+    socket?.on('fetch channels', (data: channelModel[]) => {
+      data = !Array.isArray(data) ? Array.from(data) : data;
+      console.log("updating channels: ", data);
+      setChannels(data);
+    });
+
+    // Send MP list request
+    socket?.emit('get mp', userInfos.email.email, (data: any) => {});
+    socket?.on('fetch mp', (data: channelModel[]) => {
+      data = !Array.isArray(data) ? Array.from(data) : data;
+      setPriv_msgs(data);
+    });
+    return () => {
+      socket?.off('fetch channels');
+      socket?.off('fetch mp');
+    };
+  }, [socket]);
+
+  useEffect(() => { // handle events : 'fetch message', 'update requests'
+    if (activeChannel && socket) socket.emit('get messages', activeChannel, (data: any) => {});
+    socket?.on('fetch messages', (updatedMessagesData) => { // Just clicked on chan, must fetch messages
+        setMessagesData(updatedMessagesData);
+    });
+    socket?.on('update private request', (updatedPrivateMessagesData) => {
+      setPrivateMessagesData(updatedPrivateMessagesData);
+    });
+    socket?.on('update message request', (data: any) => {
+      socket?.emit('get messages', activeChannel);
+    });
+    socket?.on('update channel request', (data: any) => {
+      socket?.emit('get channels');
+    });
+    return () => {
+      socket?.off('fetch messages');
+      socket?.off('update private request');
+      socket?.off('update message request');
+      socket?.off('update channel request');
+    };
+  }, [socket, activeChannel]);
+
+  // EVENT HANDLERS
   const handleSearch = (query: string) => {
     console.log(`Recherche en cours pour : ${query}`);
   };
@@ -74,14 +172,16 @@ const Chat = () => {
   const handleChannelClick = (channelId: number) => {
     if (PasswordNeeded)
         return;
-    const channel: channelModel = channels.find((c: any) => c.name === channelId);
+    const channel: channelModel = channels.find((c: any) => c.id === channelId);
     if (channel && channel.isPrivate)
     {
         setTempActiveChannel(channelId);
         // Ensuite, activez le mot de passe
         setPassword(true);
+        setChannelName(channel.name);
     } else {
       // Salon public, accédez directement
+      setChannelName(channel.name);
       setActivePrivateConversation(0);
       setActiveChannel(channelId);
     }
@@ -93,49 +193,40 @@ const Chat = () => {
   };
 
   const addPrivateUser = (userName: string) => {
-    // Créez une copie de la liste priv_msgs avec le nouvel utilisateur ajouté
-    const updatedPrivateUsers = [...priv_msgs, { name: userName }];
-    setPriv_msgs(updatedPrivateUsers);
+    const data: any = {
+      name: userName,
+      dm: true,
+      ownerEmail: userInfos.email.email,
+    };
+    socket?.emit('new mp', userInfos.userName.userName, data);
   };
 
-  const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) =>{
     e.preventDefault();
-  
-    if (messageInput.trim() !== '') {
-      const newMessage = {
-        sender: userInfos.userName.userName,
-        time: new Date().toLocaleTimeString(),
-        content: messageInput,
-      };
-  
-      if (activeChannel) {
-        // Send message to backend
-        socket?.emit('new message', {
-          channelId: activeChannel,
-          message: newMessage.content,
-          email: userInfos.email.email,
-        });
-  
-        // wait backend's response (updated messages list)
-        socket?.on('message updated', (updatedMessagesData) => {
-          
-          setMessagesData(updatedMessagesData);
-        });
-      } else if (activePrivateConversation) {
-        // send message to backend
-        socket?.emit('new private message', {
-          conversation: activePrivateConversation,
-          message: newMessage,
-        });
-  
-        // Attendez une réponse du backend avec la liste actualisée des messages
-        socket?.on('private message updated', (updatedPrivateMessagesData) => {
-          setPrivateMessagesData(updatedPrivateMessagesData);
-        });
-      }
-  
-      setMessageInput('');
+
+    if (messageInput.trim() === '') return;
+    const newMessage = {
+      sender: userInfos.userName.userName,
+      time: new Date().toLocaleTimeString(),
+      content: messageInput,
+    };
+    if (activeChannel) {
+      // Send public message to backend
+      socket?.emit('new message', {
+        channelId: activeChannel,
+        message: newMessage.content,
+        email: userInfos.email.email,
+      });
+      
+    } else if (activePrivateConversation) {
+      // send private message to backend
+      socket?.emit('new private message', {
+        conversation: activePrivateConversation,
+        message: newMessage,
+      });
     }
+
+    setMessageInput('');
   };
 
   const handleUserClick = (userName: string) => {
@@ -161,52 +252,6 @@ const Chat = () => {
     }
   };
 
-  useEffect(() => {
-    /* Récupérer ici tous les channels de notre base de données sous forme d'array*/
-    // Send request
-    socket?.emit('get channels', userInfos.email.email, (data: any) => {
-      console.log('data1: ', data);
-    });
-    // Handle response
-    socket?.on('fetch channels', (data: channelModel[]) => {
-      console.log('data2: ', data);
-      const dmTrue = data.filter((item) => item.dm === true);
-      const dmFalse = data.filter((item) => item.dm === false);
-      setChannels(dmFalse);
-      setPriv_msgs(dmTrue);
-    });
-    const fetchIsUser = async () => {
-      let result;
-      console.log("userInfos.userName.userName::", userInfos.userName.userName);
-      if (!isFetched && userInfos.userName.userName !== undefined) {
-        result = await backFunctions.getUserByToken();
-        console.log("result::", result);
-        if (result === undefined) return ;
-        await initializeUser(result, setUserInfo);
-        setIsFetched(true);
-      }
-    };
-    fetchIsUser();
-  }, [userInfos]);
-
-  interface MessageData 
-  {
-    [key: string]: {
-      sender: string;
-      time: string;
-      content: string;
-    }[];
-  }
-
-  interface PrivateMessagesData 
-  {
-    [key: string]: {
-      sender: string;
-      time: string;
-      content: string;
-    }[];
-  }
-
   const createChannel = () => 
   {
     /* Fonction back pour créer un channel */
@@ -231,6 +276,7 @@ const Chat = () => {
     setPassword(false);
   };
 
+  // handle create new channel component
   const handleSubmit = (res: any) => {
     const data = {
       name: res.channelName,
@@ -240,161 +286,158 @@ const Chat = () => {
       isProtected: res.private
     };
 
-    socket?.emit('new channel', data);
-    socket?.on('update channels', (data: any) => {
-      if (data?.dm === false) setChannels(data);
-      else setPriv_msgs(data);
-    });
+    socket?.emit('new channel', data); 
+  }
+
+  const check_user = (email: string): boolean => {
+    return email === userInfos.email.email;
   }
 
   return (
     <div className="chat">
-        <div className="chan_privmsg_container">
-            <div className="channel_part" onClick={closeUserPopup}>
-              <div className="searchbar_div">
-                <SearchComponent onSearch={handleSearch} />
-              </div>
-              <div className="channel_top_div">
-                <h1 className="h1_channel">#Channels(42)</h1>
-                <h1 className="createchan" onClick={createChannel}>+</h1>
-                {isPopupOpen && <ChannelNamePopup onHandleSubmit={handleSubmit} onClose={closePopup} />}
-              </div>
-              <div className="channel_div_container">
-                {channels.map((channel: channelModel, index: number) => (
-                  <div className="channel_div" key={index} onClick={() => handleChannelClick(channel.id)}>
-                    {PasswordNeeded && (
-                      <PrivateChanPopup onClose={PasswordDone} onPasswordSubmit={handlePasswordSubmit} />
+      <div className="chan_privmsg_container">
+          <div className="channel_part" onClick={closeUserPopup}>
+            <div className="searchbar_div">
+              <SearchComponent onSearch={handleSearch} />
+            </div>
+            <div className="channel_top_div">
+              <h1 className="h1_channel">#Channels({channels ? channels.length : 0})</h1>
+              <h1 className="createchan" onClick={createChannel}>+</h1>
+              {isPopupOpen && <ChannelNamePopup onHandleSubmit={handleSubmit} onClose={closePopup} />}
+            </div>
+            <div className="channel_div_container">
+              {channels.map((channel: channelModel, index: number) => (
+                <div className="channel_div" key={index} onClick={() => handleChannelClick(channel.id)}>
+                  {PasswordNeeded && (
+                    <PrivateChanPopup onClose={PasswordDone} onPasswordSubmit={handlePasswordSubmit} />
+                  )}
+                  <div className="channel_content">
+                    <h1 className="channel_title">#{channel.name}</h1>
+                    {channel.isPrivate && (
+                      <img src="lock.png" alt="Private Channel" className="lock_icon" />
                     )}
-                    <div className="channel_content">
-                      <h1 className="channel_title">#{channel.name}</h1>
-                      {channel.isPrivate && (
-                        <img src="lock.png" alt="Private Channel" className="lock_icon" />
-                      )}
-                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-            <div className="priv_msg_part">
-                <h1 className="h1_channel">#MP List(42)</h1>
-                <div className="private_users_container">
-                  {priv_msgs.map((privateChannel: channelModel, index: number) => (
-                  <div className="channel_div privmsg" key={index} onClick={() => handlePrivMsgClick(privateChannel.id)}>
-                    <div className="channel_content">
-                      <h1 className="channel_title">#{privateChannel.name}</h1>
-                    </div>
-                  </div>
-                  ))}
                 </div>
+              ))}
             </div>
-        </div>
+          </div>
+          <div className="priv_msg_part">
+            <h1 className="h1_channel">#MP List({priv_msgs ? priv_msgs.length : 0})</h1>
+            <div className="private_users_container">
+              {priv_msgs.map((privateChannel: channelModel, index: number) => (
+              <div className="channel_div privmsg" key={index} onClick={() => handlePrivMsgClick(privateChannel.id)}>
+                <div className="channel_content">
+                  <h1 className="channel_title">#{privateChannel.name}</h1>
+                </div>
+              </div>
+              ))}
+            </div>
+          </div>
+      </div>
       <div className="main_part">
-            {activeChannel && (
-                <div className="message_list">
-                    <h1 className="channel_title active_channel_title">#{activeChannel}</h1>
-                <ul>
-                {messagesData[activeChannel]?.map((message, index) => (
-                    <li key={index}>
-                      <div
-                        className={`message_bubble ${
-                          message.sender === 'Utilisateur 1' ? 'user' : 'not_user'
-                        }`}
-                        style={{
-                          width: `${Math.min(100, message.content.length)}%`, // Adjust the maximum width as needed
-                        }}
-                      >
-                        <span
-                          className="message_sender"
-                          onClick={() => handleUserClick(message.sender)} // Gérer le clic sur le nom de l'utilisateur
-                        >
-                          <strong>{message.sender} </strong>
-                        </span>
-                        ({message.time}): {message.content}
-                      </div>
-                    </li>
-                    ))}
-                </ul>
-              </div>
-              )}
-
-               {/* Champ de texte pour envoyer des messages */}
-               {activeChannel && (
-                    <form onSubmit={handleSendMessage}>
-                      <input
-                        type="text"
-                        placeholder="Message"
-                        value={messageInput}
-                        onChange={(e) => setMessageInput(e.target.value)}
-                        className="send_msg"
-                      />
-                    </form>
-                )}
-
-            
-                {activePrivateConversation && (
-                <div className="message_list">
-                <h1 className="channel_title active_channel_title">#{activePrivateConversation}</h1>
-                <ul>
-                {privateMessagesData[activePrivateConversation]?.map((message, index) => (
-                    <li key={index}>
-                      <div
-                        className={`message_bubble ${
-                          message.sender === 'Utilisateur 1' ? 'user' : 'not_user'
-                        }`}
-                        style={{
-                          width: `${Math.min(100, message.content.length)}%`, // Adjust the maximum width as needed
-                        }}
-                      >
-                        <span
-                          className="message_sender"
-                          onClick={() => handleUserClick(message.sender)} // Gérer le clic sur le nom de l'utilisateur
-                        >
-                          <strong>{message.sender} </strong>
-                        </span>
-                        ({message.time}): {message.content}
-                      </div>
-                    </li>
-                    ))}
-                </ul>
-              </div>
-              )}
-
-               {/* Champ de texte pour envoyer des messages */}
-               {activePrivateConversation && (
-                    <form onSubmit={handleSendMessage}>
-                      <input
-                        type="text"
-                        placeholder="Message"
-                        value={messageInput}
-                        onChange={(e) => setMessageInput(e.target.value)}
-                        className="send_msg"
-                      />
-                    </form>
-                )}
+        {activeChannel && (
+          <div className="message_list">
+              <h1 className="channel_title active_channel_title">#{channelName}</h1>
+          <ul>
+          {activeChannel && messagesData && messagesData.map((message: MessageData, index: number) => {
+              const textColor = check_user(message.email) ? "#8f35de" : "#275ec4";//"#8f35de" : "#275ec4"
+              return (
+                <li key={index}>
+                  <div
+                    className={`message_bubble ${message.name !== userInfos.userName.userName ? 'user' : 'not_user'}`}
+                    style={{
+                      width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
+                    }}
+                  >
+                    <span
+                        className="message_sender"
+                        onClick={() => handleUserClick(message.name)}
+                        style={{color: textColor}}
+                    >
+                        <strong>{message.name} </strong>
+                    </span>
+                    <span style={{color: '#c0b9c7'}}>
+                        ({formatDate(new Date(message.createAt))}):&nbsp;
+                    </span>
+                    {message.message}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         </div>
-        <div className={`user_popup ${isUserPopupVisible && selectedUser ? 'visible' : ''}`}>
-            <div className="close_button" onClick={closeUserPopup}>
-                X
-            </div>
-            <div className="popup_content">
-                <p className="user_popup_name">{selectedUser}</p>
-                <img src="./avatar.png" alt="User Avatar" className="img_popup1"/>
-                <div className="chat_button_container">
-                    <div className="chat_buttons DUEL"></div>
-                    <div className="chat_buttons MSG" onClick={() => addPrivateUser(selectedUser)}></div>
-                    <div className="chat_buttons ADD_FRIEND"></div>
-                    <div className="chat_buttons BLOCK"></div>
+        )}
+        {activeChannel && (
+          <form onSubmit={handleSendMessage}>
+            <input
+              type="text"
+              placeholder="Message"
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              className="send_msg"
+            />
+          </form>
+        )} 
+        {/* {activePrivateConversation && (
+        <div className="message_list">
+          <h1 className="channel_title active_channel_title">#{activePrivateConversation}</h1>
+          <ul>
+            {privateMessagesData[activePrivateConversation]?.map((message, index) => (
+              <li key={index}>
+                <div
+                  className={`message_bubble ${
+                    message.sender === 'Utilisateur 1' ? 'user' : 'not_user'
+                  }`}
+                  style={{
+                    width: `${Math.min(100, message.content.length)}%`, // Adjust the maximum width as needed
+                  }}
+                >
+                  <span
+                    className="message_sender"
+                    onClick={() => handleUserClick(message.sender)} // Gérer le clic sur le nom de l'utilisateur
+                  >
+                    <strong>{message.sender} </strong>
+                  </span>
+                  ({message.time}): {message.content}
                 </div>
-                <div className="chat_button_container">
-                    <div className="chat_buttons MUTE"></div>
-                    <div className="chat_buttons KICK"></div>
-                    <div className="chat_buttons BAN"></div>
-                </div>
-            </div>
-            </div>
-            
+              </li>
+            ))}
+          </ul>
+        </div>
+        )} */}
+        {/* {activePrivateConversation && (
+            <form onSubmit={handleSendMessage}>
+              <input
+                type="text"
+                placeholder="Message"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                className="send_msg"
+              />
+            </form>
+        )} */}
+      </div>
+      <div className={`user_popup ${isUserPopupVisible && selectedUser ? 'visible' : ''}`}>
+        <div className="close_button" onClick={closeUserPopup}>
+          X
+        </div>
+        <div className="popup_content">
+          <p className="user_popup_name">{selectedUser}</p>
+          <img src="./avatar.png" alt="User Avatar" className="img_popup1"/>
+          <div className="chat_button_container">
+            <div className="chat_buttons DUEL"></div>
+            <div className="chat_buttons MSG" onClick={() => addPrivateUser(selectedUser)}></div>
+            <div className="chat_buttons ADD_FRIEND" onClick={() => backFunctions.addFriend(userInfos.userName.userName, selectedUser, userInfos)}></div>
+            <div className="chat_buttons BLOCK"  onClick={() => backFunctions.blockUser(userInfos.userName.userName, selectedUser, userInfos)}></div>
+          </div>
+          <div className="chat_button_container">
+            <div className="chat_buttons MUTE"></div>
+            <div className="chat_buttons KICK"></div>
+            <div className="chat_buttons BAN"></div>
+          </div>
+        </div>
+      </div>      
     </div>
-    
   );
 }
 

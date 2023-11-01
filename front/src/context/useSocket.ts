@@ -5,10 +5,7 @@ export const useSocket = (
 	uri: string,
 	opts?: Partial<ManagerOptions & SocketOptions> | undefined
 ): Socket => {
-	const {current: socket} = useRef(io(uri, {
-		...opts,
-		// extraHeaders: {'Access-Control-Allow-Origin': `${process.env.REACT_APP_SERVER_HOST}`}
-	}));
+	const {current: socket} = useRef(io(uri, {...opts}));
 
 	useEffect(() => {
 		return () => {

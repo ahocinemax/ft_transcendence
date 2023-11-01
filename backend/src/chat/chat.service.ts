@@ -3,8 +3,9 @@ import { UserService } from 'src/user/user.service';
 import { ConnectedSocket, WsException } from '@nestjs/websockets';
 import { Injectable } from '@nestjs/common';
 import { MessageDTO, ChannelDTO } from './dto/chat.dto';
-import { chatPreview, oneMessage } from './type/chat.type';
+import { oneMessage } from './type/chat.type';
 import * as argon from 'argon2';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class ChatService {
@@ -32,18 +33,17 @@ export class ChatService {
 		return ;
 	}
 
-	async fetch_messages(channelId: number): Promise<oneMessage[]> {
+	async	messages_from_channel_id(channelId: number): Promise<oneMessage[]> {
 		try {
 			const source = await this.getAllMessages(channelId);
-			const data = await this.loadMessages(source);
-			return data;
+			return await this.loadMessages(source);
 		} catch (error) {
-			console.log('fetch_messages error:', error);
+			console.log('messages_from_channel_id error:', error);
 			throw new WsException(error);
 		}
 	}
 
-	async getAllMessages(channelId: number) {
+	async	getAllMessages(channelId: number) {
 		try {
 			const source = this.prisma.channel.findUnique({
 				where: { id: channelId },
@@ -52,6 +52,7 @@ export class ChatService {
 						where: { unsent: false },
 						orderBy: { createdAt: 'asc' },
 						select: {
+							channelId: true,
 							id: true,
 							content: true,
 							createdAt: true,
@@ -71,21 +72,23 @@ export class ChatService {
 		}
 	}
 
-	async loadMessages(source: any): Promise<oneMessage[]> {
+	async	loadMessages(param: any): Promise<oneMessage[]> {
 		try {
+			if (!param) return (null);
+			const source = await param.messages;
 			const data = [];
-			if (source.messages)
-				for (let index = 0; index < source.messages.length; index++) {
+			if (source)
+				for (let index = 0; index < source.length; index++) {
 					const element: oneMessage = {
-						msgId: source.messages[index].id,
-						id: source.messages[index].owner.id,
-						channelId: source.messages[index].channelId,
-						email: source.messages[index].owner.email,
-						username: source.messages[index].owner.username,
-						msg: source.messages[index].msg,
-						createAt: source.messages[index].createdAt,
-						updateAt: source.messages[index].updateAt,
+						msgId: source[index].id,
+						id: source[index].owner.id,
+						channelId: source[index].channelId,
+						email: source[index].owner.email,
+						message: source[index].content,
+						createAt: source[index].createdAt,
+						updateAt: source[index].updateAt,
 						isInvite: false,
+						name: source[index].owner.name,
 					};
 					data.push(element);
 				}
@@ -93,7 +96,7 @@ export class ChatService {
 		} catch (error) { console.log('loadMessages error:', error);}
 	}
 
-	async getRegisteredUsers(channelId: number) {
+	async	getRegisteredUsers(channelId: number) {
 		try {
 			const usersInChannel = this.prisma.channel.findUnique({
 				where: { id: channelId },
@@ -109,30 +112,15 @@ export class ChatService {
 		} catch (e) { throw new WsException(e.message); }
 	}
 	
-	async	getUsersChannels(email: string) {
+	async	getUsersMPs(email: string) {
 		try {
 			const userId = await this.userService.getUserByEmail(email).then((user) => user.id);
-			const userData = await this.prisma.user.findUnique({
+			const listOfMPs = await this.prisma.user.findUnique({
 				where: { id: userId },
-				select: {
-					owner: { where: { dm: true, }, },
-					admin: true,
-					member: true,
-					invited: true,
-					chanBanned: true,
-				},
+				select: { owner: { where: { dm: true } } }
 			});
-			const availableChannels = [];
-			for (const [index, channel] of userData.owner.entries())
-				availableChannels.push(channel);
-			for (const [index, channel] of userData.admin.entries())
-				availableChannels.push(channel);
-			for (const [index, channel] of userData.member.entries())
-				availableChannels.push(channel);
-			for (const [index, channel] of userData.invited.entries())
-				availableChannels.push(channel);
 
-			return availableChannels.filter((channel) => !userData.chanBanned.includes(channel));
+			return listOfMPs.owner;
 		} catch (error) { console.log('User\'s not registered to any channel'); }
 	}
 
@@ -167,14 +155,14 @@ export class ChatService {
 		if (!source) return (null);
 		const data: oneMessage = {
 			msgId: source.id,
-			msg: source.msg,
+			message: source.content,
 			channelId: source.channelId,
 			createAt: source.createdAt,
 			updateAt: source.updatedAt,
 			isInvite: false,
 			id: source.owner.id,
 			email: source.owner.email,
-			username: source.owner.username,
+			name: source.owner.name,
 		};
 		return data;
 	}
@@ -202,30 +190,27 @@ export class ChatService {
 			const isMuted = await this.isMuted(id, data.channelId); // Check if user is muted
 			if (isMuted.length !== 0) return ; // If user is muted, message is not created
 			*/
-			 const message = await this.prisma.message.create({
+			const message = await this.prisma.message.create({
 				data: {
 					content: data.message,
 					history: [data.message],
-					owner: { connect: { email: data.email, }, },
+					owner: { connect: { email: data.email } },
 					channel: { connect: { id: data.channelId } },
-				},
+				}
 			});
 			// Fill missing infos, which aren't in messageDTO.
 			await this.prisma.message.update({
 				where: { id: message.id, },
 				data: {
-					updatedAt: message.createdAt,
+					updatedAt: message.createdAt, // remove it from db (useless)
 					userId: id,
 					channelId: data.channelId
 				},
 			});
-			const msg = await this.get_message_by_id(message.id);
-			const msgDTO = await this.create_messageDTO(msg);
-			return msgDTO;
+			await this.prisma.channel.update({ where: { id: data.channelId }, data: { updatedAt: new Date() } });
+			return message.id;
 		}
-		catch (error) {
-			throw new WsException(error.message);
-		}        
+		catch (error) { throw new WsException(error.message); }
 	}
 
 	async	isMuted(id: number, channelId: number) {
@@ -254,9 +239,9 @@ export class ChatService {
 					password: password,
 					owners : { connect: { email: info.email, }, },
 					admins : { connect: { email: info.email, }, },
-					// members: { connect: this.mapMembersToIds(info.members) }
 				},
 			});
+			this.prisma.channel.update({ where: { id: channel.id }, data: { updatedAt: new Date() } });
 			return channel.id;
 		} catch (error) {
 			console.log("Failed to create new channel: ", error);
@@ -264,10 +249,24 @@ export class ChatService {
 		}
 	}
 
-	async	get_channels() {
-		const channels = await this.prisma.channel.findMany({}); // Get all channels
-		return channels;
+	async create_mp(creator: string, info: ChannelDTO) {
+		try {
+			const channel = await this.prisma.channel.create({  
+				data: {
+					name: info.name,
+					private: true,
+					dm: true,
+					isProtected: info.isProtected,
+					password: '',
+					owners : { connect: { email: info.email, name: creator} },
+				},
+			});
+			this.prisma.channel.update({ where: { id: channel.id }, data: { updatedAt: new Date() } });
+			return channel.id;
+		} catch (error) { console.log("Failed to create new channel: ", error); }
 	}
+
+	async	get_channels() { return await this.prisma.channel.findMany({ where: {dm: false } } ); }
 
 	async	get_channel_by_id(channelId: number) {
 		try {
@@ -299,46 +298,6 @@ export class ChatService {
 			console.log('get_channel_by_id error:', error);
 			throw new WsException(error);
 		}
-	}
-
-	async	get_preview(channelId: number, email: string) : Promise<chatPreview> {
-		try {
-			const channel = await this.get_channel_by_id(channelId);
-			const preview = await this.create_preview(channel, email);
-			return preview;
-		} catch (error) {
-			console.log("Failed to get channel preview: ", error);
-			throw new WsException(error);
-		}
-	}
-
-	async create_preview(source: any, email: string) {
-		let messageCount = 0;
-		if (source.messages) messageCount = source.messages.length;
-		let dmName = '';
-		let own = source.owners; // may break if point to wrong place
-		if (own.length > 1) {
-			dmName = own[0].email === email ? own[1].username : own[0].username;
-		} else dmName = 'Empty Chat';
-		let otherId = -1;
-		if (own.length > 1) {
-			otherId =
-				own[0].email === email
-					? own[1].id
-					: own[0].id;
-		} else otherId = own[0].id;
-		const data: chatPreview = {
-			id: source.id,
-			dm: source.dm,
-			name: source.dm ? dmName : source.name,
-			isPassword: source.isPassword,
-			updateAt: source.updateAt,
-			// eslint-disable-next-line unicorn/no-nested-ternary, prettier/prettier
-			lastMsg: source.isPassword ? '' : (messageCount > 0 ? source.messages[0].msg : ''),
-			ownerEmail: own.length > 0 ? own[0].email : '',
-			ownerId: otherId,
-		};
-		return data;
 	}
 
 	async	get_members_of_channel() {

@@ -32,6 +32,7 @@ services:
      - ft_transcendence
     depends_on:
      - postgres
+    restart: unless-stopped
 
   pgadmin:
     image: dpage/pgadmin4

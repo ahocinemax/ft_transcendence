@@ -2,13 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { config } from 'dotenv';
 import * as session from 'express-session';
 import * as cookieParser from 'cookie-parser';
 import * as passport from 'passport';
 import * as bodyParser from 'body-parser';
 
-//config();
 const oneWeek = 1000 * 60 * 60 * 24 * 7;
 
 async function bootstrap() {
@@ -27,8 +25,6 @@ async function bootstrap() {
     origin: 'http://localhost:3000',
     allowedHeaders: ['content-type','Authorization', 'Accept', 'Origin', 'X-Requested-With','Access-Control-Allow-Origin', 'credentials'],
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
-    //preflightContinue: true,
-    //optionsSuccessStatus: 204,
     credentials: true,
   });
 
