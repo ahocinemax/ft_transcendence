@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './FriendProfile.css';
 import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import SettingsIcon from '../../Settings_Icon.png';
 import BlockIcon from '../../BlockUserPixel.png';
@@ -45,48 +45,10 @@ const userInfoInit: userModel = {
 			winRate: result.winRate === null ? 0 : result.winRate,
 		};
 		setUserInfo(newUserInfo);
-		console.log("friendList", userInfoInit.friends);
-		console.log("blockedList", userInfoInit.blocked);
-		console.log("gameHistoryList", userInfoInit.gameHistory);
+		console.log("friendList", newUserInfo.friends);
+		console.log("blockedList", newUserInfo.blocked);
+		console.log("gameHistoryList", newUserInfo.gameHistory);
 	};
-
-const friends = [
-    { name: 'Player1', profile_img: require('../../avatar.png')},
-    { name: 'Player2', profile_img: require('../../avatar.png')},
-    { name: 'Player3', profile_img: require('../../avatar.png')},
-    { name: 'Player4', profile_img: require('../../avatar.png')},
-    { name: 'Player5', profile_img: require('../../avatar.png')},
-    { name: 'Player6', profile_img: require('../../avatar.png')},
-    { name: 'Player7', profile_img: require('../../avatar.png')},
-    { name: 'Player8', profile_img: require('../../avatar.png')},
-    { name: 'Player9', profile_img: require('../../avatar.png')},
-    { name: 'Player10', profile_img: require('../../avatar.png')},
-    { name: 'Player11', profile_img: require('../../avatar.png')},
-    { name: 'Player12', profile_img: require('../../avatar.png')},
-    { name: 'Player13', profile_img: require('../../avatar.png')},
-    { name: 'Player14', profile_img: require('../../avatar.png')}
-      ];
-
-const match_history = [
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-            ];
 
 const FriendProfile = () => {
 	const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
@@ -116,6 +78,19 @@ const FriendProfile = () => {
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [isFetched, userData, isUserDataUpdated]);
 
+        useEffect(() => {
+            const fetchFriendData = async () => {
+                if (friendName) {
+                    const result = await backFunctions.getUserByName(friendName);
+                    if (result) {
+                        console.log("getUserByName", result);
+                        await initializeUser(result, setUserInfo);
+                    }
+                }
+            };
+            fetchFriendData();
+        }, [friendName]);
+        
 		return (
 		<div className="profile">
 			<div className="bande">
@@ -131,31 +106,31 @@ const FriendProfile = () => {
 				</div>
 			</div>
 			<div className="centered_div_container">
-				<div className="scores_div">
+				<div className="scores_div_main_profile">
 					<div className="scores_div_top">
 						<div className="scores_round_div"></div>
 					</div>
 					<div className="scores_div_bottom">
-						<h1 className="info">Games</h1>
-						<h1 className="stat">{userInfo.gamesPlayed}</h1>
+						<h1 className="info right">Games</h1>
+						<h1 className="stat main">{userInfo.gamesPlayed}</h1>
 					</div>
 				</div>
-				<div className="scores_div">
+				<div className="scores_div_main_profile">
 					<div className="scores_div_top">
 						<div className="scores_round_div"></div>
 					</div>
 					<div className="scores_div_bottom">
-						<h1 className="info">Wins</h1>
-						<h1 className="stat">{userInfo.gamesWon}</h1>
+						<h1 className="info right">Wins</h1>
+						<h1 className="stat main">{userInfo.gamesWon}</h1>
 					</div>
 				</div>
-				<div className="scores_div">
+				<div className="scores_div_main_profile">
 					<div className="scores_div_top">
 						<div className="scores_round_div"></div>
 					</div>
 					<div className="scores_div_bottom">
-						<h1 className="info">Winrate</h1>
-						<h1 className="stat">{userInfo.winRate ? userInfo.winRate + "%" : "X"}</h1>
+						<h1 className="info right">Winrate</h1>
+						<h1 className="stat main">{userInfo.winRate ? userInfo.winRate + "%" : "X"}</h1>
 					</div>
 				</div>
 			</div>
@@ -163,21 +138,24 @@ const FriendProfile = () => {
                 {userInfo.friends.map((friend, index) => (
                   <div key={index} className='friend'>
                     <div className='friend_profile_img' style={{ backgroundImage: `url(${friend.image})` }}></div>
-                    <div className='friend_profile_name'>{friend.name}</div>
+                    <Link to={`/profile/${friend.name}`}>
+                      <div className='friend_profile_name'>{friend.name}</div>
+                    </Link>
                   </div>
                 ))}
             </div>
-            <div className='match_history'>
-                {match_history.map((match, index) => (
-                  <div key={index} className={match.result}>
-                    <div className='match_infos'>{match.opponentName}</div>
-                    <div className='match_infos'>{match.score}</div>
+                <div className='match_history main'>
+                {userInfo.gameHistory && userInfo.gameHistory.map((match, index) => (
+                    <div key={index} className={match.victory ? "win" : "loose"}>
+                    <div className='match_infos'>{userInfo.name}</div>
+                    <div className='match_infos'>{match.userScore} - </div>
+                    <div className='match_infos'>{match.opponentScore}</div>
+                    <div className='match_infos'>{match.opponentUser.name}</div>
                     <div className='match_infos'>{match.mode}</div>
-                    <div className='match_infos'>{match.result.charAt(0).toUpperCase() + match.result.slice(1)}</div>
                   </div>
                 ))}
                 </div>
-        </div>
+            </div>
 	);
 }
 

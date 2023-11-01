@@ -119,7 +119,7 @@ const Profile = () => {
                     <div key={index} className='friend'>
                         <div className='friend_profile_img' style={{ backgroundImage: `url(${friend.image})` }}></div>
                         {/* <div className='friend_profile_name'>{friend.name}</div> */}
-                        <Link to={`/friendProfile/${friend.name}`}>
+                        <Link to={`/profile/${friend.name}`}>
                         <div className='friend_profile_name'>{friend.name}</div>
                         </Link>
 
@@ -127,7 +127,7 @@ const Profile = () => {
                 ))}
             </div>
                     <div className='match_history main'>
-                    {userInfoInit.gameHistory && userInfoInit.gameHistory.map((match, index) => (
+                    {userInfo.gameHistory && userInfo.gameHistory.map((match, index) => (
                         <div key={index} className={match.victory ? "win" : "loose"}>
                         <div className='match_infos'>{userInfo.name}</div>
                         <div className='match_infos'>{match.userScore} - </div>
