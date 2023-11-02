@@ -71,11 +71,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			console.log("room not found!");
 			return;
 		}
-		// console.log("🚀 ~ sending back room:", room);
 		client.emit('room infos response', room);
 	}
-
-	// @SubscribeMessage('set mode one') 
-	// @SubscribeMessage('set mode two')
-	// @SubscribeMessage('set mode three')
 }
