@@ -55,7 +55,6 @@ const FriendProfile = () => {
     const userData = useUserContext();
     const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
     const [isFetched, setIsFetched] = useState(false);
-	const [selectedUser, setSelectedUser] = useState('');
     const [isUser, setIsUser] = useState(true);
     //let params = useParams();
 
