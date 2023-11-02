@@ -33,6 +33,10 @@ import { MuteController } from './mute/mute.controller';
 import { MuteService } from './mute/mute.service';
 import { MuteModule } from './mute/mute.module';
 
+import { BanService } from './ban/ban.service';
+import { BanController } from './ban/ban.controller';
+import { BanModule } from './ban/ban.module';
+
 @Module({
   imports: [
         PrismaModule,
@@ -52,9 +56,10 @@ import { MuteModule } from './mute/mute.module';
         PendingModule,
         WebsocketModule,
         ChatModule,
-        MuteModule
+        MuteModule,
+        BanModule
       ],
-    controllers: [AppController, FriendController, PendingController, MuteController],
-  providers: [AppService, CloudinaryService, FriendService, PendingService, MuteService],
+    controllers: [AppController, FriendController, PendingController, MuteController, BanController],
+  providers: [AppService, CloudinaryService, FriendService, PendingService, MuteService, BanService],
 })
 export class AppModule {}

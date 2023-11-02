@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { MuteCreateInput } from 'prisma/prisma-client';
 
 @Injectable()
 export class MuteService {
@@ -14,38 +13,37 @@ export class MuteService {
     return user?.muted || [];
   }
 
-  async addMuteUser(username: string, mutedUsername: string, channelId: number) {
-    const user = await this.prisma.user.findUnique({ where: { name: username } });
-    const mutedUser = await this.prisma.user.findUnique({ where: { name: mutedUsername } });
+  async addMuteUser(userName: string, mutedUserName: string, channelId: number) {
+    const user = await this.prisma.user.findUnique({ where: { name: userName } });
+    const mutedUser = await this.prisma.user.findUnique({ where: { name: mutedUserName } });
   
     if (!user || !mutedUser) {
       return null;
     }
   
-    const data: MuteCreateInput = {  // 型を明示的に指定
-      userId: user.id,
-      channelId: channelId,
-      muted: {
-        connect: { id: mutedUser.id },
+    return this.prisma.mute.create({
+      data: {
+        userId: user.id,
+        channelId: channelId,
+        mutedId: mutedUser.id,
       },
-    };
-  
-    return this.prisma.mute.create({ data });
-  }
-  
+    });
+  }  
 
-  async removeMuteUser(username: string, channelId: number) {
-    const user = await this.prisma.user.findUnique({ where: { name: username } });
+  async removeMuteUser(userName: string, mutedUserName: string, channelId: number) {
+    const user = await this.prisma.user.findUnique({ where: { name: userName } });
+    const mutedUser = await this.prisma.user.findUnique({ where: { name: mutedUserName } });
 
-    if (!user) {
+    if (!user || !mutedUser) {
       return null;
     }
 
     return this.prisma.mute.delete({
       where: {
-        userId_channelId: {
+        userId_channelId_mutedId: {
           userId: user.id,
           channelId: channelId,
+          mutedId: mutedUser.id,
         },
       },
     });

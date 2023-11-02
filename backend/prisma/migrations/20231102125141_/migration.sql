@@ -57,6 +57,7 @@ CREATE TABLE "Mute" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" INTEGER NOT NULL,
+    "mutedId" INTEGER NOT NULL,
     "channelId" INTEGER NOT NULL,
 
     CONSTRAINT "Mute_pkey" PRIMARY KEY ("id")
@@ -140,7 +141,7 @@ CREATE UNIQUE INDEX "Channel_name_key" ON "Channel"("name");
 CREATE UNIQUE INDEX "Channel_id_key" ON "Channel"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Mute_userId_channelId_key" ON "Mute"("userId", "channelId");
+CREATE UNIQUE INDEX "Mute_userId_channelId_mutedId_key" ON "Mute"("userId", "channelId", "mutedId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_friends_AB_unique" ON "_friends"("A", "B");
