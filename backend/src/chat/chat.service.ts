@@ -183,6 +183,18 @@ export class ChatService {
 		}
 	}
 
+	async getUserIdByName(name: string) {
+		try {
+			const user = await this.prisma.user.findFirst({
+				where: { name: name, },
+				select: { id: true, },
+			});
+			return (user.id);
+		} catch (error) {
+			console.log("getUserByName error: ", error);
+		}
+	}
+
 	async	new_message(data: MessageDTO) {
 		try {
 			const id = await this.getUserIdByMail(data.email); // Get user id by email
@@ -252,7 +264,10 @@ export class ChatService {
 	async create_mp(creator: string, otherClient: ChannelDTO) {
 		try {
 			let ids: number[] = [];
-			ids.push(await this.userService.getUserByEmail(creator).then((user) => user.id), await this.getUserIdByMail(otherClient.email));
+			const ownerId = await this.getUserIdByName(creator);
+			const otherId = await this.getUserIdByMail(otherClient.email);
+			console.log("ownerId: ", ownerId, "|| otherId: ", otherId);
+			ids.push(ownerId, otherId);
 			const channel = await this.prisma.channel.create({  
 				data: {
 					name: otherClient.name,

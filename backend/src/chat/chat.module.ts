@@ -7,7 +7,7 @@ import { WebsocketGateway } from 'src/websocket/websocket.gateway';
 
 @Module({
     imports: [forwardRef(() => PrismaModule), forwardRef(() => UserModule)],
-    providers: [ChatGateway, ChatService, WebsocketGateway],
+    providers: [ChatGateway, ChatService],
     exports: [ChatService, ChatGateway],
 })
 export class ChatModule {}

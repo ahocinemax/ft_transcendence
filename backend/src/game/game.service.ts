@@ -341,7 +341,6 @@ export class GameService {
 		const player1 = GameService.waitlists[mode][0];
 		const player2 = GameService.waitlists[mode][1];
 		const room: Room = {
-
 			name: roomInfo.name,
 			NamePlayer1: player1.name,
 			player1: player1.socket,
@@ -378,18 +377,15 @@ export class GameService {
 		player2.socket.emit('get room id', roomId);
 	}
 
-	getRoomById(roomId: string) : Room | null {
-		// console.log("Parcours la liste et cherche [", roomId, "]:");
-		// GameService.rooms.forEach((room) => {
-		// 	console.log(room.name);
-		// 	if (room.name === roomId) {
-		// 		console.log("room found");
-		// 		return room;
-		// 	}
-		// });
-		// return null;
-		return GameService.rooms.find((room) => room.name === roomId);
-	}
+	getRoomById(roomId: string): Room | null {
+		for (const room of GameService.rooms) {
+		  if (room.name === roomId) {
+			console.log("room found: ", room.id, " / ", room.name);
+			return room;
+		  }
+		}
+		return null; // Retournez null si aucune chambre correspondante n'est trouvée
+	  }
 
 	getWaitlist(mode: string) { return GameService.waitlists[mode]; }
 }

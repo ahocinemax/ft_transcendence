@@ -133,9 +133,9 @@ const Chat = () => {
       setPriv_msgs(data);
     });
     return () => {
-      socket?.disconnect();
+      socket?.off('fetch mp');
     };
-  }, []);
+  }, [socket]);
 
   useEffect(() => { // handle events : 'fetch message', 'update requests'
     if (activeChannel && socket) socket.emit('get messages', activeChannel, (data: any) => {});
@@ -145,16 +145,19 @@ const Chat = () => {
     socket?.on('update private request', () => {
       socket?.emit('get mp', userInfos.email.email);
     });
-    // socket?.on('update message request', (data: any) => {
-    //   socket?.emit('get messages', activeChannel);
-    // });
-    // socket?.on('update channel request', (data: any) => {
-    //   socket?.emit('get channels');
-    // });
+    socket?.on('update message request', (data: any) => {
+      socket?.emit('get messages', activeChannel);
+    });
+    socket?.on('update channel request', (data: any) => {
+      socket?.emit('get channels');
+    });
     return () => {
-      socket?.disconnect();
+      socket?.off('fetch messages');
+      socket?.off('update private request');
+      socket?.off('update message request');
+      socket?.off('update channel request');
     };
-  }, [activeChannel]);
+  }, [activeChannel, socket]);
 
   // EVENT HANDLERS
   const handleSearch = (query: string) => {
@@ -273,6 +276,7 @@ const Chat = () => {
     const data = {
       name: res.channelName,
       private: res.private,
+      dm: false,
       password: res.password,
       email: userInfos.email.email,
       isProtected: res.private

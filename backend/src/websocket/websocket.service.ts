@@ -76,10 +76,10 @@ export class WebsocketService {
 				where: {name: client.data.name},
 				data: {status: 'online'}
 			});
-			// this.sendMessage(client, 'update_status', {
-			// 	status: 'online',
-			// 	user: client.data.name,
-			// });
+			this.sendMessage(client, 'update_status', {
+				status: 'online',
+				user: client.data.name,
+			});
 			// console.log(`${client.data.name} is now online`);
 		} catch (error) { console.log('Failed to update status of user to online'); }
 	} 
@@ -92,10 +92,10 @@ export class WebsocketService {
 					status: 'ingame',
 				},
 			});
-			// this.sendMessage(client, 'update_status', {
-			// 	status: 'ingame',
-			// 	user: client.data.name,
-			// });
+			this.sendMessage(client, 'update_status', {
+				status: 'ingame',
+				user: client.data.name,
+			});
 			// console.log(`${client.data.name} is now ingame`);
 		} catch (error) {
 			console.log('Failed to update status of user');
@@ -112,10 +112,10 @@ export class WebsocketService {
 							status: 'offline',
 						},
 					});
-					// this.sendMessage(client, 'update_status', {
-					// 	status: 'offline',
-					// 	user: client.data.name,
-					// });
+					this.sendMessage(client, 'update_status', {
+						status: 'offline',
+						user: client.data.name,
+					});
 					// console.log(`${client.data.name} is now offline`);
 				} catch (error) { console.log('Failed to update status of user'); }
 			}

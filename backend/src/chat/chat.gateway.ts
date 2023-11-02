@@ -39,7 +39,7 @@ export class ChatGateway implements OnGatewayConnection {
 
 	async handleConnection(@ConnectedSocket() client: AuthenticatedSocket) {
 		const user = await this.UserService.getUserByName(client.data.name as string);
-		this.logger.log('[NEW CONNECTION]: ' + user.name);
+		this.logger.log(`[NEW CONNECTION]: ${client.data.name}`);
 
 		const email = user?.email;
 		const channels = await this.chatService.get_channels();
@@ -97,8 +97,8 @@ export class ChatGateway implements OnGatewayConnection {
 	@SubscribeMessage('new mp') // mp is a private channel between two users
 	async handleNewPrivateMessage(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
 		const creator: string = data[0];
-		const otherClient: ChannelDTO = data[1];
-		this.logger.log("[NEW PRIVATE MESSAGE CHANNEL]");
+		const otherClient = data[1];
+		this.logger.log("[NEW PRIVATE MESSAGE CHANNEL]: ", creator, otherClient.name);
 		const to_send = await this.chatService.create_mp(creator, otherClient);
 		if (to_send === undefined)
 			client.emit('exception', 'failed to create the message, please try again');

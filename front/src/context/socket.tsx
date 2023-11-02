@@ -60,7 +60,6 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		SocketDispatch({type: 'update_socket', payload: socket});
 		StartListeners();
 		SendHandshake();
-		console.log("tset::::::::::::::::::::::");
 	}, [name, socket]);
 
 	useEffect(() => {
