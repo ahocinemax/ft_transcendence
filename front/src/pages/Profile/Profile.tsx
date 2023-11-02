@@ -110,7 +110,7 @@ const Profile = () => {
                             <h1 className="info">online</h1>
                             <h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
                         </div>
-                        <Link to="/settings" className="nav_link_profile"><img src={SettingsIcon} alt="Logo 5" /></a>
+                        <Link to="/settings" className="nav_link_profile"><img src={SettingsIcon} alt="Logo 5" /></Link>
                     </div>
                 </div>
                 <div className="centered_div_container">

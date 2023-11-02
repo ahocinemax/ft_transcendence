@@ -17,9 +17,9 @@ function Login() {
         <div className="Connexion_popup_container">
           <div className="logins_logos">
             <Link className="fortytwo_logo" to={fortytwoAuthUrl}>
-            </a>
+            </Link>
             <Link className="google_logo" to={googleAuthUrl}>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -126,8 +126,8 @@ const FriendProfile = () => {
 							<h1 className="info">online/offline</h1>
 							<h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
 						</div>
-							<Link to="/settings" className="block_friend_button"><img src={BlockIcon} alt="Logo 5" /></a>
-							<Link to="/settings" className="add_friend_button"><img src={AddIcon} alt="Logo 6" /></a>
+							<Link to="/settings" className="block_friend_button"><img src={BlockIcon} alt="Logo 5"/></Link>
+							<Link to="/settings" className="add_friend_button"><img src={AddIcon} alt="Logo 6"/></Link>
 				</div>
 			</div>
 			<div className="centered_div_container">
