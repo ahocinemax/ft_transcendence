@@ -55,6 +55,7 @@ const FriendProfile = () => {
     const userData = useUserContext();
     const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
     const [isFetched, setIsFetched] = useState(false);
+	const [selectedUser, setSelectedUser] = useState('');
     const [isUser, setIsUser] = useState(true);
     //let params = useParams();
 
@@ -101,8 +102,8 @@ const FriendProfile = () => {
 							<h1 className="info">online/offline</h1>
 							<h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
 						</div>
-							<a href="/settings" className="block_friend_button"><img src={BlockIcon} alt="Logo 5" /></a>
-							<a href="/settings" className="add_friend_button"><img src={AddIcon} alt="Logo 6" /></a>
+							<div className="add_friend_button" onClick={() => backFunctions.addFriend(userData.userName.userName, userInfo.name, userInfo)} ></div>
+							<div className="block_friend_button" onClick={() => backFunctions.blockUser(userData.userName.userName, userInfo.name, userInfo)} ></div>
 				</div>
 			</div>
 			<div className="centered_div_container">

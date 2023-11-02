@@ -345,25 +345,33 @@
 }
 
 .add_friend_button {
-  width: 5%;
+  background-image: url(../../AddUserPixel.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 5vh;
+  height: 5vh;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   align-self: center;
-  /* left : 85%; */
-  background-color: white;
+  cursor: pointer;
 }
 
 .block_friend_button {
-  width: 5%;
+  background-image: url(../../BlockUserPixel.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 5vh;
+  height: 5vh;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   align-self: center;
-  /* left : 89%; */
-  background-color: white;
+  cursor: pointer;
 }
 
 .scores_div:nth-child(2) .scores_round_div
