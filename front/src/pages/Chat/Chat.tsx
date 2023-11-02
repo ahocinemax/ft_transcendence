@@ -41,9 +41,6 @@ const initializeUser = async (result: any, setUserInfo: any) => {
   userInfoInit.rank = result.rank;
   userInfoInit.score = result.score;
   userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
-  console.log("friendList", userInfoInit.friends);
-  console.log("blockedList", userInfoInit.blocked);
-  console.log("gameHistoryList", userInfoInit.gameHistory);
   setUserInfo(userInfoInit);
 };
 
@@ -112,10 +109,8 @@ const Chat = () => {
   useEffect(() => { // Handle events : 'fetch channels', 'fetch mp'
     const fetchIsUser = async () => {
       let result;
-      console.log("userInfos.userName.userName::", userInfos.userName.userName);
       if (!isFetched && userInfos.userName.userName !== undefined) {
         result = await backFunctions.getUserByToken();
-        console.log("result::", result);
         if (result === undefined) return ;
         await initializeUser(result, setUserInfo);
         setIsFetched(true);
@@ -131,13 +126,13 @@ const Chat = () => {
     });
 
     // Send MP list request
-    socket?.emit('get mp', userInfos.email.email, (data: any) => {});
+    socket?.emit('get mp', userInfos.email.email);
     socket?.on('fetch mp', (data: channelModel[]) => {
       data = !Array.isArray(data) ? Array.from(data) : data;
+      console.log("updating mp: ", data);
       setPriv_msgs(data);
     });
     return () => {
-      socket?.off('fetch channels');
       socket?.off('fetch mp');
     };
   }, [socket]);
@@ -147,8 +142,8 @@ const Chat = () => {
     socket?.on('fetch messages', (updatedMessagesData) => { // Just clicked on chan, must fetch messages
         setMessagesData(updatedMessagesData);
     });
-    socket?.on('update private request', (updatedPrivateMessagesData) => {
-      setPrivateMessagesData(updatedPrivateMessagesData);
+    socket?.on('update private request', () => {
+      socket?.emit('get mp', userInfos.email.email);
     });
     socket?.on('update message request', (data: any) => {
       socket?.emit('get messages', activeChannel);
@@ -162,7 +157,7 @@ const Chat = () => {
       socket?.off('update message request');
       socket?.off('update channel request');
     };
-  }, [socket, activeChannel]);
+  }, [activeChannel, socket]);
 
   // EVENT HANDLERS
   const handleSearch = (query: string) => {
@@ -281,6 +276,7 @@ const Chat = () => {
     const data = {
       name: res.channelName,
       private: res.private,
+      dm: false,
       password: res.password,
       email: userInfos.email.email,
       isProtected: res.private

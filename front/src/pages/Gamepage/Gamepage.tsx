@@ -26,14 +26,10 @@ function Gamepage() {
 	};
 
 	// send request only once:
-	const [requestSent, setRequestSent] = useState(false);
 	useEffect(() => {
-	if (!requestSent) {
+		console.log("emmiting roomID: ", roomID.roomID);
 		socket?.emit("room infos request", roomID.roomID);
-		setRequestSent(true);
-	}
-	}, [requestSent]);
-
+	}, []);
 
 	useEffect(() => {
 		socket?.on("room infos response", (response: Room) => {
@@ -72,10 +68,10 @@ function Gamepage() {
 			}
 
 			// Appeler la fonction de mise à jour à chaque frame du jeu
-			requestAnimationFrame(updateBallPosition);
+			// requestAnimationFrame(updateBallPosition);
 		};
 
-		requestAnimationFrame(updateBallPosition);
+		// requestAnimationFrame(updateBallPosition);
 
 		// Ajoutez un gestionnaire d'événements lors du montage du composant
 		window.addEventListener('mousemove', handleMouseMove1);

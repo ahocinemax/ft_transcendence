@@ -1,17 +1,15 @@
 import { 
-	ForbiddenException,
 	forwardRef,
 	Inject,
 	Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { Server } from 'socket.io';
 import { UserService } from '../user/user.service';
-// import { SchedulerRegistry } from '@nestjs/schedule';
 import { Mutex } from 'async-mutex';
 import { Room } from './interface/room.interface';
-// import { GameData } from './interface/game-data.interface';
 import { waitingPlayer } from './interface/player.interface';
 import { GameData } from './interface/game-data.interface';
+import { AuthenticatedSocket } from 'src/websocket/types/websocket.type';
 
 const paddleSpeed = 1;
 
@@ -141,7 +139,7 @@ export class GameService {
 						.paddleRight -
 					5) /
 					6) *
-				GameService.rooms.find((room) => room.id === roomId).ballSpeed; // make ball go up, straight or down based on  the part of the paddle touched
+				GameService.rooms.find((room) => room.id === roomId).ballSpeed; // make ball go up, straight or down based on	the part of the paddle touched
 		}
 		// ball collision with left paddle
 		if (
@@ -341,7 +339,6 @@ export class GameService {
 		const player1 = GameService.waitlists[mode][0];
 		const player2 = GameService.waitlists[mode][1];
 		const room: Room = {
-
 			name: roomInfo.name,
 			NamePlayer1: player1.name,
 			player1: player1.socket,
@@ -378,18 +375,57 @@ export class GameService {
 		player2.socket.emit('get room id', roomId);
 	}
 
-	getRoomById(roomId: string) : Room | null {
-		// console.log("Parcours la liste et cherche [", roomId, "]:");
-		// GameService.rooms.forEach((room) => {
-		// 	console.log(room.name);
-		// 	if (room.name === roomId) {
-		// 		console.log("room found");
-		// 		return room;
-		// 	}
-		// });
-		// return null;
-		return GameService.rooms.find((room) => room.name === roomId);
-	}
+	getRoomById(roomId: string, clientToExclude: AuthenticatedSocket): Room | null {
+		for (const room of GameService.rooms) {
+			if (room.name === roomId) {
+			console.log("room found: ", room.id, " / ", room.name);
+
+			// Créez un nouvel objet en excluant le client spécifié
+			const filteredRoom: Room = {
+				id: room.id,
+				name: room.name,
+				// player1: room.player1,
+				NamePlayer1: room.NamePlayer1,
+				AvatarPlayer1: room.AvatarPlayer1,
+				player1Disconnected: room.player1Disconnected,
+				// player2: room.player2,
+				NamePlayer2: room.NamePlayer2,
+				AvatarPlayer2: room.AvatarPlayer2,
+				player2Disconnected: room.player2Disconnected,
+				paddleLeft: room.paddleLeft,
+				paddleLeftDir: room.paddleLeftDir,
+				paddleRight: room.paddleRight,
+				paddleRightDir: room.paddleRightDir,
+				ScorePlayer1: room.ScorePlayer1,
+				ScorePlayer2: room.ScorePlayer2,
+				xball: room.xball,
+				yball: room.yball,
+				xSpeed: room.xSpeed,
+				ySpeed: room.ySpeed,
+				private: room.private,
+				ballSpeed: room.ballSpeed,
+				mode: room.mode,
+			};
+
+			// Vérifiez si le client à exclure est le joueur 1 ou le joueur 2
+			if (filteredRoom.player1 === clientToExclude) {
+				filteredRoom.player1 = null;
+				filteredRoom.NamePlayer1 = null;
+				filteredRoom.AvatarPlayer1 = null;
+				// Vous pouvez également réinitialiser d'autres propriétés liées au joueur 1 si nécessaire
+			}
+			if (filteredRoom.player2 === clientToExclude) {
+				filteredRoom.player2 = null;
+				filteredRoom.NamePlayer2 = null;
+				filteredRoom.AvatarPlayer2 = null;
+				// Vous pouvez également réinitialiser d'autres propriétés liées au joueur 2 si nécessaire
+			}
+			return filteredRoom;
+			}
+		}
+		return null;
+		}
+
 
 	getWaitlist(mode: string) { return GameService.waitlists[mode]; }
 }

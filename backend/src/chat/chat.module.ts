@@ -3,11 +3,11 @@ import { PrismaModule } from 'prisma/prisma.module';
 import { UserModule } from 'src/user/user.module';
 import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
-import { WebsocketService } from 'src/websocket/websocket.service';
+import { WebsocketGateway } from 'src/websocket/websocket.gateway';
 
 @Module({
     imports: [forwardRef(() => PrismaModule), forwardRef(() => UserModule)],
-    providers: [ChatGateway, ChatService, WebsocketService],
+    providers: [ChatGateway, ChatService],
     exports: [ChatService, ChatGateway],
 })
 export class ChatModule {}

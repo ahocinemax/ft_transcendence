@@ -8,7 +8,7 @@ import {
   OnGatewayDisconnect,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { Inject, Logger, forwardRef } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { WebsocketService} from './websocket.service';
 import { AuthenticatedSocket, ServerEvents } from './types/websocket.type';
@@ -31,10 +31,14 @@ export enum Status {
 @WebSocketGateway() 
 export class WebsocketGateway
 implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{ 
+{
   @WebSocketServer()
   server: Server;
-  constructor(private websocketService: WebsocketService) {}
+  constructor(
+    @Inject(forwardRef(() => WebsocketService))
+    private websocketService: WebsocketService) {}
+
+  private logger: Logger = new Logger('WebsocketGateway Log');
 
   userStatusMap = new Map<string, Status>();
   clientSocket = new Map<string, Socket>();
@@ -64,25 +68,20 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
     this.server.emit('update-status', serializedMap);
   }
 
-  private logger: Logger = new Logger('WebsocketGateway Log');
-
 	afterInit(server: Server) {
 		this.websocketService.server = this.server;
 	}
 
   async handleConnection(@ConnectedSocket() client: AuthenticatedSocket, ...args: any[]) {
-    // console.log("Client connected: ", client);
     client.data.name = client.handshake.query.name as string;
-    this.logger.log(`[NEW CONNEXION] :  ${client.data.name}`);
     this.websocketService.addUser(client);
-    // this.chatGateway.handleJoinChat(client);
   }
 
   async handleDisconnect(client: AuthenticatedSocket) {
-    this.logger.log(`[DISCONNECTED] : Client ID ${client.data.name}`);
-    this.websocketService.removeUser(client);
+    this.logger.log(`[DISCONNECTED] :  Client ID ${client.data.name}`);
+    // this.websocketService.removeUser(client);
 		const users = Object.keys(this.websocketService.clients);
-		// this.websocketService.sendMessage(client, 'user_disconnected', users);
+		this.websocketService.sendMessage(client, 'user_disconnected', users);
     client.removeAllListeners();
 		await this.websocketService.updateStatus(client, 'offline');
   }
@@ -98,11 +97,10 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 		if (reconnected) this.logger.log(`User [${client.data.name}] has reconnected`);
     else this.websocketService.addUser(client);
 		const users = this.websocketService.clients;
-		console.log("🚀 ~ file: websocket.gateway.ts:100 ~ users:", Object.keys(users))
 
 		this.logger.log('Sending response for handshake...');
 		client?.emit('handshake', client.data.name, Object.keys(users)); // not working
-		// this.websocketService.sendMessage(client, 'user_connected', users);
+		this.websocketService.sendMessage(client, 'user_connected', users);
 		await this.websocketService.updateStatus(client, 'online');
 	}
 }

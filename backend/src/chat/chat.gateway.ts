@@ -8,7 +8,6 @@ import {
 	ConnectedSocket,
 	MessageBody,
 	OnGatewayConnection,
-	OnGatewayDisconnect,
 	SubscribeMessage, 
 	WebSocketGateway,
 	WebSocketServer,
@@ -18,25 +17,29 @@ import { HttpToWsFilter, ProperWsFilter } from './filter/chat.filter';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { UserService } from 'src/user/user.service';
-import { ChannelDTO, MessageDTO } from './dto/chat.dto';
+import { ChannelDTO } from './dto/chat.dto';
 import { AuthenticatedSocket } from 'src/websocket/types/websocket.type';
+import { WebsocketGateway } from 'src/websocket/websocket.gateway';
 
 @UsePipes(new ValidationPipe()) 
 @UseFilters(new HttpToWsFilter())
 @UseFilters(new ProperWsFilter())
 
 @WebSocketGateway()
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway implements OnGatewayConnection {
 	@WebSocketServer() 
 	server: Server;
 
 	private logger: Logger = new Logger('ChatGateway');
 
-	constructor(private chatService: ChatService, private UserService: UserService) {}
+	constructor(
+		private chatService: ChatService,
+		private UserService: UserService,
+		private websocketGateway: WebsocketGateway) {}
 
 	async handleConnection(@ConnectedSocket() client: AuthenticatedSocket) {
 		const user = await this.UserService.getUserByName(client.data.name as string);
-		this.logger.log('[NEW CONNECTION]: ' + user.name);
+		this.logger.log(`[NEW CONNECTION]: ${client.data.name}`);
 
 		const email = user?.email;
 		const channels = await this.chatService.get_channels();
@@ -45,11 +48,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			await client?.join(channel.name);
 		if (MPs) for (const MP of MPs)
 			await client?.join(MP.name);
-	}
-
-	async handleDisconnect(@ConnectedSocket() client: AuthenticatedSocket) {
-		this.logger.log('[DISCONNECTED]: ' + client.data.name);
-		client.removeAllListeners();
+		client?.join('default_all');
 	}
 
 	@SubscribeMessage('new channel')
@@ -81,8 +80,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.logger.log("[NEW  MESSAGE]");
 		const channelId = data.channelId;
 		const channel = await this.chatService.get_channel_by_id(channelId);
-		const to_send = await this.chatService.new_message(data) === undefined
-		if (to_send === undefined)
+		const isMessageCreated = await this.chatService.new_message(data) === undefined
+		if (isMessageCreated === undefined)
 			client.emit('exception', 'failed to create the message, please try again');
 		else {
 			this.server.to(channel.name).emit('update message request');
@@ -96,16 +95,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('new mp') // mp is a private channel between two users
-	async handleNewPrivateMessage(
-			@MessageBody() data: any,
-			@ConnectedSocket() client: Socket) {
-		this.logger.log("[NEW PRIVATE MESSAGE CHANNEL]");
-		const to_send = await this.chatService.create_mp(data[0], data[1]);
+	async handleNewPrivateMessage(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+		const creator: string = data[0];
+		const otherClient = data[1];
+		this.logger.log("[NEW PRIVATE MESSAGE CHANNEL]: ", creator, otherClient.name);
+		const to_send = await this.chatService.create_mp(creator, otherClient);
 		if (to_send === undefined)
 			client.emit('exception', 'failed to create the message, please try again');
 		else {
-			client.join(data[1].name);
-			client.emit('update private request');
+			// The two users are joining to the room
+			client.join(otherClient.name);
+			this.websocketGateway.clientSocket.get(otherClient.name)?.join(otherClient.name);
+			// both of the users are notified that the channel has been created
+			this.server.to(otherClient.name).emit('update private request');
 		}
 	}
 

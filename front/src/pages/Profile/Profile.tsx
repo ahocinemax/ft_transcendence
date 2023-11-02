@@ -50,7 +50,7 @@ const initializeUser = async (result: any, setUserInfo: any) => {
 };
 
 const test = () => {
-    console.log("AMIS : ", userInfoInit.friends[0].name);
+    // console.log("AMIS : ", userInfoInit.friends[0].name);
 }
 
 const match_history = [
