@@ -1,5 +1,6 @@
 import React from 'react';
 import './Login.css';
+import { Link } from 'react-router-dom';
 
 function Login() {
   const googleAuthUrl = `${process.env.REACT_APP_GOOGLE_AUTH_URL}`;
@@ -15,9 +16,9 @@ function Login() {
         <div className="Overlay"></div>
         <div className="Connexion_popup_container">
           <div className="logins_logos">
-            <a className="fortytwo_logo" href ={fortytwoAuthUrl}>
+            <Link className="fortytwo_logo" to={fortytwoAuthUrl}>
             </a>
-            <a className="google_logo" href={googleAuthUrl}>
+            <Link className="google_logo" to={googleAuthUrl}>
             </a>
           </div>
         </div>
