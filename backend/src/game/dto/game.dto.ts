@@ -41,4 +41,7 @@ export class SubjectiveGameDto {
 
 	@IsNotEmpty()
 	victory: boolean;
+
+	@IsNotEmpty()
+	mode: string;
 }
