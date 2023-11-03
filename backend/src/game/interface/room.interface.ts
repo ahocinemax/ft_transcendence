@@ -4,14 +4,14 @@ export interface Room {
 	id: number;
 	name: string;
 
-	player1?: Client;
+	player1: Client;
 	NamePlayer1: string;
 	AvatarPlayer1: string;
 	player1Disconnected?: boolean;
 
-	player2?: Client;
-	NamePlayer2?: string;
-	AvatarPlayer2?: string;
+	player2: Client;
+	NamePlayer2: string;
+	AvatarPlayer2: string;
 	player2Disconnected?: boolean;
 
 	paddleLeft: number;
