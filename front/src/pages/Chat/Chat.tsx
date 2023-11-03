@@ -51,7 +51,7 @@ const Chat = () => {
   const [messageInput, setMessageInput] = useState(''); // État pour stocker le message en cours de frappe
   const [messagesData, setMessagesData] = useState<MessagesArray>([]);
   const [channelName, setChannelName] = useState(''); // État pour stocker le nom du canal en cours de création
-  const [privateMessagesData, setPrivateMessagesData] = useState<PrivateMessagesData>({});
+  const [privateMessagesData, setPrivateMessagesData] = useState<MessagesArray>([]);
   const [activePrivateUser, setActivePrivateUser] = useState('');
   const [activePrivateConversation, setActivePrivateConversation] = useState(0);
   const [selectedUser, setSelectedUser] = useState('');
@@ -95,14 +95,6 @@ const Chat = () => {
   };
 
   type MessagesArray = MessageData[];
-  interface PrivateMessagesData 
-  {
-    [key: string]: {
-      sender: string;
-      time: string;
-      content: string;
-    }[];
-  }
 
   // HOOKS
 
@@ -121,8 +113,10 @@ const Chat = () => {
     socket?.emit('get channels', userInfos.email.email, (data: any) => {}); // 1st load of channels
     socket?.on('fetch channels', (data: channelModel[]) => {
       data = !Array.isArray(data) ? Array.from(data) : data;
-      console.log("updating channels: ", data);
       setChannels(data);
+      console.log("setting active::", tempActiveChannel);
+      if (tempActiveChannel != 0) setActiveChannel(tempActiveChannel);
+      setTempActiveChannel(0);
     });
 
     // Send MP list request
@@ -149,13 +143,20 @@ const Chat = () => {
       socket?.emit('get messages', activeChannel);
     });
     socket?.on('update channel request', (data: any) => {
+      console.log("update channel request");
       socket?.emit('get channels');
+    });
+    socket?.on('new channel id', (channelId: number) => {
+      setTempActiveChannel(channelId);
+      console.log("🚀 ~ file: Chat.tsx:164 ~ socket?.on ~ channelId:", channelId)
+      console.log("setting temp active::", tempActiveChannel);
     });
     return () => {
       socket?.off('fetch messages');
       socket?.off('update private request');
       socket?.off('update message request');
       socket?.off('update channel request');
+      socket?.off('new channel id');
     };
   }, [activeChannel, socket]);
 
@@ -163,6 +164,18 @@ const Chat = () => {
   const handleSearch = (query: string) => {
     console.log(`Recherche en cours pour : ${query}`);
   };
+
+  // handle create new channel component
+  const handleSubmit = (res: any) => {
+    const data = {
+      name: res.channelName,
+      dm: false,
+      password: res.password,
+      email: userInfos.email.email,
+      isProtected: res.private
+    };
+    socket?.emit('new channel', data);
+  }
 
   const handleChannelClick = (channelId: number) => {
     if (PasswordNeeded)
@@ -271,20 +284,6 @@ const Chat = () => {
     setPassword(false);
   };
 
-  // handle create new channel component
-  const handleSubmit = (res: any) => {
-    const data = {
-      name: res.channelName,
-      private: res.private,
-      dm: false,
-      password: res.password,
-      email: userInfos.email.email,
-      isProtected: res.private
-    };
-
-    socket?.emit('new channel', data); 
-  }
-
   const check_user = (email: string): boolean => {
     return email === userInfos.email.email;
   }
@@ -374,34 +373,32 @@ const Chat = () => {
             />
           </form>
         )} 
-        {/* {activePrivateConversation && (
+        {activePrivateConversation && (
         <div className="message_list">
           <h1 className="channel_title active_channel_title">#{activePrivateConversation}</h1>
           <ul>
-            {privateMessagesData[activePrivateConversation]?.map((message, index) => (
+            {privateMessagesData && privateMessagesData.map((message: MessageData, index: number) => (
               <li key={index}>
                 <div
-                  className={`message_bubble ${
-                    message.sender === 'Utilisateur 1' ? 'user' : 'not_user'
-                  }`}
+                    className={`message_bubble ${message.name !== userInfos.userName.userName ? 'user' : 'not_user'}`}
                   style={{
-                    width: `${Math.min(100, message.content.length)}%`, // Adjust the maximum width as needed
+                    width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
                   }}
                 >
                   <span
                     className="message_sender"
-                    onClick={() => handleUserClick(message.sender)} // Gérer le clic sur le nom de l'utilisateur
+                    onClick={() => handleUserClick(message.name)} // Gérer le clic sur le nom de l'utilisateur
                   >
-                    <strong>{message.sender} </strong>
+                    <strong>{message.name} </strong>
                   </span>
-                  ({message.time}): {message.content}
+                  ({formatDate(new Date(message.createAt))}):&nbsp;
                 </div>
               </li>
             ))}
           </ul>
         </div>
-        )} */}
-        {/* {activePrivateConversation && (
+        )}
+        {activePrivateConversation && (
             <form onSubmit={handleSendMessage}>
               <input
                 type="text"
@@ -411,7 +408,7 @@ const Chat = () => {
                 className="send_msg"
               />
             </form>
-        )} */}
+        )}
       </div>
       <div className={`user_popup ${isUserPopupVisible && selectedUser ? 'visible' : ''}`}>
         <div className="close_button" onClick={closeUserPopup}>

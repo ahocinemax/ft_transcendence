@@ -8,6 +8,7 @@ import {
 	ConnectedSocket,
 	MessageBody,
 	OnGatewayConnection,
+	OnGatewayDisconnect,
 	SubscribeMessage, 
 	WebSocketGateway,
 	WebSocketServer,
@@ -26,8 +27,8 @@ import { WebsocketGateway } from 'src/websocket/websocket.gateway';
 @UseFilters(new ProperWsFilter())
 
 @WebSocketGateway()
-export class ChatGateway implements OnGatewayConnection {
-	@WebSocketServer() 
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+	@WebSocketServer()
 	server: Server;
 
 	private logger: Logger = new Logger('ChatGateway');
@@ -39,7 +40,7 @@ export class ChatGateway implements OnGatewayConnection {
 
 	async handleConnection(@ConnectedSocket() client: AuthenticatedSocket) {
 		const user = await this.UserService.getUserByName(client.data.name as string);
-		this.logger.log(`[NEW CONNECTION]: ${client.data.name}`);
+		this.logger.log('[NEW CONNECTION]: ', user.name);
 
 		const email = user?.email;
 		const channels = await this.chatService.get_channels();
@@ -48,7 +49,11 @@ export class ChatGateway implements OnGatewayConnection {
 			await client?.join(channel.name);
 		if (MPs) for (const MP of MPs)
 			await client?.join(MP.name);
-		client?.join('default_all');
+	}
+
+	async handleDisconnect(@ConnectedSocket() client: AuthenticatedSocket) {
+		this.logger.log('[DISCONNECTED]: ', client.data.name);
+		client.removeAllListeners();
 	}
 
 	@SubscribeMessage('new channel')
@@ -58,14 +63,15 @@ export class ChatGateway implements OnGatewayConnection {
 	) {
 		this.logger.log("[NEW CHANNEL]");
 
-		const channelId = await this.chatService.create_channel(data);
+		const channelId: number = await this.chatService.create_channel(data);
 		if (channelId == undefined)
 			client.emit('exception', 'failed to create the channel, please try again');
 		else {
 			await client.join(data.name);
 			// demande à tous les clients connectés de mettre à jour la liste des channels
-			this.server.to('default_all').emit('update channel request');
 		}
+		client.emit('new channel id', channelId);
+		this.server.to('default_all').emit('update channel request');
 	}
 
 	@SubscribeMessage('get channels')
@@ -83,9 +89,8 @@ export class ChatGateway implements OnGatewayConnection {
 		const isMessageCreated = await this.chatService.new_message(data) === undefined
 		if (isMessageCreated === undefined)
 			client.emit('exception', 'failed to create the message, please try again');
-		else {
+		else 
 			this.server.to(channel.name).emit('update message request');
-		}
 	}
 
 	@SubscribeMessage('get messages')

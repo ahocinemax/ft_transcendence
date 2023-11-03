@@ -299,16 +299,16 @@ export class ChatService {
 						select: {
 							id: true,
 							email: true,
-							name: true,
-						},
+							name: true
+						}
 					},
 					messages: {
 						where: { unsent: false, },
 						orderBy: { createdAt: 'asc', },
 						select: { content: true, },
-						take: 1,
-					},
-				},
+						take: 1
+					}
+				}
 			});
 			return channel;
 		} catch (error) {

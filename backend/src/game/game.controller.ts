@@ -20,6 +20,7 @@ export class GameController {
 		@Body('ScorePlayer2') ScorePlayer2: number,
 		@Body('startTime') startTime: Date,
 		@Body('endTime') endTime: Date,
+		@Body('mode') mode: string
 	) { // giving the datas to the service
 		const res = await this.gameService.saveGame(
 			id,
@@ -29,6 +30,7 @@ export class GameController {
 			ScorePlayer2,
 			startTime,
 			endTime,
+			mode
 		);
 		return res;
 	}

@@ -49,6 +49,7 @@ export class GameService {
 		ScorePlayer2: number,
 		startTime: Date,
 		endTime: Date,
+		mode: string
 	) {
 		const game = await this.prisma.game.create({
 			data: {
@@ -59,6 +60,7 @@ export class GameService {
 				ScorePlayer2: ScorePlayer2,
 				startTime: startTime,
 				endTime: endTime,
+				mode: mode
 			},
 		});
 
@@ -312,49 +314,41 @@ export class GameService {
 	getRoomById(roomId: string, clientToExclude: AuthenticatedSocket): Room | null {
 		for (const room of GameService.rooms) {
 			if (room.name === roomId) {
-			console.log("room found: ", room.id, " / ", room.name);
+				console.log("room found: ", room.id, " / ", room.name);
 
-			// Créez un nouvel objet en excluant le client spécifié
-			const filteredRoom: Room = {
-				id: room.id,
-				name: room.name,
-				// player1: room.player1,
-				NamePlayer1: room.NamePlayer1,
-				AvatarPlayer1: room.AvatarPlayer1,
-				player1Disconnected: room.player1Disconnected,
-				// player2: room.player2,
-				NamePlayer2: room.NamePlayer2,
-				AvatarPlayer2: room.AvatarPlayer2,
-				player2Disconnected: room.player2Disconnected,
-				paddleLeft: room.paddleLeft,
-				paddleLeftDir: room.paddleLeftDir,
-				paddleRight: room.paddleRight,
-				paddleRightDir: room.paddleRightDir,
-				ScorePlayer1: room.ScorePlayer1,
-				ScorePlayer2: room.ScorePlayer2,
-				xball: room.xball,
-				yball: room.yball,
-				xSpeed: room.xSpeed,
-				ySpeed: room.ySpeed,
-				private: room.private,
-				ballSpeed: room.ballSpeed,
-				mode: room.mode,
-			};
+				// Créez un nouvel objet en excluant le client spécifié
+				const filteredRoom: Room = {
+					id: room.id,
+					name: room.name,
+					player1: room.player1,
+					NamePlayer1: room.NamePlayer1,
+					AvatarPlayer1: room.AvatarPlayer1,
+					player1Disconnected: room.player1Disconnected,
+					player2: room.player2,
+					NamePlayer2: room.NamePlayer2,
+					AvatarPlayer2: room.AvatarPlayer2,
+					player2Disconnected: room.player2Disconnected,
+					paddleLeft: room.paddleLeft,
+					paddleLeftDir: room.paddleLeftDir,
+					paddleRight: room.paddleRight,
+					paddleRightDir: room.paddleRightDir,
+					ScorePlayer1: room.ScorePlayer1,
+					ScorePlayer2: room.ScorePlayer2,
+					xball: room.xball,
+					yball: room.yball,
+					xSpeed: room.xSpeed,
+					ySpeed: room.ySpeed,
+					private: room.private,
+					ballSpeed: room.ballSpeed,
+					mode: room.mode,
+				};
 
-			// Vérifiez si le client à exclure est le joueur 1 ou le joueur 2
-			if (filteredRoom.player1 === clientToExclude) {
-				filteredRoom.player1 = null;
-				filteredRoom.NamePlayer1 = null;
-				filteredRoom.AvatarPlayer1 = null;
-				// Vous pouvez également réinitialiser d'autres propriétés liées au joueur 1 si nécessaire
-			}
-			if (filteredRoom.player2 === clientToExclude) {
-				filteredRoom.player2 = null;
-				filteredRoom.NamePlayer2 = null;
-				filteredRoom.AvatarPlayer2 = null;
-				// Vous pouvez également réinitialiser d'autres propriétés liées au joueur 2 si nécessaire
-			}
-			return filteredRoom;
+				// Vérifiez si le client à exclure est le joueur 1 ou le joueur 2
+				if (filteredRoom.player1 === clientToExclude)
+					filteredRoom.player1 = null;
+				else if (filteredRoom.player2 === clientToExclude)
+					filteredRoom.player2 = null;
+				return filteredRoom;
 			}
 		}
 		return null;

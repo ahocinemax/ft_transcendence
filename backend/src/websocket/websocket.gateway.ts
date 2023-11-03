@@ -57,7 +57,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
     this.userStatusMap.set(id, Status.offline);
     const serializedMap = [...this.userStatusMap.entries()];
     this.websocketService.updateStatus(this.clientSocket[id], 'offline');
-    this.server.emit('update-status', serializedMap);
+    this.server.emit('update-status', serializedMap); 
   }
   // this id is from google or 42 api. Must replace it by the corresponding id in the database
   inGameFromService(id: string) {
@@ -75,6 +75,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   async handleConnection(@ConnectedSocket() client: AuthenticatedSocket, ...args: any[]) {
     client.data.name = client.handshake.query.name as string;
     this.websocketService.addUser(client);
+    client.join('default_all');
   }
 
   async handleDisconnect(client: AuthenticatedSocket) {
