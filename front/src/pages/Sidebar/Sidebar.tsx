@@ -55,7 +55,6 @@ const Sidebar = () => {
       <Link to="/chat" className="nav-link"><img src={ChatIcon} alt="Logo 4" /></Link>
       <Link to="/settings" className="nav-link"><img src={SettingsIcon} alt="Logo 5" /></Link>
       <span onClick={handleLogout} className="nav-link"><img src={LogoutIcon} alt="Logo 6" /></span>
-      {/* <a href="/logout" className="nav-link"><img src={LogoutIcon} alt="Logo 6" /></Link> */}
     </div>
   );
 }

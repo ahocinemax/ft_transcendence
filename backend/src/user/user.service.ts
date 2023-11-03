@@ -220,7 +220,8 @@ export class UserService
 				opponentRank: opponent.rank,
 				opponentID: opponent.id,
 				opponentUser: opponent,
-			victory: userScore > opponentScore ? true : false,
+				victory: userScore > opponentScore ? true : false,
+				mode: game.mode,
 			};
 			gameDTOs.push(gameDTO);
 		}

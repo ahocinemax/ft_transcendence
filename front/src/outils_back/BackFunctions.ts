@@ -150,4 +150,7 @@ export const addMuteCallback = (result: any) => { return result;}
 
 export const removeMuteCallback = (result: any) => { return result;}
 
-export const getGameHitoryCallback = (result: any) => { return result; }
+export const getGameHitoryCallback = (result: any) => { 
+    console.log("getGameHitoryCallback: ", result);
+    return result;
+}
