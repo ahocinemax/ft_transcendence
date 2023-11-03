@@ -33,9 +33,9 @@ export class ChatService {
 		return ;
 	}
 
-	async	messages_from_channel_id(channelId: number): Promise<oneMessage[]> {
+	async	messages_from_channel_id(channelId: number, userId: number): Promise<oneMessage[]> {
 		try {
-			const source = await this.getAllMessages(channelId);
+			const source = await this.getAllMessages(channelId, userId);
 			return await this.loadMessages(source);
 		} catch (error) {
 			console.log('messages_from_channel_id error:', error);
@@ -43,34 +43,61 @@ export class ChatService {
 		}
 	}
 
-	async	getAllMessages(channelId: number) {
+	async getMutedUsers(userId: number, channelId: number): Promise<number[]> {
+		const mutedUsers = await this.prisma.mute.findMany({
+		  where: {
+			userId: userId,
+			channelId: channelId
+		  },
+		  select: {
+			mutedId: true
+		  }
+		});
+	
+		return mutedUsers.map(mute => mute.mutedId);
+	  }
+
+	async getAllMessages(channelId: number, userId: number) {
 		try {
-			const source = this.prisma.channel.findUnique({
-				where: { id: channelId },
-				select: {
-					messages: {
-						where: { unsent: false },
-						orderBy: { createdAt: 'asc' },
-						select: {
-							channelId: true,
-							id: true,
-							content: true,
-							createdAt: true,
-							owner: { select: {
-								id: true,
-								email: true,
-								name: true
-							}}
-						}
+		  const mutedUsers = await this.getMutedUsers(userId, channelId);
+		  console.log("mutedUsers", mutedUsers);
+		  console.log("userId", userId);
+	  
+		  const source = await this.prisma.channel.findUnique({
+			where: { id: channelId },
+			select: {
+			  messages: {
+				where: {
+				  unsent: false,
+				  NOT: {
+					userId: {
+					  in: mutedUsers
 					}
+				  }
+				},
+				orderBy: { createdAt: 'asc' },
+				select: {
+				  channelId: true,
+				  id: true,
+				  content: true,
+				  createdAt: true,
+				  owner: {
+					select: {
+					  id: true,
+					  email: true,
+					  name: true
+					}
+				  }
 				}
-			});
-			return source;
+			  }
+			}
+		  });
+		  return source;
 		} catch (error) {
-			console.log('getAllMessages error:', error);
-			throw new WsException(error);
+		  console.log('getAllMessages error:', error);
+		  throw new WsException(error);
 		}
-	}
+	  }
 
 	async	loadMessages(param: any): Promise<oneMessage[]> {
 		try {

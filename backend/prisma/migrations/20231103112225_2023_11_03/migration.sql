@@ -33,6 +33,7 @@ CREATE TABLE "Game" (
     "startTime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "endTime" TIMESTAMP(3) NOT NULL,
     "duration" INTEGER,
+    "mode" TEXT NOT NULL,
 
     CONSTRAINT "Game_pkey" PRIMARY KEY ("id")
 );
