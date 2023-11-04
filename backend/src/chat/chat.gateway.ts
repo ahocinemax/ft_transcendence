@@ -102,6 +102,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleGetMessages(@MessageBody() channelId: number, @ConnectedSocket() client: Socket) {
 		const data = await this.chatService.messages_from_channel_id(channelId); 
 		client.emit('fetch messages', data);
+		console.log("🚀 ~ handleGetMessages ~ sending messages: ", data);
 	}
 
 	@SubscribeMessage('new mp') // mp is a private channel between two users

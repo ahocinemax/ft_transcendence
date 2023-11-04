@@ -138,10 +138,11 @@ const Chat = () => {
 
   useEffect(() => { // handle events : 'fetch message', 'update requests'
     if (activeChannel && socket) socket.emit('get messages', activeChannel, (data: any) => {});
+    else if (activePrivateChannel && socket) socket.emit('get messages', activePrivateChannel, (data: any) => {});
     socket?.on('fetch messages', (updatedMessagesData) => { // Just clicked on chan, must fetch messages
         setMessagesData(updatedMessagesData);
         setPrivateMessagesData(updatedMessagesData);
-        console.log("setting updated messges");
+        console.log("setting updated messges: ", updatedMessagesData);
     });
     socket?.on('update private request', () => {
       socket?.emit('get mp', userInfos.email.email);
@@ -167,18 +168,7 @@ const Chat = () => {
       socket?.off('update channel request');
       socket?.off('new channel id');
     };
-  }, [activeChannel, socket]);
-
-
-  useEffect(() => { // handle events : 'fetch private message'
-    if (activePrivateChannel && socket) socket.emit('get messages', activePrivateChannel, (data: any) => {});
-    socket?.on('fetch messages', (updatedMessagesData) => {
-      setPrivateMessagesData(updatedMessagesData);
-    });
-    return () => {
-      socket?.off('fetch messages');
-    };
-  }, [activePrivateChannel, socket]);
+  }, [activeChannel, activePrivateChannel, socket]);
 
   // EVENT HANDLERS
   const handleSearch = (query: string) => {
@@ -217,6 +207,8 @@ const Chat = () => {
   };
 
   const handlePrivMsgClick = (channelId: number) => {
+    const channel: channelModel = priv_msgs.find((c: any) => c.id === channelId);
+    setChannelName(channel.name);
     setActiveChannel(0);
     setActivePrivateChannel(channelId);
   };
@@ -249,6 +241,7 @@ const Chat = () => {
       
     } else if (activePrivateChannel) {
       // send private message to backend
+      console.log("sending private message");
       socket?.emit('new message', {
         channelId: activePrivateChannel,
         message: newMessage.content,
@@ -351,7 +344,7 @@ const Chat = () => {
           </div>
       </div>
       <div className="main_part">
-        {activeChannel && (
+        {activeChannel ? (
           <div className="message_list">
               <h1 className="channel_title active_channel_title">#{channelName}</h1>
           <ul>
@@ -388,8 +381,8 @@ const Chat = () => {
             })}
           </ul>
         </div>
-        )}
-        {activeChannel && (
+        ) : null}
+        {activeChannel ? (
           <form onSubmit={handleSendMessage}>
             <input
               type="text"
@@ -399,10 +392,10 @@ const Chat = () => {
               className="send_msg"
             />
           </form>
-        )} 
-        {activePrivateChannel && (
+        ) : null} 
+        {activePrivateChannel ? (
         <div className="message_list">
-          <h1 className="channel_title active_channel_title">#{activePrivateChannel}</h1>
+          <h1 className="channel_title active_channel_title">#{channelName}</h1>
           <ul>
             {privateMessagesData && privateMessagesData.map((message: MessageData, index: number) => (
               <li key={index}>
@@ -427,8 +420,8 @@ const Chat = () => {
             ))}
           </ul>
         </div>
-        )}
-        {activePrivateChannel && (
+        ) : null}
+        {activePrivateChannel ? (
             <form onSubmit={handleSendMessage}>
               <input
                 type="text"
@@ -438,7 +431,7 @@ const Chat = () => {
                 className="send_msg"
               />
             </form>
-        )}
+        ) : null}
       </div>
       <div className={`user_popup ${isUserPopupVisible && selectedUser ? 'visible' : ''}`}>
         <div className="close_button" onClick={closeUserPopup}>
