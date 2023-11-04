@@ -16,11 +16,20 @@ export class MuteService {
   async addMuteUser(userName: string, mutedUserName: string, channelId: number) {
     const user = await this.prisma.user.findUnique({ where: { name: userName } });
     const mutedUser = await this.prisma.user.findUnique({ where: { name: mutedUserName } });
-  
-    if (!user || !mutedUser) {
+    const channel = await this.prisma.channel.findUnique({
+      where: { id: channelId },
+      include: { admins: true },
+    });
+    if (!user || !mutedUser || !channel) {
       return null;
     }
-  
+    console.log("channel.admins", channel.admins);
+    const isAdmin = channel.admins.some((admin) => admin.id === user.id);
+    if (!isAdmin) {
+      throw new Error('Only channel admin can mute users');
+    }
+    console.log("isAdmin",isAdmin);
+
     return this.prisma.mute.create({
       data: {
         userId: user.id,

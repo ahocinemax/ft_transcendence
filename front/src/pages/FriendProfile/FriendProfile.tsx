@@ -116,6 +116,7 @@ const FriendProfile = () => {
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [isFetched, userData, isUserDataUpdated]);
 
+		console.log("userData.userId:::::::",userData.userId);
 		return (
 		<div className="profile">
 			<div className="bande">
