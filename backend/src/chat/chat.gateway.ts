@@ -40,19 +40,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	async handleConnection(@ConnectedSocket() client: AuthenticatedSocket) {
 		const user = await this.UserService.getUserByName(client.data.name as string);
-		this.logger.log('[NEW CONNECTION]: ', user.name);
+		this.logger.log(`[NEW CONNECTION]:  ${user.name}`);
 
 		const email = user?.email;
 		const channels = await this.chatService.get_channels();
 		const MPs = await this.chatService.getUsersMPs(email);
-		if (channels) for (const channel of channels)
+		if (channels) for (const channel of channels) {
 			await client?.join(channel.name);
-		if (MPs) for (const MP of MPs)
+			console.log('client ', client.data.name, ' joined channel ', channel.name);
+		}
+		if (MPs) for (const MP of MPs) {
+			console.log('client ', client.data.name, ' joined MP ', MP.name);
 			await client?.join(MP.name);
+		}
 	}
 
 	async handleDisconnect(@ConnectedSocket() client: AuthenticatedSocket) {
-		this.logger.log('[DISCONNECTED]: ', client.data.name);
+		this.logger.log(`[DISCONNECTED] ${client.data.name}`);
 		client.removeAllListeners();
 	}
 
@@ -89,8 +93,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const isMessageCreated = await this.chatService.new_message(data) === undefined
 		if (isMessageCreated === undefined)
 			client.emit('exception', 'failed to create the message, please try again');
-		else 
+		else {
 			this.server.to(channel.name).emit('update message request');
+		}
 	}
 
 	@SubscribeMessage('get messages')
@@ -103,14 +108,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleNewPrivateMessage(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
 		const creator: string = data[0];
 		const otherClient = data[1];
-		this.logger.log("[NEW PRIVATE MESSAGE CHANNEL]: ", creator, otherClient.name);
+		this.logger.log(`[NEW PRIVATE MESSAGE CHANNEL]: ${creator}, ${otherClient.name}`);
 		const to_send = await this.chatService.create_mp(creator, otherClient);
 		if (to_send === undefined)
-			client.emit('exception', 'failed to create the message, please try again');
+			client.emit('exception', 'failed to create the mp, please try again');
 		else {
 			// The two users are joining to the room
 			client.join(otherClient.name);
 			this.websocketGateway.clientSocket.get(otherClient.name)?.join(otherClient.name);
+			console.log("🚀 ~ handleNewPrivateMessage ~ otherClient:", this.websocketGateway.clientSocket);
 			// both of the users are notified that the channel has been created
 			this.server.to(otherClient.name).emit('update private request');
 		}
@@ -122,10 +128,4 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const data = await this.chatService.getUsersMPs(email);
 		client.emit('fetch mp', data);
 	}
-
-	// @SubscribeMessage('users in')
-	// async getUsersIn(channelId: number) {
-	// 	const data = await this.chatService.getRegisteredUsers(channelId);
-	// 	return data;
-	// }
 }

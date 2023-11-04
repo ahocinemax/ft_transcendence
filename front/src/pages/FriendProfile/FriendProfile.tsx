@@ -45,9 +45,9 @@ const userInfoInit: userModel = {
 			winRate: result.winRate === null ? 0 : result.winRate,
 		};
 		setUserInfo(newUserInfo);
-		console.log("friendList", userInfoInit.friends);
-		console.log("blockedList", userInfoInit.blocked);
-		console.log("gameHistoryList", userInfoInit.gameHistory);
+		// console.log("friendList", userInfoInit.friends);
+		// console.log("blockedList", userInfoInit.blocked);
+		// console.log("gameHistoryList", userInfoInit.gameHistory);
 	};
 
 const friends = [

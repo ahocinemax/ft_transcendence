@@ -261,12 +261,38 @@ export class ChatService {
 		}
 	}
 
+	async channelAlreadyExists(ownerId1, ownerId2) {
+		const existingChannel = await this.prisma.channel.findFirst({
+			where: { dm: true, NOT: { owners: { some: { AND: [{ id: ownerId1 }, { id: ownerId2 }] } } } }
+		});
+		
+		console.log("🚀 ~ file: chat.service.ts:270 ~ ChatService ~ channelAlreadyExists ~ existingChannel:", existingChannel !== null ? true : false);
+		return  existingChannel !== null ? true : false; // Retourne true si un canal existe, sinon false
+	}
+
 	async create_mp(creator: string, otherClient: ChannelDTO) {
 		try {
-			let ids: number[] = [];
+			let ids: number[] = []; 
 			const ownerId = await this.getUserIdByName(creator);
-			const otherId = await this.getUserIdByMail(otherClient.email);
+			const otherId = await this.getUserIdByName(otherClient.name);
 			console.log("ownerId: ", ownerId, "|| otherId: ", otherId);
+			const channelAlreadyExists = await this.channelAlreadyExists(ownerId, otherId);
+			// Test 1 : un canal existe
+			// let id1 = 1;
+			// let id2 = 3; 
+
+			// let chan = await this.channelAlreadyExists(id1, id2);
+
+			// console.log("should display true: ", chan);
+			// // Test 2 : aucun canal n'existe
+			// id1 = 1;
+			// id2 = 2;
+ 
+			// chan = await this.channelAlreadyExists(id1, id2);
+
+			// console.log("should display false: ", chan);
+			console.log("🚀 ~ create_mp ~ channelAlreadyExists:", channelAlreadyExists);
+			if (channelAlreadyExists) return null; 
 			ids.push(ownerId, otherId);
 			const channel = await this.prisma.channel.create({  
 				data: {
@@ -275,9 +301,9 @@ export class ChatService {
 					dm: true,
 					isProtected: otherClient.isProtected,
 					password: '',
-					owners : { connect: ids.map((id) => ({ id: id })), },
+					owners : { connect: ids.map((id) => ({ id: id })) },
 				},
-			});
+			}); 
 			this.prisma.channel.update({ where: { id: channel.id }, data: { updatedAt: new Date() } });
 			return channel.id;
 		} catch (error) { console.log("Failed to create new channel: ", error); }

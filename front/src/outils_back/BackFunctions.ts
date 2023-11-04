@@ -110,6 +110,6 @@ export const blockCallback = (result: any) => { return result; }
 export const removeBlockCallback = (result: any) => { return result; }
 
 export const getGameHitoryCallback = (result: any) => { 
-    console.log("getGameHitoryCallback: ", result);
+    // console.log("getGameHitoryCallback: ", result);
     return result;
 }

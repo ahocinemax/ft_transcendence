@@ -43,9 +43,9 @@ const initializeUser = async (result: any, setUserInfo: any) => {
     userInfoInit.rank = result.rank;
     userInfoInit.score = result.score;
     userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
-    console.log("friendList", userInfoInit.friends);
-    console.log("blockedList", userInfoInit.blocked);
-    console.log("gameHistoryList", userInfoInit.gameHistory);
+    // console.log("friendList", userInfoInit.friends);
+    // console.log("blockedList", userInfoInit.blocked);
+    // console.log("gameHistoryList", userInfoInit.gameHistory);
     setUserInfo(userInfoInit);
 };
 
@@ -90,7 +90,6 @@ const Profile = () => {
                 result = await backFunctions.getUserByToken();
                 if (result === undefined) return ;
                 await initializeUser(result, setUserInfo);
-                console.log("name:     ", userInfo.name);
                 setIsFetched(true);
                 setIsUser(false);
                 setIsUserDataUpdated(false);

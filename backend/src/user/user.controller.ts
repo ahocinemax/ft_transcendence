@@ -50,8 +50,7 @@ export class UserController {
 
 	@Post('getGameHistory')
 	async getGameHistory(@Req() req: Request) {
-		const ret = this.userService.getGameHistory(req.body.id)
-		console.log("getGameHistory: ", ret);
+		const ret = await this.userService.getGameHistory(req.body.id)
 		return ret;
 	}
 }
