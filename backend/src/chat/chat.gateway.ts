@@ -39,6 +39,7 @@ export class ChatGateway implements OnGatewayConnection {
 
 	async handleConnection(@ConnectedSocket() client: AuthenticatedSocket) {
 		const user = await this.UserService.getUserByName(client.data.name as string);
+		client.data.user = user;
 		this.logger.log(`[NEW CONNECTION]: ${client.data.name}`);
 
 		const email = user?.email;
@@ -90,7 +91,9 @@ export class ChatGateway implements OnGatewayConnection {
 
 	@SubscribeMessage('get messages') // mute
 	async handleGetMessages(@MessageBody() channelId: number, @ConnectedSocket() client: Socket) {
-		const data = await this.chatService.messages_from_channel_id(channelId); 
+		const userId = client.data.user.id;
+		console.log("userId", userId);
+		const data = await this.chatService.messages_from_channel_id(channelId, userId); 
 		client.emit('fetch messages', data);
 	}
 
