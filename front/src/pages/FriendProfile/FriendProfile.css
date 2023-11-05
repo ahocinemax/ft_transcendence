@@ -345,7 +345,7 @@
 }
 
 .add_friend_button {
-  background-image: url(../../AddUserPixel.png);
+  background-image: url(../../AddFriendPixel.png);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -359,13 +359,43 @@
   cursor: pointer;
 }
 
-.block_friend_button {
-  background-image: url(../../BlockUserPixel.png);
+.remove_friend_button {
+  background-image: url(../../RemoveFriendPixel.png);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   width: 5vh;
   height: 5vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  cursor: pointer;
+}
+
+.block_button {
+  background-image: url(../../BlockUserPixel.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 6vh;
+  height: 6vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  cursor: pointer;
+}
+
+.unblock_button {
+  background-image: url(../../UnblockUserPixel.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 6vh;
+  height: 6vh;
   position: relative;
   display: flex;
   align-items: center;

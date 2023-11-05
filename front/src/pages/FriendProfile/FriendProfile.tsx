@@ -56,6 +56,9 @@ const FriendProfile = () => {
     const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
     const [isFetched, setIsFetched] = useState(false);
     const [isUser, setIsUser] = useState(true);
+	const [myFriendList, setMyFriendList] = useState<userModel[]>([]);
+	const [myBlockedList, setMyBlockedList] = useState<userModel[]>([]);
+	const isUserFriend = userInfo.friends.some((friend) => friend.name === userData.userName.userName);
     //let params = useParams();
 
     //console.log("name:     ", userInfo.name);
@@ -90,6 +93,49 @@ const FriendProfile = () => {
             };
             fetchFriendData();
         }, [friendName]);
+
+		useEffect(() => {
+			// Fonction asynchrone pour récupérer la liste d'amis
+			const fetchFriends = async () => {
+			  try {
+				const name = userData.userName.userName; // Remplacez par le nom de l'utilisateur que vous souhaitez obtenir
+				const data = await backFunctions.getFriend(name); // Appel de la fonction pour obtenir la liste d'amis
+				// const data = await response.json(); // Extraction des données de la réponse
+		
+				// Vérifiez si la réponse a réussi et que les données sont au format attendu
+				if (/* response.ok &&  */Array.isArray(data))
+				  setMyFriendList(data); // Mettez à jour l'état avec la liste d'amis
+				else
+				  console.error('La requête a échoué ou les données ne sont pas au format attendu.');
+				}
+			  catch (error) {
+				console.error('Une erreur s\'est produite lors de la récupération de la liste d\'amis.', error);
+			}
+		}
+		fetchFriends();
+			}, []);
+
+		useEffect(() => {
+			// Fonction asynchrone pour récupérer la liste d'amis
+			const fetchBlocked = async () => {
+			  try {
+				const name = userData.userName.userName; // Remplacez par le nom de l'utilisateur que vous souhaitez obtenir
+				const data = await backFunctions.getBlockedUser(name); // Appel de la fonction pour obtenir la liste d'amis
+				// const data = await response.json(); // Extraction des données de la réponse
+		
+				// Vérifiez si la réponse a réussi et que les données sont au format attendu
+				if (/* response.ok &&  */Array.isArray(data))
+				  setMyBlockedList(data); // Mettez à jour l'état avec la liste d'amis
+				else
+				  console.error('La requête a échoué ou les données ne sont pas au format attendu.');
+				}
+			  catch (error) {
+				console.error('Une erreur s\'est produite lors de la récupération de la liste d\'amis.', error);
+			}
+		}
+		fetchBlocked();
+			}, []);
+
         
 		return (
 		<div className="profile">
@@ -101,8 +147,16 @@ const FriendProfile = () => {
 							<h1 className="info">online/offline</h1>
 							<h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
 						</div>
-							<div className="add_friend_button" onClick={() => backFunctions.addFriend(userData.userName.userName, userInfo.name, userInfo)} ></div>
-							<div className="block_friend_button" onClick={() => backFunctions.blockUser(userData.userName.userName, userInfo.name, userInfo)} ></div>
+						{myFriendList.some((friend) => userInfo.id === friend.id) ? (
+								<div className="remove_friend_button" onClick={() => {backFunctions.removeFriend(userData.userName.userName, userInfo.name)}} ></div>
+							) : (
+								<div className="add_friend_button" onClick={() => backFunctions.addFriend(userData.userName.userName, userInfo.name, userInfo)} ></div>
+						)}
+						{myBlockedList.some((blocked) => userInfo.id === blocked.id) ? (
+								<div className="unblock_button" onClick={() => backFunctions.removeBlock(userData.userName.userName, userInfo.name)} ></div>
+							) : (
+								<div className="block_button" onClick={() => backFunctions.blockUser(userData.userName.userName, userInfo.name, userInfo)} ></div>
+						)}
 				</div>
 			</div>
 			<div className="centered_div_container">
