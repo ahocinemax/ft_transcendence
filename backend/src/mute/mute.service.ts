@@ -45,7 +45,14 @@ export class MuteService {
           error: 'Cannot mute channel owner'
         }, HttpStatus.BAD_REQUEST);
     }
-
+    const isTargetAdmin = channel.admins.some((admin) => admin.id === mutedUser.id);
+    if (isTargetAdmin) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Cannot mute another admin'
+        }, HttpStatus.BAD_REQUEST);
+    }
     return this.prisma.mute.create({
       data: {
         userId: user.id,

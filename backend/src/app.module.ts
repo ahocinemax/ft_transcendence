@@ -36,6 +36,9 @@ import { MuteModule } from './mute/mute.module';
 import { BanService } from './ban/ban.service';
 import { BanController } from './ban/ban.controller';
 import { BanModule } from './ban/ban.module';
+import { AdminService } from './admin/admin.service';
+import { AdminController } from './admin/admin.controller';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -57,9 +60,10 @@ import { BanModule } from './ban/ban.module';
         WebsocketModule,
         ChatModule,
         MuteModule,
-        BanModule
+        BanModule,
+        AdminModule
       ],
-    controllers: [AppController, FriendController, PendingController, MuteController, BanController],
-  providers: [AppService, CloudinaryService, FriendService, PendingService, MuteService, BanService],
+    controllers: [AppController, FriendController, PendingController, MuteController, BanController, AdminController],
+  providers: [AppService, CloudinaryService, FriendService, PendingService, MuteService, BanService, AdminService],
 })
 export class AppModule {}

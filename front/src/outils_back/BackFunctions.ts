@@ -106,6 +106,13 @@ export const backFunctions = {
         const response = await UserApi.fetchDelete('/mute/remove/' + name + '/' + muteUser, removeMuteCallback);
         return await response;
     },
+
+    /*admin*/
+
+    async addNewAdminUser(name: string, addNewAdminUser: string, channelId: unknown): Promise<any> {
+        const response = await UserApi.fetchPost('/admin/add/' + name + '/' + addNewAdminUser, channelId, addAdminCallback);
+        return await response;
+    },
     
     /*game history*/
     async getGameHistory(id: number): Promise<any> {
@@ -149,5 +156,7 @@ export const getMutedCallback = (result: any) => { return result;}
 export const addMuteCallback = (result: any) => { return result;}
 
 export const removeMuteCallback = (result: any) => { return result;}
+
+export const addAdminCallback = (result: any) => { return result;}
 
 export const getGameHitoryCallback = (result: any) => { return result; }
