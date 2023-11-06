@@ -33,9 +33,9 @@ export class ChatService {
 		return ;
 	}
 
-	async	messages_from_channel_id(channelId: number, userId: number): Promise<oneMessage[]> {
+	async	messages_from_channel_id(channelId: number): Promise<oneMessage[]> {
 		try {
-			const source = await this.getAllMessages(channelId, userId);
+			const source = await this.getAllMessages(channelId);
 			return await this.loadMessages(source);
 		} catch (error) {
 			console.log('messages_from_channel_id error:', error);
@@ -56,13 +56,20 @@ export class ChatService {
 	
 		return mutedUsers.map(mute => mute.mutedId);
 	  }
-
-	async getAllMessages(channelId: number, userId: number) {
+async getAllMessages(channelId: number) {
 		try {
-		  const mutedUsers = await this.getMutedUsers(userId, channelId);
-		  console.log("mutedUsers", mutedUsers);
-		  console.log("userId", userId);
-	  
+			  const mutedUsers = await this.prisma.mute.findMany({
+				where: {
+				  channelId: channelId
+				},
+				select: {
+				  mutedId: true
+				}
+			  });
+		const mutedUserIds = mutedUsers.map(mute => mute.mutedId);
+		console.log("mutedUsers", mutedUsers);
+		console.log("channelId", channelId);
+
 		  const source = await this.prisma.channel.findUnique({
 			where: { id: channelId },
 			select: {
@@ -71,7 +78,7 @@ export class ChatService {
 				  unsent: false,
 				  NOT: {
 					userId: {
-					  in: mutedUsers
+					  in: mutedUserIds
 					}
 				  }
 				},
@@ -98,6 +105,7 @@ export class ChatService {
 		  throw new WsException(error);
 		}
 	  }
+	
 
 	async	loadMessages(param: any): Promise<oneMessage[]> {
 		try {
