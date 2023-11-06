@@ -257,13 +257,13 @@
   margin-top: 5%;
 }
 
-.match_history 
+.match_history.main
 {
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   justify-content: top;
   position: absolute;
   top: 55%;

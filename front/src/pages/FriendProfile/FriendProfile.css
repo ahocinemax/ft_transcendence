@@ -267,7 +267,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   justify-content: top;
   position: absolute;
   top: 55%;
@@ -345,25 +345,63 @@
 }
 
 .add_friend_button {
-  width: 5%;
+  background-image: url(../../AddFriendPixel.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 5vh;
+  height: 5vh;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   align-self: center;
-  /* left : 85%; */
-  background-color: white;
+  cursor: pointer;
 }
 
-.block_friend_button {
-  width: 5%;
+.remove_friend_button {
+  background-image: url(../../RemoveFriendPixel.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 5vh;
+  height: 5vh;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   align-self: center;
-  /* left : 89%; */
-  background-color: white;
+  cursor: pointer;
+}
+
+.block_button {
+  background-image: url(../../BlockUserPixel.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 6vh;
+  height: 6vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  cursor: pointer;
+}
+
+.unblock_button {
+  background-image: url(../../UnblockUserPixel.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 6vh;
+  height: 6vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  cursor: pointer;
 }
 
 .scores_div:nth-child(2) .scores_round_div
