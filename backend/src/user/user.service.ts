@@ -15,6 +15,7 @@ import { plainToClass } from 'class-transformer';
 import { GameService } from 'src/game/game.service';
 import { SubjectiveGameDto } from 'src/game/dto/game.dto';
 import { UserDto } from './dto/user.dto';
+import { WebsocketService } from 'src/websocket/websocket.service';
 
 import { triggerAsyncId } from 'async_hooks';
 
@@ -25,6 +26,7 @@ export class UserService
 		private readonly prisma: PrismaService,
 		@Inject(forwardRef(() => GameService))
 		private readonly gameService: GameService,
+		private readonly websocketService: WebsocketService,
 	) {}
 
 	async createUser(
@@ -146,8 +148,7 @@ export class UserService
 	async updateUser(req: Request) {
 		try{
 			const accessToken : string = req.cookies.access_token;
-			console.log("updateUser.req.body: ", req.body);
-			const users = await this.prisma.user.findMany({
+			const users = await this.prisma.user.findMany({ // findFirst better ?
 				where: { accessToken: accessToken },
 				select: { id: true }
 			});
@@ -167,7 +168,8 @@ export class UserService
 					HttpStatus.BAD_REQUEST
 				);
 			}
-		return user;
+			this.websocketService.updateClient(user.name);
+			return user;
 		} catch (error) {
 			console.log(error);
 			throw new HttpException({

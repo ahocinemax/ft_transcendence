@@ -8,7 +8,7 @@ import { Room } from './interface/room.interface';
 import { Server } from 'socket.io';
 
 @WebSocketGateway()
-export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class GameGateway implements OnGatewayDisconnect {
 	constructor(
 		private websocketService: WebsocketService,
 		private gameService: GameService
@@ -16,11 +16,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
 	private logger: Logger = new Logger('GameGateway');
-
-	async handleConnection(client: AuthenticatedSocket) {
-		this.logger.log(`Client connected to Game Gateway: ${client.data.name}`);
-		this.websocketService.updateStatus(client, 'busy');
-	}
 
 	handleDisconnect(client: any) {
 		this.websocketService.updateStatus(client, 'online');

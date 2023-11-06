@@ -320,11 +320,11 @@ export class GameService {
 				const filteredRoom: Room = {
 					id: room.id,
 					name: room.name,
-					player1: room.player1,
+					// player1: room.player1,
 					NamePlayer1: room.NamePlayer1,
 					AvatarPlayer1: room.AvatarPlayer1,
 					player1Disconnected: room.player1Disconnected,
-					player2: room.player2,
+					// player2: room.player2,
 					NamePlayer2: room.NamePlayer2,
 					AvatarPlayer2: room.AvatarPlayer2,
 					player2Disconnected: room.player2Disconnected,

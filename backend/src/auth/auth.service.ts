@@ -52,9 +52,7 @@ async createDataBase42User(
     let finalUser: any;
     const user42infos = await this.Auth42.access42UserInformation(token);
     const user = await this.getUserByToken_(token);
-    console.log("handleDataBaseCreation::: user", user);
     if (user) {
-      // this.websocketGateway.onlineFromService(UserDto.name);
       return res.status(200).json({statusCode: 200, path: user});
     }
     if (user42infos)
@@ -82,8 +80,6 @@ async createDataBase42User(
           }, HttpStatus.BAD_REQUEST);
       };
   }
-  console.log("finalUser", finalUser);
-  // this.websocketGateway.onlineFromService(finalUser.name);
   return res.status(200).json({statusCode: 200, path: finalUser});
 };
 

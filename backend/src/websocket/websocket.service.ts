@@ -50,19 +50,27 @@ export class WebsocketService {
 		this.websocketGateway.clientSocket.set(client.data.name, client);
 	}
 
+	public updateClient(username: string) {
+		const client = this.getClient(username);
+		if (!client) return ;
+		// remove old client
+		this.websocketGateway.clientSocket.delete(username);
+		// update name
+		client.data.name = username;
+		// add updated client
+		this.addUser(client);
+	}
+
 	public async updateStatus(
 		@ConnectedSocket() client: AuthenticatedSocket,
 		type: string
 		) {
 			switch (type) {
-				case 'online':
-					await this.setOnline(client);
+				case 'online': await this.setOnline(client);
 				break;
-			case 'busy':
-				await this.setBusy(client);
+			case 'busy': await this.setBusy(client);
 				break;
-			case 'offline':
-				await this.setOffline(client);
+			case 'offline': await this.setOffline(client);
 				break;
 			default:
 				break;
@@ -80,7 +88,6 @@ export class WebsocketService {
 				status: 'online',
 				user: client.data.name,
 			});
-			// console.log(`${client.data.name} is now online`);
 		} catch (error) { console.log('Failed to update status of user to online'); }
 	} 
 
@@ -88,15 +95,12 @@ export class WebsocketService {
 		try {
 			await this.prisma.user.update({
 				where: {name: client.data.name},
-				data: {
-					status: 'ingame',
-				},
+				data: {status: 'ingame'}
 			});
 			this.sendMessage(client, 'update_status', {
 				status: 'ingame',
 				user: client.data.name,
 			});
-			// console.log(`${client.data.name} is now ingame`);
 		} catch (error) {
 			console.log('Failed to update status of user');
 		}
@@ -108,15 +112,12 @@ export class WebsocketService {
 				try {
 					await this.prisma.user.update({
 						where: {name: client.data.name},
-						data: {
-							status: 'offline',
-						},
+						data: {status: 'offline'}
 					});
 					this.sendMessage(client, 'update_status', {
 						status: 'offline',
 						user: client.data.name,
 					});
-					// console.log(`${client.data.name} is now offline`);
 				} catch (error) { console.log('Failed to update status of user'); }
 			}
 		}, 5_000);

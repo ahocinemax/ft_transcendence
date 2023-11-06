@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './Profile.css';
 import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
@@ -6,6 +6,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import SettingsIcon from '../../PencilPixel.png';
 import { userInfo } from 'os';
+import SocketContext from '../../context/socketContext';
 
 const userInfoInit: userModel = {
 	id: 0,
@@ -80,6 +81,7 @@ const Profile = () => {
     const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
     const [isFetched, setIsFetched] = useState(false);
     const [isUser, setIsUser] = useState(true);
+	const { users } = useContext(SocketContext).SocketState;
     let params = useParams();
 
     

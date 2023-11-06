@@ -22,7 +22,6 @@ function Gamepage() {
 		socket?.on("room infos response", (response: Room) => {
 			console.log("room infos: ", response);
 		});
-		console.log("handsake", "hello");
 		return () => {
 			socket?.off("room infos response");
 		}
