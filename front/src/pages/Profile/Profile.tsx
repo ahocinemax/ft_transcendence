@@ -50,31 +50,6 @@ const initializeUser = async (result: any, setUserInfo: any) => {
     setUserInfo(userInfoInit);
 };
 
-const test = () => {
-    // console.log("AMIS : ", userInfoInit.friends[0].name);
-}
-
-const match_history = [
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'Loose' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-    { opponentName: 'EnemyName', score: '7 - 2', mode: 'Hard Mode', result: 'win' },
-            ];
-
 const Profile = () => {
 	const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
     const userData = useUserContext();
@@ -107,7 +82,7 @@ const Profile = () => {
                 <div className="profile_img" style={{ backgroundImage: `url(${userInfo.image})` }}></div>
                 <div className="profile_info">
                         <div className="info_container">
-                            <h1 className="info firstinfo"onClick={test}>{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
+                            <h1 className="info firstinfo">{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
                             <h1 className="info">online</h1>
                             <h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
                         </div>
@@ -144,24 +119,25 @@ const Profile = () => {
                     </div>
                 </div>
                 <div className='friendlist'>
-                {userInfoInit.friends.map((friend, index) => (
+                {userInfo.friends.map((friend, index) => (
                     <div key={index} className='friend'>
                         <div className='friend_profile_img' style={{ backgroundImage: `url(${friend.image})` }}></div>
                         {/* <div className='friend_profile_name'>{friend.name}</div> */}
-                        <Link to={`/friendProfile/${friend.name}`}>
+                        <Link to={`/profile/${friend.name}`}>
                         <div className='friend_profile_name'>{friend.name}</div>
                         </Link>
 
                     </div>
                 ))}
             </div>
-                <div className='match_history'>
-                    {match_history.map((match, index) => (
-                      <div key={index} className={match.result}>
-                        <div className='match_infos'>{match.opponentName}</div>
-                        <div className='match_infos'>{match.score}</div>
+                    <div className='match_history main'>
+                    {userInfo.gameHistory && userInfo.gameHistory.map((match, index) => (
+                        <div key={index} className={match.victory ? "win" : "loose"}>
+                        <div className='match_infos'>{userInfo.name}</div>
+                        <div className='match_infos'>{match.userScore} - </div>
+                        <div className='match_infos'>{match.opponentScore}</div>
+                        <div className='match_infos'>{match.opponentUser.name}</div>
                         <div className='match_infos'>{match.mode}</div>
-                        <div className='match_infos'>{match.result.charAt(0).toUpperCase() + match.result.slice(1)}</div>
                       </div>
                     ))}
                     </div>
