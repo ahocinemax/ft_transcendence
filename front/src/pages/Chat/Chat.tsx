@@ -447,9 +447,9 @@ const Chat = () => {
             <div className="chat_buttons BLOCK"  onClick={() => backFunctions.blockUser(userInfos.userName.userName, selectedUser, userInfos)}></div>
           </div>
           <div className="chat_button_container">
-            <div className="chat_buttons MUTE"></div>
-            <div className="chat_buttons KICK"></div>
-            <div className="chat_buttons BAN"></div>
+            <div className="chat_buttons MUTE"onClick={() => backFunctions.addMute(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
+            <div className="chat_buttons KICK"onClick={() => backFunctions.removeMute(userInfos.userName.userName, selectedUser)}></div>
+            <div className="chat_buttons BAN"onClick={() => backFunctions.addNewAdminUser(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
           </div>
         </div>
       </div>      

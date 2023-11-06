@@ -40,7 +40,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	async handleConnection(@ConnectedSocket() client: AuthenticatedSocket) {
 		const user = await this.UserService.getUserByName(client.data.name as string);
-		this.logger.log(`[NEW CONNECTION]:  ${user.name}`);
+		client.data.user = user;
+		this.logger.log(`[NEW CONNECTION]: ${client.data.name}`);
 
 		const email = user?.email;
 		const channels = await this.chatService.get_channels();
@@ -78,14 +79,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.to('default_all').emit('update channel request');
 	}
 
-	@SubscribeMessage('get channels')
+	@SubscribeMessage('get channels') //ban / kick
 	async handleFetchChannels(@MessageBody() email: string, @ConnectedSocket() client: Socket) {
 		this.logger.log("[GET CHANNELS]");
 		const data = await this.chatService.get_channels();
 		client.emit('fetch channels', data);
 	}
 
-	@SubscribeMessage('new message')
+	@SubscribeMessage('new message') 
 	async handleNewMessage(@MessageBody() data, @ConnectedSocket() client: Socket) {
 		this.logger.log("[NEW  MESSAGE]");
 		const channelId = data.channelId;
@@ -98,8 +99,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
-	@SubscribeMessage('get messages')
+	@SubscribeMessage('get messages') // mute
 	async handleGetMessages(@MessageBody() channelId: number, @ConnectedSocket() client: Socket) {
+		const userId = client.data.user.id;
 		const data = await this.chatService.messages_from_channel_id(channelId); 
 		client.emit('fetch messages', data);
 		console.log("🚀 ~ handleGetMessages ~ sending messages: ", data);
