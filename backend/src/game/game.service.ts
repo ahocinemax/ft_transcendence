@@ -10,8 +10,10 @@ import { Room } from './interface/room.interface';
 import { waitingPlayer } from './interface/player.interface';
 import { GameData } from './interface/game-data.interface';
 import { AuthenticatedSocket } from 'src/websocket/types/websocket.type';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 const paddleSpeed = 1;
+const refreshRate = 10;
 
 type Waitlist = waitingPlayer[];
 
@@ -28,6 +30,7 @@ export class GameService {
 	private readonly prisma: PrismaService,
 	@Inject(forwardRef(() => UserService))
 	private readonly userService: UserService,
+	private schedulerRegistry: SchedulerRegistry
 	) {}
 
 	static rooms: Room[] = [];
@@ -36,13 +39,77 @@ export class GameService {
 		hard: [],
 		hardcore: [],
 	};
-	
 
+	async startGame(roomID: number, server: Server){
+		const room: Room = GameService.rooms.find((room) => room.id === roomID);
+		const gameData: GameData = {
+			paddleLeft: 0,
+			paddleRight: 0,
+			xBall: 0,
+			yBall: 0,
+			player1Score: 0,
+			player2Score: 0,
+			player1Name: room.NamePlayer1,
+			player2Name: room.NamePlayer2,
+			player1Avatar: room.AvatarPlayer1,
+			player2Avatar: room.AvatarPlayer2,
+			startTime: new Date(),
+			gameID: roomID,
+		};
+		const mutex = new Mutex();
+		this.initBall(roomID);
+		const interval = setInterval(() => {
+			this.gameLoop(roomID, server, gameData, mutex);
+		}, refreshRate);
+		this.schedulerRegistry.addInterval('room_' + roomID, interval);
+		return gameData;
+	}
+
+	async gameLoop(roomID: number, server: Server, gameData: GameData, mutex: Mutex) {
+		const release = await mutex.acquire();
+		let room = GameService.rooms.find((room) => room.id === roomID);
+		if (!room) {
+			release();
+			return;
+		}
+		if (room.player1Disconnected || room.player2Disconnected)
+			server.to(room.name).emit('disconnected', room.player1Disconnected ? 1 : 2);
+		else {
+			this.updatePaddles(roomID);
+			this.updateBall(roomID);
+			gameData.paddleLeft = room.paddleLeft;
+			gameData.paddleRight = room.paddleRight;
+
+			gameData.xBall = room.xball;
+			gameData.yBall = room.yball;
+
+			gameData.player1Score = room.ScorePlayer1;
+			gameData.player2Score = room.ScorePlayer2;
+		}
+		server.to(room.name).emit('game data', gameData);
+
+		if (room.ScorePlayer1 === 10 || room.ScorePlayer2 === 10) {
+			this.schedulerRegistry.deleteInterval('room_' + roomID);
+			const winner = gameData.player1Score === 10 ? 1 : 2;
+			server.to(room.name).emit('game over', winner);
+			const endTime = new Date();
+			this.saveGame(
+				room.player1.data.id,
+				room.player2.data.id,
+				room.ScorePlayer1,
+				room.ScorePlayer2,
+				gameData.startTime,
+				endTime,
+				room.mode
+			);
+			GameService.rooms.splice(GameService.rooms.findIndex((room) => room.id === roomID), 1);
+		}
+		release();
+	}
 	/**
 	* Call this method when the game is over to save infos in the database
 	*/
 	async saveGame(
-		id: number,
 		IdPlayer1: number,
 		IdPlayer2: number,
 		ScorePlayer1: number,
@@ -53,7 +120,6 @@ export class GameService {
 	) {
 		const game = await this.prisma.game.create({
 			data: {
-				id: id,
 				player1: IdPlayer1,
 				player2: IdPlayer2,
 				ScorePlayer1: ScorePlayer1,
@@ -63,14 +129,13 @@ export class GameService {
 				mode: mode
 			},
 		});
-
+		const id = game.id;
 		const duration = Math.abs(game.endTime.getTime() - game.startTime.getTime());
 		await this.prisma.game.update({
 			where: { id: id },
 			data: { duration: duration },
 		});
 
-		;
 		return game;
 	}
 
@@ -83,18 +148,15 @@ export class GameService {
 		
 		updatedRoom.xball = 50;
 		updatedRoom.yball = 50;
-		updatedRoom.ballSpeed =
-			this.ballSpeed;
-		updatedRoom.xSpeed =
-			this.ballSpeed;
-		updatedRoom.ySpeed =
-			0.15 + Math.random() * this.ballSpeed;
+
+		updatedRoom.ballSpeed = room.mode === 'normal' ? 0.75 : room.mode === 'hard' ? 1 : 1.50 ;
+		updatedRoom.xSpeed = this.ballSpeed;
+		updatedRoom.ySpeed = 0.15 + Math.random() * this.ballSpeed;
+
 		let direction = Math.round(Math.random());
-		if (direction)
-			updatedRoom.xSpeed *= -1;
+		if (direction) updatedRoom.xSpeed *= -1;
 		direction = Math.round(Math.random());
-		if (direction)
-			updatedRoom.ySpeed *= -1;
+		if (direction) updatedRoom.ySpeed *= -1;
 		Object.assign(room, updatedRoom);
 	}
 
@@ -206,27 +268,6 @@ export class GameService {
 	async getGame(id: number)
 	{ return await this.prisma.game.findUniqueOrThrow({ where: { id: id } });	}
 
-	async startGame(roomID: number, server: Server){
-		const gameData: GameData = {
-			paddleLeft: 0,
-			paddleRight: 0,
-			xBall: 0,
-			yBall: 0,
-			player1Score: 0,
-			player2Score: 0,
-			player1Name: GameService.rooms.find((room) => room.id === roomID).NamePlayer1,
-			player2Name: GameService.rooms.find((room) => room.id === roomID).NamePlayer2,
-			player1Avatar: GameService.rooms.find((room) => room.id === roomID).AvatarPlayer1,
-			player2Avatar: GameService.rooms.find((room) => room.id === roomID).AvatarPlayer2,
-			startTime: new Date(),
-			gameID: roomID,
-		};
-		const mutex = new Mutex();
-		// init ball (roomID)
-		// create game loop
-		return gameData;
-	}
-
 	async getLastGames() {
 		//returns a record of all the users, ordered by endTime in descending order
 		const games = await this.prisma.game.findMany({
@@ -236,10 +277,10 @@ export class GameService {
 		return games;
 	}
 
-	isInRoom(client: any) {
+	isInRoom(client: any) : string | boolean {
 		const username = client.data.name;
 		for (const room of GameService.rooms)
-			if (room.NamePlayer1 === username || room.NamePlayer2 === username) return false; // change back tu true after testing
+			if (room.NamePlayer1 === username || room.NamePlayer2 === username) return room.name; // change back tu true after testing
 		return false;
 	}
 
@@ -352,8 +393,20 @@ export class GameService {
 			}
 		}
 		return null;
-		}
-
+	}
 
 	getWaitlist(mode: string) { return GameService.waitlists[mode]; }
+
+	leftOngoingGame(client: AuthenticatedSocket) {
+		const username = client.data.name;
+		for (const room of GameService.rooms) {
+			if (room.NamePlayer1 === username || room.NamePlayer2 === username) {
+				if (room.NamePlayer1 === username) room.player1Disconnected = true;
+				else room.player2Disconnected = true;
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

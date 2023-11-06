@@ -19,15 +19,23 @@ export class GameGateway implements OnGatewayDisconnect {
 
 	handleDisconnect(client: any) {
 		this.websocketService.updateStatus(client, 'online');
-		// this.gameService.saveGame(client.data.id); // 
+		const roomId = this.gameService.isInRoom(client);
+		if (roomId === false) return ;
+		const room: Room = this.gameService.getRoomById(roomId as string, client);
+		if (room && this.gameService.leftOngoingGame(client)) return;
+			// this.gameService.startGame(room.player1?.data.id,
+			// 	room.player2?.data.id, room.ScorePlayer1, room.ScorePlayer2,
+			// 	room., room.mode);
 	}
+
+	// IL FAUT IMPLEMENTER LE MESSAGE 'START' POUR LANCER LA PARTIE
 
 	@SubscribeMessage('waitlist request')
 	async handleAddingToWaitlist(
 		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() mode: string
 	) {
-		if (this.gameService.isInRoom(client) || this.gameService.isInWaitlist(client, mode)) {
+		if (this.gameService.isInRoom(client) !== false || this.gameService.isInWaitlist(client, mode)) {
 			console.log("user is already in a room or waitlist");
 			return;
 		}
@@ -63,7 +71,7 @@ export class GameGateway implements OnGatewayDisconnect {
 		console.log("🚀 ~ file: GameGateway ~ handleGetRoomInfos ~ roomId", roomId)
 		const room: Room = this.gameService.getRoomById(roomId, client);
 		if (room === null) {
-			console.log("room not found!");
+			this.logger.log("room not found!");
 			return;
 		}
 		client.emit('room infos response', room);

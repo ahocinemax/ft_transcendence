@@ -11,6 +11,21 @@ function Gamepage() {
 	const [ballX, setBallX] = useState(0); // Position horizontale de la balle
   	const [ballY, setBallY] = useState(0); // Position verticale de la balle
 	const { roomID } = useUserContext();
+	// AUTANT ENREGISTRER UN STATE ROOM DIRECTEMENT (INTERFACE ROOM)
+	// DEDANS IL Y AURAIT TOUTES LES DONNEES DE LA GAME
+
+	// UNE FOIS LA PARTIE TERMINEE, IL FAUT ENVOYER UNE REQUETE POST AU BACK
+	// POUR ENREGISTRER LA GAME DANS LA DB 
+	// URL: '/Game/SaveGame'
+	// BODY: { IdPalyer1, IdPalyer2, ScorePlayer1, ScorePlayer1, startTime, endTime, mode }
+
+	// ET ENFIN REDIRIGER VERS LA PAGE DE FIN DE PARTIE
+	// QUI AFFICHERA LES STATS DE LA GAME
+
+	// CREER LES SOCKET.ON():
+	//   - 'disconnected' QUI RENVOIE LE N° DU JOUEUR
+	//   - 'game data' QUI RENVOIE LES DONNEES DE LA GAME
+	//   - 'game over' QUI RENVOIE LE N° DU JOUEUR GAGNANT
 
 	// send request only once:
 	useEffect(() => {

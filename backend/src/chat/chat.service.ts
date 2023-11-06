@@ -58,19 +58,15 @@ export class ChatService {
 	  }
 async getAllMessages(channelId: number) {
 		try {
-			  const mutedUsers = await this.prisma.mute.findMany({
-				where: {
-				  channelId: channelId
-				},
-				select: {
-				  mutedId: true
-				}
-			  });
+			const mutedUsers = await this.prisma.mute.findMany({
+			where: { channelId: channelId },
+			select: { mutedId: true }
+		});
 		const mutedUserIds = mutedUsers.map(mute => mute.mutedId);
 		console.log("mutedUsers", mutedUsers);
 		console.log("channelId", channelId);
 
-		  const source = await this.prisma.channel.findUnique({
+		const source = await this.prisma.channel.findUnique({
 			where: { id: channelId },
 			select: {
 			  messages: {
@@ -310,23 +306,7 @@ async getAllMessages(channelId: number) {
 			let ids: number[] = []; 
 			const ownerId = await this.getUserIdByName(creator);
 			const otherId = await this.getUserIdByName(otherClient.name);
-			console.log("ownerId: ", ownerId, "|| otherId: ", otherId);
 			const channelAlreadyExists = await this.channelAlreadyExists(ownerId, otherId);
-			// Test 1 : un canal existe
-			// let id1 = 1;
-			// let id2 = 3; 
-
-			// let chan = await this.channelAlreadyExists(id1, id2);
-
-			// console.log("should display true: ", chan);
-			// // Test 2 : aucun canal n'existe
-			// id1 = 1;
-			// id2 = 2;
- 
-			// chan = await this.channelAlreadyExists(id1, id2);
-
-			// console.log("should display false: ", chan);
-			console.log("🚀 ~ create_mp ~ channelAlreadyExists:", channelAlreadyExists);
 			if (channelAlreadyExists) return null; 
 			ids.push(ownerId, otherId);
 			const channel = await this.prisma.channel.create({  
@@ -344,7 +324,7 @@ async getAllMessages(channelId: number) {
 		} catch (error) { console.log("Failed to create new channel: ", error); }
 	}
 
-	async	get_channels() { return await this.prisma.channel.findMany({ where: {dm: false } } ); }
+	async	get_channels() { return await this.prisma.channel.findMany({ where: { dm: false } } ); }
 
 	async	get_channel_by_id(channelId: number) {
 		try {
