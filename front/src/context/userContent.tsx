@@ -55,6 +55,10 @@ export type RoomID = {
 	roomID: string;
 };
 
+export type UserID = {
+	userId: number;
+};
+
 type UserContextType = {
 	userName: UserName;
 	setUserName: React.Dispatch<React.SetStateAction<UserName>>;
@@ -80,6 +84,8 @@ type UserContextType = {
 	setScore: React.Dispatch<React.SetStateAction<Score>>;
 	roomID: RoomID;
 	setRoomID: React.Dispatch<React.SetStateAction<RoomID>>;
+	userId: UserID;
+	setUserId: React.Dispatch<React.SetStateAction<UserID>>;
 };
 
 export const UserContext = createContext({} as UserContextType);
@@ -98,6 +104,7 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 	const [play, setPlay] = useState<Play>({play: 0});
 	const [score, setScore] = useState<Score>({score: 0});
 	const [roomID, setRoomID] = useState<RoomID>({roomID: ''});
+	const [userId, setUserId] = useState<UserID>({userId: 0});
 
 	useEffect(() => {
 		const userInfos = getUserInfo(navigate);
@@ -115,6 +122,7 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 			setPlay({play: rhs.gamesPlayed});
 			setScore({score: rhs.score});
 			setRoomID({roomID: rhs.roomID});
+			setUserId({userId: rhs.id});
 		});
 	}, [navigate]);
 
@@ -145,6 +153,8 @@ export const UserContextProvider = ({children}: UserContextProviderProps) => {
 				setScore,
 				roomID,
 				setRoomID,
+				userId,
+				setUserId,
 			}}
 		>
 			{children}

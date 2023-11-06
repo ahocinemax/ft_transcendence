@@ -43,34 +43,69 @@ export class ChatService {
 		}
 	}
 
-	async	getAllMessages(channelId: number) {
+	async getMutedUsers(userId: number, channelId: number): Promise<number[]> {
+		const mutedUsers = await this.prisma.mute.findMany({
+		  where: {
+			userId: userId,
+			channelId: channelId
+		  },
+		  select: {
+			mutedId: true
+		  }
+		});
+	
+		return mutedUsers.map(mute => mute.mutedId);
+	  }
+async getAllMessages(channelId: number) {
 		try {
-			const source = this.prisma.channel.findUnique({
-				where: { id: channelId },
+			  const mutedUsers = await this.prisma.mute.findMany({
+				where: {
+				  channelId: channelId
+				},
 				select: {
-					messages: {
-						where: { unsent: false },
-						orderBy: { createdAt: 'asc' },
-						select: {
-							channelId: true,
-							id: true,
-							content: true,
-							createdAt: true,
-							owner: { select: {
-								id: true,
-								email: true,
-								name: true
-							}}
-						}
-					}
+				  mutedId: true
 				}
-			});
-			return source;
+			  });
+		const mutedUserIds = mutedUsers.map(mute => mute.mutedId);
+		console.log("mutedUsers", mutedUsers);
+		console.log("channelId", channelId);
+
+		  const source = await this.prisma.channel.findUnique({
+			where: { id: channelId },
+			select: {
+			  messages: {
+				where: {
+				  unsent: false,
+				  NOT: {
+					userId: {
+					  in: mutedUserIds
+					}
+				  }
+				},
+				orderBy: { createdAt: 'asc' },
+				select: {
+				  channelId: true,
+				  id: true,
+				  content: true,
+				  createdAt: true,
+				  owner: {
+					select: {
+					  id: true,
+					  email: true,
+					  name: true
+					}
+				  }
+				}
+			  }
+			}
+		  });
+		  return source;
 		} catch (error) {
-			console.log('getAllMessages error:', error);
-			throw new WsException(error);
+		  console.log('getAllMessages error:', error);
+		  throw new WsException(error);
 		}
-	}
+	  }
+	
 
 	async	loadMessages(param: any): Promise<oneMessage[]> {
 		try {
