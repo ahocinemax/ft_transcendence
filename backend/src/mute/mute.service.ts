@@ -13,7 +13,8 @@ export class MuteService {
     return user?.muted || [];
   }
 
-  async addMuteUser(userName: string, mutedUserName: string, channelId: number) {
+  async addMuteUser(userName: string, mutedUserName: string, channelId: number)
+  {
     const user = await this.prisma.user.findUnique({ where: { name: userName } });
     const mutedUser = await this.prisma.user.findUnique({ where: { name: mutedUserName } });
     const channel = await this.prisma.channel.findUnique({
@@ -46,11 +47,11 @@ export class MuteService {
         }, HttpStatus.BAD_REQUEST);
     }
     const isTargetAdmin = channel.admins.some((admin) => admin.id === mutedUser.id);
-    if (isTargetAdmin) {
+    if (isTargetAdmin && !isOwner) {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: 'Cannot mute another admin'
+          error: 'Admin user cannot mute another admin user'
         }, HttpStatus.BAD_REQUEST);
     }
     return this.prisma.mute.create({

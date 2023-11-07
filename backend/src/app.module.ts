@@ -39,6 +39,9 @@ import { BanModule } from './ban/ban.module';
 import { AdminService } from './admin/admin.service';
 import { AdminController } from './admin/admin.controller';
 import { AdminModule } from './admin/admin.module';
+import { KickService } from './kick/kick.service';
+import { KickController } from './kick/kick.controller';
+import { KickModule } from './kick/kick.module';
 
 @Module({
   imports: [
@@ -61,9 +64,10 @@ import { AdminModule } from './admin/admin.module';
         ChatModule,
         MuteModule,
         BanModule,
-        AdminModule
+        AdminModule,
+        KickModule
       ],
-    controllers: [AppController, FriendController, PendingController, MuteController, BanController, AdminController],
-  providers: [AppService, CloudinaryService, FriendService, PendingService, MuteService, BanService, AdminService],
+    controllers: [AppController, FriendController, PendingController, MuteController, BanController, AdminController, KickController],
+  providers: [AppService, CloudinaryService, FriendService, PendingService, MuteService, BanService, AdminService, KickService],
 })
 export class AppModule {}

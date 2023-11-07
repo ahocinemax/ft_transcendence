@@ -73,6 +73,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('exception', 'failed to create the channel, please try again');
 		else {
 			await client.join(data.name);
+			await this.chatService.addNewChannelMember(channelId);
 			// demande à tous les clients connectés de mettre à jour la liste des channels
 		}
 		client.emit('new channel id', channelId);
@@ -81,8 +82,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('get channels') //ban / kick
 	async handleFetchChannels(@MessageBody() email: string, @ConnectedSocket() client: Socket) {
+		const userId = client.data.user.id;
 		this.logger.log("[GET CHANNELS]");
-		const data = await this.chatService.get_channels();
+		const data = await this.chatService.get_channels2(userId);
 		client.emit('fetch channels', data);
 	}
 
@@ -90,7 +92,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleNewMessage(@MessageBody() data, @ConnectedSocket() client: Socket) {
 		this.logger.log("[NEW  MESSAGE]");
 		const channelId = data.channelId;
-		const channel = await this.chatService.get_channel_by_id(channelId);
+		const channel = await this.chatService.get_channel_by_id(channelId); // ajouter une nouvelle etape prisma (add menmber)
 		const isMessageCreated = await this.chatService.new_message(data) === undefined
 		if (isMessageCreated === undefined)
 			client.emit('exception', 'failed to create the message, please try again');

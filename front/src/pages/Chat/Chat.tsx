@@ -137,7 +137,10 @@ const Chat = () => {
   }, [socket]);
 
   useEffect(() => { // handle events : 'fetch message', 'update requests'
-    if (activeChannel && socket) socket.emit('get messages', activeChannel, (data: any) => {});
+    if (activeChannel && socket) {
+      socket.emit('get messages', activeChannel, (data: any) => {});
+      socket?.emit('get role', activeChannel)
+  }
     else if (activePrivateChannel && socket) socket.emit('get messages', activePrivateChannel, (data: any) => {});
     socket?.on('fetch messages', (updatedMessagesData) => { // Just clicked on chan, must fetch messages
         setMessagesData(updatedMessagesData);
@@ -448,8 +451,8 @@ const Chat = () => {
           </div>
           <div className="chat_button_container">
             <div className="chat_buttons MUTE"onClick={() => backFunctions.addMute(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
-            <div className="chat_buttons KICK"onClick={() => backFunctions.removeMute(userInfos.userName.userName, selectedUser, activeChannel)}></div>
-            <div className="chat_buttons BAN"onClick={() => backFunctions.addNewAdminUser(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
+            <div className="chat_buttons KICK"onClick={() => backFunctions.kickUser(userInfos.userName.userName, selectedUser, activeChannel)}></div>
+            <div className="chat_buttons BAN"onClick={() => backFunctions.banUser(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
           </div>
         </div>
       </div>      
