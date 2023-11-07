@@ -417,3 +417,9 @@
     background-image: url(../../../public/add_friend.png);
     background-size: contain;
   }
+
+  .chat_buttons.PROMOTE
+  {
+    background-image: url(../../../public/crown2.png);
+    background-size: contain;
+  }
