@@ -68,6 +68,7 @@ model Game {
   startTime     DateTime @default(now())
   endTime       DateTime
   duration      Int?
+  mode          String 
 }
 
 model Channel {
@@ -98,9 +99,12 @@ model Mute {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   userId        Int
+  mutedId       Int
   muted         User      @relation(fields: [userId], references: [id])
   channel       Channel   @relation(fields: [channelId], references: [id])
   channelId     Int
+
+  @@unique([userId, channelId, mutedId])
 }
 
 model Message {

@@ -29,9 +29,16 @@ import { PendingModule } from './pending/pending.module';
 // socket
 import { WebsocketModule } from './websocket/websocket.module';
 import { ChatModule } from './chat/chat.module';
-//import { MuteController } from './mute/mute.controller';
-//import { MuteService } from './mute/mute.service';
-//import { MuteModule } from './mute/mute.module';
+import { MuteController } from './mute/mute.controller';
+import { MuteService } from './mute/mute.service';
+import { MuteModule } from './mute/mute.module';
+
+import { BanService } from './ban/ban.service';
+import { BanController } from './ban/ban.controller';
+import { BanModule } from './ban/ban.module';
+import { AdminService } from './admin/admin.service';
+import { AdminController } from './admin/admin.controller';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -52,9 +59,11 @@ import { ChatModule } from './chat/chat.module';
         PendingModule,
         WebsocketModule,
         ChatModule,
-//        MuteModule
+        MuteModule,
+        BanModule,
+        AdminModule
       ],
-    controllers: [AppController, FriendController, PendingController, /*MuteController*/],
-  providers: [AppService, CloudinaryService, FriendService, PendingService, /*MuteService*/],
+    controllers: [AppController, FriendController, PendingController, MuteController, BanController, AdminController],
+  providers: [AppService, CloudinaryService, FriendService, PendingService, MuteService, BanService, AdminService],
 })
 export class AppModule {}

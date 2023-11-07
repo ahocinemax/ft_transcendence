@@ -3,6 +3,7 @@ import './Settings.css';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import { useUserContext } from '../../context/userContent';
 import { useNavigate } from 'react-router-dom';
+import { error } from 'console';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -92,11 +93,12 @@ const Settings = () => {
         setPseudo(newPseudo);
     try {
           const updatedUser = await backFunctions.updateUser(userName.userName, { name: newPseudo, isRegistered: true });
-          if (updatedUser) {
+          if (updatedUser !== 'error') {
             console.log("User updated successfully:", updatedUser);
             setUserName({userName: newPseudo});
             navigate('/profile');
           }
+          else console.log("user already exists");
         } catch (error) {
           console.error("Failed to update user:", error);
         }
@@ -163,7 +165,7 @@ const Settings = () => {
 
 
   return (
-    <div className="settings" onClick={closeModal}>
+    <div className="settings" onClick={closeModal}> // ?
       <h1 className="Settingsh1">Settings</h1>
       <div className="settings_container">
         <div className="round_div_settings_img" onClick={openImageUploader} style={{ backgroundImage: `url(${image.image})` }}></div>

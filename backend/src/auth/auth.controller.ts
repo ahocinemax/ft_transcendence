@@ -52,7 +52,6 @@ export class AuthController {
 		this.logger.log("LOG OUT");
 		console.log("logout access_token", req.cookies.access_token);
 		const user = await this.authService.getUserByToken(req.cookies.access_token);
-		if (user) this.WebsocketGateway.offlineFromService(user.name);
 	}
 
 	@Get("token")
@@ -72,9 +71,12 @@ export class AuthController {
 		const googleUser: any = await this.googleAuthService.getGoogleUser(code);
 		this.authService.createCookiesGoogle(req, res, googleUser);
 		const userExists = await this.authService.getUserByEmail(googleUser.email);
-		console.log("userExists: ", userExists);
+		// console.log("userExists: ", userExists);
 		if (userExists && (userExists?.accessToken !== googleUser.accessToken))
+		{
 			await this.authService.updateUserAccessToken(userExists?.email, googleUser.accessToken);
+			console.log("userToken updated from google account ", googleUser.email);
+		}
 		this.authService.RedirectionUser(req, res, userExists?.isRegistered, userExists?.email);
 	}
 }

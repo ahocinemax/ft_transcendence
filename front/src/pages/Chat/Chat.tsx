@@ -41,30 +41,33 @@ const initializeUser = async (result: any, setUserInfo: any) => {
   userInfoInit.rank = result.rank;
   userInfoInit.score = result.score;
   userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
-  console.log("friendList", userInfoInit.friends);
-  console.log("blockedList", userInfoInit.blocked);
-  console.log("gameHistoryList", userInfoInit.gameHistory);
   setUserInfo(userInfoInit);
 };
 
 const Chat = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [PasswordNeeded, setPassword] = useState(false);
-  const [activeChannel, setActiveChannel] = useState(0);
-  const [messageInput, setMessageInput] = useState(''); // État pour stocker le message en cours de frappe
-  const [messagesData, setMessagesData] = useState<MessagesArray>([]);
-  const [channelName, setChannelName] = useState(''); // État pour stocker le nom du canal en cours de création
-  const [privateMessagesData, setPrivateMessagesData] = useState<PrivateMessagesData>({});
-  const [activePrivateUser, setActivePrivateUser] = useState('');
-  const [activePrivateConversation, setActivePrivateConversation] = useState(0);
-  const [selectedUser, setSelectedUser] = useState('');
   const [isUserPopupVisible, setIsUserPopupVisible] = useState(false);
+
+  // Etat pour les channels publics
+  const [channels, setChannels] = useState<any>([]); // liste des channels publics
+  const [messagesData, setMessagesData] = useState<MessagesArray>([]); // messages du channel public actif
+  const [channelName, setChannelName] = useState(''); // nom du channel public pour création
+  const [privatePassword, setPrivatePassword] = useState(''); // mot de passe saisi par l'utilisateur
+  const [PasswordNeeded, setPassword] = useState(false); // faut il un mot de passe (booléen)
+
+  // Etat pour les channels privés
+  const [priv_msgs, setPriv_msgs] = useState<any>([]); // liste des channels privés
+  const [privateMessagesData, setPrivateMessagesData] = useState<MessagesArray>([]); // messages du channel privé actif
+  const [activePrivateChannel, setActivePrivateChannel] = useState(0); 
+
+  // Commun aux deux
+  const [messageInput, setMessageInput] = useState(''); // message en cours de frappe
+  const [selectedUser, setSelectedUser] = useState(''); // le client a cliqué sur ce nom d'utilisateur
+  const [tempActiveChannel, setTempActiveChannel] = useState(0); // canal sur lequel le client a cliqué
+  const [activeChannel, setActiveChannel] = useState(0);
+
   const { socket } = useContext(SocketContext).SocketState;
   const userInfos = useContext(UserContext);
-  const [privatePassword, setPrivatePassword] = useState(''); // État pour le mot de passe privé
-  const [tempActiveChannel, setTempActiveChannel] = useState(0); // État temporaire pour stocker le canal sur lequel vous avez cliqué
-  const [channels, setChannels] = useState<any>([]);
-  const [priv_msgs, setPriv_msgs] = useState<any>([]);
   const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
   const [isFetched, setIsFetched] = useState(false);
 
@@ -98,24 +101,14 @@ const Chat = () => {
   };
 
   type MessagesArray = MessageData[];
-  interface PrivateMessagesData 
-  {
-    [key: string]: {
-      sender: string;
-      time: string;
-      content: string;
-    }[];
-  }
 
   // HOOKS
 
   useEffect(() => { // Handle events : 'fetch channels', 'fetch mp'
     const fetchIsUser = async () => {
       let result;
-      console.log("userInfos.userName.userName::", userInfos.userName.userName);
       if (!isFetched && userInfos.userName.userName !== undefined) {
         result = await backFunctions.getUserByToken();
-        console.log("result::", result);
         if (result === undefined) return ;
         await initializeUser(result, setUserInfo);
         setIsFetched(true);
@@ -126,48 +119,73 @@ const Chat = () => {
     socket?.emit('get channels', userInfos.email.email, (data: any) => {}); // 1st load of channels
     socket?.on('fetch channels', (data: channelModel[]) => {
       data = !Array.isArray(data) ? Array.from(data) : data;
-      console.log("updating channels: ", data);
       setChannels(data);
+      if (tempActiveChannel != 0) setActiveChannel(tempActiveChannel);
+      setTempActiveChannel(0);
     });
 
     // Send MP list request
-    socket?.emit('get mp', userInfos.email.email, (data: any) => {});
+    socket?.emit('get mp', userInfos.email.email);
     socket?.on('fetch mp', (data: channelModel[]) => {
       data = !Array.isArray(data) ? Array.from(data) : data;
+      console.log("updating mp: ", data);
       setPriv_msgs(data);
     });
     return () => {
-      socket?.off('fetch channels');
       socket?.off('fetch mp');
     };
   }, [socket]);
 
   useEffect(() => { // handle events : 'fetch message', 'update requests'
     if (activeChannel && socket) socket.emit('get messages', activeChannel, (data: any) => {});
+    else if (activePrivateChannel && socket) socket.emit('get messages', activePrivateChannel, (data: any) => {});
     socket?.on('fetch messages', (updatedMessagesData) => { // Just clicked on chan, must fetch messages
         setMessagesData(updatedMessagesData);
+        setPrivateMessagesData(updatedMessagesData);
+        console.log("setting updated messges: ", updatedMessagesData);
     });
-    socket?.on('update private request', (updatedPrivateMessagesData) => {
-      setPrivateMessagesData(updatedPrivateMessagesData);
+    socket?.on('update private request', () => {
+      socket?.emit('get mp', userInfos.email.email);
     });
-    socket?.on('update message request', (data: any) => {
-      socket?.emit('get messages', activeChannel);
+    socket?.on('update message request', () => {
+      if (activeChannel) socket?.emit('get messages', activeChannel);
+      else if (activePrivateChannel) socket?.emit('get messages', activePrivateChannel);
+      console.log('asking for new messages');
     });
-    socket?.on('update channel request', (data: any) => {
+    socket?.on('update channel request', () => {
+      console.log("update channel request");
       socket?.emit('get channels');
+    });
+    socket?.on('new channel id', (channelId: number) => {
+      setTempActiveChannel(channelId);
+      console.log("🚀 ~ file: Chat.tsx:164 ~ socket?.on ~ channelId:", channelId)
+      console.log("setting temp active::", tempActiveChannel);
     });
     return () => {
       socket?.off('fetch messages');
       socket?.off('update private request');
       socket?.off('update message request');
       socket?.off('update channel request');
+      socket?.off('new channel id');
     };
-  }, [socket, activeChannel]);
+  }, [activeChannel, activePrivateChannel, socket]);
 
   // EVENT HANDLERS
   const handleSearch = (query: string) => {
     console.log(`Recherche en cours pour : ${query}`);
   };
+
+  // handle create new channel component
+  const handleSubmit = (res: any) => {
+    const data = {
+      name: res.channelName,
+      dm: false,
+      password: res.password,
+      email: userInfos.email.email,
+      isProtected: res.private
+    };
+    socket?.emit('new channel', data);
+  }
 
   const handleChannelClick = (channelId: number) => {
     if (PasswordNeeded)
@@ -175,6 +193,7 @@ const Chat = () => {
     const channel: channelModel = channels.find((c: any) => c.id === channelId);
     if (channel && channel.isPrivate)
     {
+      // Salon privé, demandez le mot de passe d'abord
         setTempActiveChannel(channelId);
         // Ensuite, activez le mot de passe
         setPassword(true);
@@ -182,21 +201,23 @@ const Chat = () => {
     } else {
       // Salon public, accédez directement
       setChannelName(channel.name);
-      setActivePrivateConversation(0);
+      setActivePrivateChannel(0);
       setActiveChannel(channelId);
     }
   };
 
   const handlePrivMsgClick = (channelId: number) => {
+    const channel: channelModel = priv_msgs.find((c: any) => c.id === channelId);
+    setChannelName(channel.name);
     setActiveChannel(0);
-    setActivePrivateConversation(channelId);
+    setActivePrivateChannel(channelId);
   };
 
   const addPrivateUser = (userName: string) => {
     const data: any = {
       name: userName,
       dm: true,
-      ownerEmail: userInfos.email.email,
+      email: userInfos.email.email,
     };
     socket?.emit('new mp', userInfos.userName.userName, data);
   };
@@ -218,14 +239,15 @@ const Chat = () => {
         email: userInfos.email.email,
       });
       
-    } else if (activePrivateConversation) {
+    } else if (activePrivateChannel) {
       // send private message to backend
-      socket?.emit('new private message', {
-        conversation: activePrivateConversation,
-        message: newMessage,
+      console.log("sending private message");
+      socket?.emit('new message', {
+        channelId: activePrivateChannel,
+        message: newMessage.content,
+        email: userInfos.email.email
       });
     }
-
     setMessageInput('');
   };
 
@@ -276,19 +298,6 @@ const Chat = () => {
     setPassword(false);
   };
 
-  // handle create new channel component
-  const handleSubmit = (res: any) => {
-    const data = {
-      name: res.channelName,
-      private: res.private,
-      password: res.password,
-      email: userInfos.email.email,
-      isProtected: res.private
-    };
-
-    socket?.emit('new channel', data); 
-  }
-
   const check_user = (email: string): boolean => {
     return email === userInfos.email.email;
   }
@@ -335,7 +344,7 @@ const Chat = () => {
           </div>
       </div>
       <div className="main_part">
-        {activeChannel && (
+        {activeChannel ? (
           <div className="message_list">
               <h1 className="channel_title active_channel_title">#{channelName}</h1>
           <ul>
@@ -349,13 +358,19 @@ const Chat = () => {
                       width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
                     }}
                   >
-                    <span
+                    {selectedUser !== userInfos.userName.userName ? (
+                      <span
                         className="message_sender"
                         onClick={() => handleUserClick(message.name)}
                         style={{color: textColor}}
-                    >
+                      >
                         <strong>{message.name} </strong>
-                    </span>
+                      </span>
+                    ) : (
+                      <span className="message_sender" style={{color: textColor}}>
+                        <strong>{message.name} </strong>
+                      </span>
+                    )}
                     <span style={{color: '#c0b9c7'}}>
                         ({formatDate(new Date(message.createAt))}):&nbsp;
                     </span>
@@ -366,8 +381,8 @@ const Chat = () => {
             })}
           </ul>
         </div>
-        )}
-        {activeChannel && (
+        ) : null}
+        {activeChannel ? (
           <form onSubmit={handleSendMessage}>
             <input
               type="text"
@@ -377,35 +392,36 @@ const Chat = () => {
               className="send_msg"
             />
           </form>
-        )} 
-        {/* {activePrivateConversation && (
+        ) : null} 
+        {activePrivateChannel ? (
         <div className="message_list">
-          <h1 className="channel_title active_channel_title">#{activePrivateConversation}</h1>
+          <h1 className="channel_title active_channel_title">#{channelName}</h1>
           <ul>
-            {privateMessagesData[activePrivateConversation]?.map((message, index) => (
+            {privateMessagesData && privateMessagesData.map((message: MessageData, index: number) => (
               <li key={index}>
                 <div
-                  className={`message_bubble ${
-                    message.sender === 'Utilisateur 1' ? 'user' : 'not_user'
-                  }`}
+                    className={`message_bubble ${message.name !== userInfos.userName.userName ? 'user' : 'not_user'}`}
                   style={{
-                    width: `${Math.min(100, message.content.length)}%`, // Adjust the maximum width as needed
+                    width: `${Math.min(100, message.message.length)}%`, // Adjust the maximum width as needed
                   }}
                 >
                   <span
                     className="message_sender"
-                    onClick={() => handleUserClick(message.sender)} // Gérer le clic sur le nom de l'utilisateur
+                    onClick={() => handleUserClick(message.name)} // Gérer le clic sur le nom de l'utilisateur
                   >
-                    <strong>{message.sender} </strong>
+                    <strong>{message.name} </strong>
                   </span>
-                  ({message.time}): {message.content}
+                  <span style={{color: '#c0b9c7'}}>
+                    ({formatDate(new Date(message.createAt))}):&nbsp;
+                  </span>
+                  {message.message}
                 </div>
               </li>
             ))}
           </ul>
         </div>
-        )} */}
-        {/* {activePrivateConversation && (
+        ) : null}
+        {activePrivateChannel ? (
             <form onSubmit={handleSendMessage}>
               <input
                 type="text"
@@ -415,7 +431,7 @@ const Chat = () => {
                 className="send_msg"
               />
             </form>
-        )} */}
+        ) : null}
       </div>
       <div className={`user_popup ${isUserPopupVisible && selectedUser ? 'visible' : ''}`}>
         <div className="close_button" onClick={closeUserPopup}>
@@ -432,9 +448,9 @@ const Chat = () => {
           </div>
           <div className="chat_button_container">
             <div className="chat_buttons PROMOTE"></div>
-            <div className="chat_buttons MUTE"></div>
-            <div className="chat_buttons KICK"></div>
-            <div className="chat_buttons BAN"></div>
+            <div className="chat_buttons MUTE"onClick={() => backFunctions.addMute(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
+            <div className="chat_buttons KICK"onClick={() => backFunctions.removeMute(userInfos.userName.userName, selectedUser, activeChannel)}></div>
+            <div className="chat_buttons BAN"onClick={() => backFunctions.addNewAdminUser(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
           </div>
         </div>
       </div>      

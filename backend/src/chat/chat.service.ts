@@ -43,34 +43,65 @@ export class ChatService {
 		}
 	}
 
-	async	getAllMessages(channelId: number) {
+	async getMutedUsers(userId: number, channelId: number): Promise<number[]> {
+		const mutedUsers = await this.prisma.mute.findMany({
+		  where: {
+			userId: userId,
+			channelId: channelId
+		  },
+		  select: {
+			mutedId: true
+		  }
+		});
+	
+		return mutedUsers.map(mute => mute.mutedId);
+	  }
+async getAllMessages(channelId: number) {
 		try {
-			const source = this.prisma.channel.findUnique({
-				where: { id: channelId },
-				select: {
-					messages: {
-						where: { unsent: false },
-						orderBy: { createdAt: 'asc' },
-						select: {
-							channelId: true,
-							id: true,
-							content: true,
-							createdAt: true,
-							owner: { select: {
-								id: true,
-								email: true,
-								name: true
-							}}
-						}
+			const mutedUsers = await this.prisma.mute.findMany({
+			where: { channelId: channelId },
+			select: { mutedId: true }
+		});
+		const mutedUserIds = mutedUsers.map(mute => mute.mutedId);
+		console.log("mutedUsers", mutedUsers);
+		console.log("channelId", channelId);
+
+		const source = await this.prisma.channel.findUnique({
+			where: { id: channelId },
+			select: {
+			  messages: {
+				where: {
+				  unsent: false,
+				  NOT: {
+					userId: {
+					  in: mutedUserIds
 					}
+				  }
+				},
+				orderBy: { createdAt: 'asc' },
+				select: {
+				  channelId: true,
+				  id: true,
+				  content: true,
+				  createdAt: true,
+				  owner: {
+					select: {
+					  id: true,
+					  email: true,
+					  name: true
+					}
+				  }
 				}
-			});
-			return source;
+			  }
+			}
+		  });
+		  return source;
 		} catch (error) {
-			console.log('getAllMessages error:', error);
-			throw new WsException(error);
+		  console.log('getAllMessages error:', error);
+		  throw new WsException(error);
 		}
-	}
+	  }
+	
 
 	async	loadMessages(param: any): Promise<oneMessage[]> {
 		try {
@@ -183,6 +214,18 @@ export class ChatService {
 		}
 	}
 
+	async getUserIdByName(name: string) {
+		try {
+			const user = await this.prisma.user.findFirst({
+				where: { name: name, },
+				select: { id: true, },
+			});
+			return (user.id);
+		} catch (error) {
+			console.log("getUserByName error: ", error);
+		}
+	}
+
 	async	new_message(data: MessageDTO) {
 		try {
 			const id = await this.getUserIdByMail(data.email); // Get user id by email
@@ -208,7 +251,7 @@ export class ChatService {
 				},
 			});
 			await this.prisma.channel.update({ where: { id: data.channelId }, data: { updatedAt: new Date() } });
-			return message.id;
+			return message?.id;
 		}
 		catch (error) { throw new WsException(error.message); }
 	}
@@ -234,7 +277,7 @@ export class ChatService {
 			const channel = await this.prisma.channel.create({  
 				data: {
 					name: info.name,
-					private: info.private,
+					private: info.dm,
 					isProtected: info.isProtected,
 					password: password,
 					owners : { connect: { email: info.email, }, },
@@ -249,24 +292,39 @@ export class ChatService {
 		}
 	}
 
-	async create_mp(creator: string, info: ChannelDTO) {
+	async channelAlreadyExists(ownerId1, ownerId2) {
+		const existingChannel = await this.prisma.channel.findFirst({
+			where: { dm: true, NOT: { owners: { some: { AND: [{ id: ownerId1 }, { id: ownerId2 }] } } } }
+		});
+		
+		console.log("🚀 ~ file: chat.service.ts:270 ~ ChatService ~ channelAlreadyExists ~ existingChannel:", existingChannel !== null ? true : false);
+		return  existingChannel !== null ? true : false; // Retourne true si un canal existe, sinon false
+	}
+
+	async create_mp(creator: string, otherClient: ChannelDTO) {
 		try {
+			let ids: number[] = []; 
+			const ownerId = await this.getUserIdByName(creator);
+			const otherId = await this.getUserIdByName(otherClient.name);
+			const channelAlreadyExists = await this.channelAlreadyExists(ownerId, otherId);
+			if (channelAlreadyExists) return null; 
+			ids.push(ownerId, otherId);
 			const channel = await this.prisma.channel.create({  
 				data: {
-					name: info.name,
+					name: otherClient.name,
 					private: true,
 					dm: true,
-					isProtected: info.isProtected,
+					isProtected: otherClient.isProtected,
 					password: '',
-					owners : { connect: { email: info.email, name: creator} },
+					owners : { connect: ids.map((id) => ({ id: id })) },
 				},
-			});
+			}); 
 			this.prisma.channel.update({ where: { id: channel.id }, data: { updatedAt: new Date() } });
 			return channel.id;
 		} catch (error) { console.log("Failed to create new channel: ", error); }
 	}
 
-	async	get_channels() { return await this.prisma.channel.findMany({ where: {dm: false } } ); }
+	async	get_channels() { return await this.prisma.channel.findMany({ where: { dm: false } } ); }
 
 	async	get_channel_by_id(channelId: number) {
 		try {
@@ -282,16 +340,16 @@ export class ChatService {
 						select: {
 							id: true,
 							email: true,
-							name: true,
-						},
+							name: true
+						}
 					},
 					messages: {
 						where: { unsent: false, },
 						orderBy: { createdAt: 'asc', },
 						select: { content: true, },
-						take: 1,
-					},
-				},
+						take: 1
+					}
+				}
 			});
 			return channel;
 		} catch (error) {

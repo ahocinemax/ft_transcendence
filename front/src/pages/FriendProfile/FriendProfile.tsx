@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './FriendProfile.css';
 import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link} from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import SettingsIcon from '../../Settings_Icon.png';
 import BlockIcon from '../../BlockUserPixel.png';
@@ -45,9 +45,9 @@ const userInfoInit: userModel = {
 			winRate: result.winRate === null ? 0 : result.winRate,
 		};
 		setUserInfo(newUserInfo);
-		console.log("friendList", newUserInfo.friends);
-		console.log("blockedList", newUserInfo.blocked);
-		console.log("gameHistoryList", newUserInfo.gameHistory);
+		// console.log("friendList", userInfoInit.friends);
+		// console.log("blockedList", userInfoInit.blocked);
+		// console.log("gameHistoryList", userInfoInit.gameHistory);
 	};
 
 const FriendProfile = () => {

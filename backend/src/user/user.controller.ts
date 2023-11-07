@@ -49,5 +49,8 @@ export class UserController {
 	async getLeader() { return this.userService.getLeaderBoard(); }
 
 	@Post('getGameHistory')
-	async getGameHistory(@Req() req: Request) { return this.userService.getGameHistory(req.body.id); }
+	async getGameHistory(@Req() req: Request) {
+		const ret = await this.userService.getGameHistory(req.body.id)
+		return ret;
+	}
 }

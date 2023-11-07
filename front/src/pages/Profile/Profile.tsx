@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './Profile.css';
 import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
@@ -6,6 +6,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import SettingsIcon from '../../PencilPixel.png';
 import { userInfo } from 'os';
+import SocketContext from '../../context/socketContext';
 
 const userInfoInit: userModel = {
 	id: 0,
@@ -43,6 +44,9 @@ const initializeUser = async (result: any, setUserInfo: any) => {
     userInfoInit.rank = result.rank;
     userInfoInit.score = result.score;
     userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
+    // console.log("friendList", userInfoInit.friends);
+    // console.log("blockedList", userInfoInit.blocked);
+    // console.log("gameHistoryList", userInfoInit.gameHistory);
     setUserInfo(userInfoInit);
 };
 
@@ -52,6 +56,7 @@ const Profile = () => {
     const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
     const [isFetched, setIsFetched] = useState(false);
     const [isUser, setIsUser] = useState(true);
+	const { users } = useContext(SocketContext).SocketState;
     let params = useParams();
 
     
@@ -62,7 +67,6 @@ const Profile = () => {
                 result = await backFunctions.getUserByToken();
                 if (result === undefined) return ;
                 await initializeUser(result, setUserInfo);
-                console.log("name:     ", userInfo.name);
                 setIsFetched(true);
                 setIsUser(false);
                 setIsUserDataUpdated(false);
@@ -82,7 +86,7 @@ const Profile = () => {
                             <h1 className="info">online</h1>
                             <h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
                         </div>
-                        <a href="/settings" className="nav_link_profile"><img src={SettingsIcon} alt="Logo 5" /></a>
+                        <Link to="/settings" className="nav_link_profile"><img src={SettingsIcon} alt="Logo 5" /></Link>
                     </div>
                 </div>
                 <div className="centered_div_container">
