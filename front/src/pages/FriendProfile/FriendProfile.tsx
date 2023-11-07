@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './FriendProfile.css';
 import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
-import { useParams, useNavigate, Link, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link} from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import SettingsIcon from '../../Settings_Icon.png';
 import BlockIcon from '../../BlockUserPixel.png';
