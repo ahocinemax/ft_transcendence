@@ -102,8 +102,8 @@ export const backFunctions = {
         return await response;
     }
 
-    ,async removeMute(name: string, muteUser: string): Promise<any> {
-        const response = await UserApi.fetchDelete('/mute/remove/' + name + '/' + muteUser, removeMuteCallback);
+    ,async removeMute(name: string, muteUser: string, channelId: number): Promise<any> {
+        const response = await UserApi.fetchDelete('/mute/remove/' + name + '/' + muteUser + '/?channelId=' + channelId, removeMuteCallback);
         return await response;
     },
 
