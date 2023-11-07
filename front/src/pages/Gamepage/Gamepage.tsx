@@ -43,6 +43,78 @@ function Gamepage() {
 	}, [socket]);
 
 	let lastTimestamp = 0;
+    const TICK_RATE = 60; // Fréquence à laquelle le jeu se met à jour (en ms)
+    const PLAYER_SPEED = 20; // La vitesse de déplacement du joueur
+    const gameCanvasHeightVh = 68; // hauteur du Gamecanvas en vh
+    const playerBarHeightVh = 13; // hauteur de Playerbar1 en vh
+    const vhInPixels = (vh: number): number => (vh * window.innerHeight) / 100; // hauteur du canva en px
+    const maxY = vhInPixels(gameCanvasHeightVh) - vhInPixels(playerBarHeightVh); // hauteur max du canva en pixels
+    const [isUpPressed, setIsUpPressed] = useState(false);
+    const [isDownPressed, setIsDownPressed] = useState(false);
+
+    interface ServerResponse {
+        player1Y: number;
+        player2Y: number;
+      }
+
+    
+    //// Gérer l'appui des touches ///////////////////
+    useEffect(() => {
+        // Définir les gestionnaires d'événements pour les touches
+        const handleKeyDown = (event: KeyboardEvent) => {
+          if (event.key === 'ArrowUp') setIsUpPressed(true);
+          if (event.key === 'ArrowDown') setIsDownPressed(true);
+        };
+        const handleKeyUp = (event: KeyboardEvent) => {
+          if (event.key === 'ArrowUp') setIsUpPressed(false);
+          if (event.key === 'ArrowDown') setIsDownPressed(false);
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+        return () => {
+          window.removeEventListener('keydown', handleKeyDown);
+          window.removeEventListener('keyup', handleKeyUp);
+        };
+      }, []);
+
+    ////// MAJ DE LA POSITION DANS LE BACKEND ////////////
+    useEffect(() => {
+        const interval = setInterval(() => {
+          let newPlayer1Y = playerBar1Y;
+          let newPlayer2Y = playerBar2Y;
+
+          if (isUpPressed) newPlayer1Y = Math.max(playerBar1Y - PLAYER_SPEED, 0);
+          if (isDownPressed) newPlayer1Y = Math.min(playerBar1Y + PLAYER_SPEED, maxY);
+      
+          // Set the new Y positions -> It should call BACK HERE ***
+          setPlayerBar1Y(newPlayer1Y);
+          setPlayerBar2Y(newPlayer2Y);
+      
+          // Here you would normally send the new position to the server
+          // and then the server would respond with the "official" positions of the players
+          // which you would then use to set the player bar positions
+          // For now, we're just simulating this with local state updates
+          
+        }, 1000 / TICK_RATE);
+        
+        return () => clearInterval(interval);
+      }, [isUpPressed, isDownPressed, playerBar1Y, playerBar2Y, TICK_RATE, PLAYER_SPEED, maxY]);
+      
+      function serverUpdate(inputs: { up: boolean; down: boolean }): Promise<ServerResponse> {
+        return new Promise((resolve) => {
+          let newPlayer1Y = playerBar1Y;
+          let newPlayer2Y = playerBar2Y;
+          
+          // Assuming player 1 controls are local and instant, supposed to be calculated within back?
+          if (inputs.up) newPlayer1Y = Math.max(playerBar1Y - PLAYER_SPEED, 0);
+          if (inputs.down) newPlayer1Y = Math.min(playerBar1Y + PLAYER_SPEED, maxY);
+          
+          resolve({
+            player1Y: newPlayer1Y,
+            player2Y: newPlayer2Y,
+          });
+        });
+      }
 
 	return (
 		<div className="Gamebackground">
@@ -55,7 +127,7 @@ function Gamepage() {
 					<div className="Player2Area" style={{ right: 0 }}>
 						<div className="Playerbar2" style={{ top: playerBar2Y }}></div>
 					</div>
-					{<div className="Ball" style={{ left: ballX, top: ballY }}></div>}
+					{<div className="main_ball" style={{ left: ballX, top: ballY }}></div>}
 				</div>
 			</div>
 		</div>
