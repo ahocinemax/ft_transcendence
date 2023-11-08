@@ -36,9 +36,14 @@ function Gamepage() {
 	useEffect(() => {
 		socket?.on("room infos response", (response: Room) => {
 			console.log("room infos: ", response);
+			socket?.emit('start', response.name);
+		});
+		socket?.on("game data", (data: any) => {
+			console.log("game data: ", data);
 		});
 		return () => {
 			socket?.off("room infos response");
+			socket?.off("game data");
 		}
 	}, [socket]);
 

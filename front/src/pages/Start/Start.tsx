@@ -72,7 +72,7 @@ function Start() {
           {displayClose && <div className="pong-animation">
             <div className="player player1"></div>
             <div className="player player2"></div>
-            <div className="ball"></div>
+            <div className="ball-animation"></div>
           </div>}
         </div>
       </div>

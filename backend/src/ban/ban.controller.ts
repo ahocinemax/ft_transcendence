@@ -2,8 +2,9 @@ import {
     Controller,
 	Get,
 	Param,
-	Patch,
+	Post,
 	Req,
+    Body,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { BanService } from './ban.service';
@@ -17,11 +18,12 @@ export class BanController {
         return this.banService.getBanUser(req.params.name);
     }
     
-    @Patch('add/:userName/:banUserName')
+    @Post('add/:userName/:banUserName')
     async banUser(
+        @Body('channelId') channelId: number,
         @Param('userName') userName: string,
         @Param('banUserName') banUserName: string,
     ) {
-        return this.banService.banUser(userName, banUserName);
+        return this.banService.banUser(userName, banUserName, channelId);
     }
 }

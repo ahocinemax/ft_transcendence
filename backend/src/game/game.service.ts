@@ -57,12 +57,18 @@ export class GameService {
 			gameID: roomID,
 		};
 		const mutex = new Mutex();
-		this.initBall(roomID);
-		const interval = setInterval(() => {
-			this.gameLoop(roomID, server, gameData, mutex);
-		}, refreshRate);
-		this.schedulerRegistry.addInterval('room_' + roomID, interval);
-		return gameData;
+
+		const intervals = this.schedulerRegistry.getIntervals();
+		if (intervals.indexOf('room_' + roomID) === -1)
+		{
+			this.initBall(roomID);
+			const interval = setInterval(() => {
+				this.gameLoop(roomID, server, gameData, mutex);
+			}, refreshRate);
+			this.schedulerRegistry.addInterval('room_' + roomID, interval);
+			console.log("intervals: ", this.schedulerRegistry.getIntervals());
+		}
+		else console.log("interval already exists: ", 'room_' + roomID);
 	}
 
 	async gameLoop(roomID: number, server: Server, gameData: GameData, mutex: Mutex) {
@@ -93,6 +99,7 @@ export class GameService {
 			const winner = gameData.player1Score === 10 ? 1 : 2;
 			server.to(room.name).emit('game over', winner);
 			const endTime = new Date();
+			console.log(room);
 			this.saveGame(
 				room.player1.data.id,
 				room.player2.data.id,
@@ -118,11 +125,12 @@ export class GameService {
 		endTime: Date,
 		mode: string
 	) {
+		console.log(IdPlayer1, IdPlayer2, ScorePlayer1, ScorePlayer2, startTime, endTime, mode);
 		const game = await this.prisma.game.create({
 			data: {
 				player1: IdPlayer1,
-				player2: IdPlayer2,
 				ScorePlayer1: ScorePlayer1,
+				player2: IdPlayer2,
 				ScorePlayer2: ScorePlayer2,
 				startTime: startTime,
 				endTime: endTime,
@@ -212,11 +220,11 @@ export class GameService {
 		}
 		// end of point management
 		if (updatedRoom.xball >= 100 + 2 / 1.77) {
-			updatedRoom.ScorePlayer1 += 1;
+			// updatedRoom.ScorePlayer1 += 1;
 			this.initBall(updatedRoom.id);
 		}
 		if (updatedRoom.xball <= 0 - 2 / 1.77) {
-			updatedRoom.ScorePlayer2 += 1;
+			// updatedRoom.ScorePlayer2 += 1;
 			this.initBall(updatedRoom.id);
 		}
 		Object.assign(room, updatedRoom);
@@ -265,8 +273,27 @@ export class GameService {
 		Object.assign(room, updatedRoom);
 	}
 
+	async updateDirection(roomId: string, client: AuthenticatedSocket, direction: string) {
+		const room = GameService.rooms.find((room) => room.name === roomId);
+		if (!room) return;
+
+		// Clone de l'objet 'room'
+		const updatedRoom = { ...room };
+
+		if (client.data.name === updatedRoom.NamePlayer1) {
+			if (direction === 'none') updatedRoom.paddleLeftDir = 0;
+			else if (direction === 'up') updatedRoom.paddleLeftDir = 1;
+			else if (direction === 'down') updatedRoom.paddleLeftDir = 2;
+		} else if (client.data.name === updatedRoom.NamePlayer2) {
+			if (direction === 'none') updatedRoom.paddleRightDir = 0;
+			else if (direction === 'up') updatedRoom.paddleRightDir = 1;
+			else if (direction === 'down') updatedRoom.paddleRightDir = 2;
+		}
+		Object.assign(room, updatedRoom);
+	}
+
 	async getGame(id: number)
-	{ return await this.prisma.game.findUniqueOrThrow({ where: { id: id } });	}
+	{ return await this.prisma.game.findUniqueOrThrow({ where: { id: id } }); }
 
 	async getLastGames() {
 		//returns a record of all the users, ordered by endTime in descending order
@@ -310,9 +337,14 @@ export class GameService {
 		return {name: roomId + id, id: id};
 	}
 
-	createRoomAddPlayers(roomInfo: {name, id}, mode: string) {
+	async createRoomAddPlayers(roomInfo: {name, id}, mode: string) {
 		const player1 = GameService.waitlists[mode][0];
 		const player2 = GameService.waitlists[mode][1];
+		const IdPlayer1: number = await this.userService.getUserByName(player1.name).then((user) => user.id);
+		const IdPlayer2: number = await this.userService.getUserByName(player2.name).then((user) => user.id);
+		player1.id = IdPlayer1; // set the id of each player to the room
+		console.log("🚀 ~ file: game.service.ts:327 ~ GameService ~ createRoomAddPlayers ~ player1:", player1)
+		player2.id = IdPlayer2;
 		const room: Room = {
 			name: roomInfo.name,
 			NamePlayer1: player1.name,
@@ -355,8 +387,6 @@ export class GameService {
 	getRoomById(roomId: string, clientToExclude: AuthenticatedSocket): Room | null {
 		for (const room of GameService.rooms) {
 			if (room.name === roomId) {
-				console.log("room found: ", room.id, " / ", room.name);
-
 				// Créez un nouvel objet en excluant le client spécifié
 				const filteredRoom: Room = {
 					id: room.id,

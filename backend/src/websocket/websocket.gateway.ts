@@ -76,7 +76,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
     
     this.websocketService.addUser(client);
 		const users = Array.from(this.websocketService.clients.keys());
-		console.log("🚀 ~ file: websocket.gateway.ts:79 ~ users:", users);
+		this.logger.log(`🚀 ~ Connected clients: ${users}`);
 		client?.emit('handshake', client.data.name, users); // not working
 		this.websocketService.sendMessage(client, 'user_connected', users);
 		await this.websocketService.updateStatus(client, 'online');

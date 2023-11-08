@@ -98,7 +98,7 @@
     animation: pong 5s infinite linear;
   }
 
-  .ball {
+  .ball-animation {
     width: 20px; /* Ajustez la taille de la balle */
     height: 20px; /* Ajustez la taille de la balle */
     background-color: #ffffff; /* Couleur de la balle */

@@ -100,10 +100,21 @@ export const backFunctions = {
     async addMute(name: string, muteUser: string, channelId: unknown): Promise<any> {
         const response = await UserApi.fetchPost('/mute/add/' + name + '/' + muteUser, channelId, addMuteCallback);
         return await response;
-    }
+    },
 
-    ,async removeMute(name: string, muteUser: string, channelId: number): Promise<any> {
+    async removeMute(name: string, muteUser: string, channelId: number): Promise<any> {
         const response = await UserApi.fetchDelete('/mute/remove/' + name + '/' + muteUser + '/?channelId=' + channelId, removeMuteCallback);
+        return await response;
+    },
+
+    /*ban*/
+    async banUser(name: string, banUser: string, channelId: unknown): Promise<any> {
+        const response = await UserApi.fetchPost('/ban/add/' + name + '/' + banUser, channelId, banUserCallback);
+        return await response;
+    },
+    /*kick*/
+    async kickUser(name: string, kickUser: string, channelId: number): Promise<any> {
+        const response = await UserApi.fetchDelete('/kick/remove/' + name + '/' + kickUser + '/?channelId=' + channelId, kickUserCallback);
         return await response;
     },
 
@@ -156,6 +167,10 @@ export const getMutedCallback = (result: any) => { return result;}
 export const addMuteCallback = (result: any) => { return result;}
 
 export const removeMuteCallback = (result: any) => { return result;}
+
+export const kickUserCallback = (result: any) => { return result;}
+
+export const banUserCallback = (result: any) => { return result;}
 
 export const addAdminCallback = (result: any) => { return result;}
 

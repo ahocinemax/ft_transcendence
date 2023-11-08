@@ -63,8 +63,6 @@ async getAllMessages(channelId: number) {
 			select: { mutedId: true }
 		});
 		const mutedUserIds = mutedUsers.map(mute => mute.mutedId);
-		console.log("mutedUsers", mutedUsers);
-		console.log("channelId", channelId);
 
 		const source = await this.prisma.channel.findUnique({
 			where: { id: channelId },
@@ -233,6 +231,14 @@ async getAllMessages(channelId: number) {
 			const isMuted = await this.isMuted(id, data.channelId); // Check if user is muted
 			if (isMuted.length !== 0) return ; // If user is muted, message is not created
 			*/
+			console.log("id::: ", id);
+			await this.prisma.channel.update({ 
+				where: { id: data.channelId },
+				data: {
+					members: {
+						connect: {id: id}
+					}
+				}});
 			const message = await this.prisma.message.create({
 				data: {
 					content: data.message,
@@ -292,6 +298,26 @@ async getAllMessages(channelId: number) {
 		}
 	}
 
+	async addNewChannelMember(channelId: number) {
+		try {
+				const allUsers = await this.prisma.user.findMany();
+				const connectUsersTochannel = allUsers.map((user) => {
+					return this.prisma.channel.update({
+						where: { id : channelId },
+						data: {
+							members: {
+								connect: { id: user.id },
+							},
+						},
+		})});
+		await this.prisma.$transaction(connectUsersTochannel);
+		}
+		 catch (error) {
+			console.log('addNewChannelMenmber error:', error);
+			throw new WsException(error);
+		}
+	}
+
 	async channelAlreadyExists(ownerId1, ownerId2) {
 		const existingChannel = await this.prisma.channel.findFirst({
 			where: { dm: true, NOT: { owners: { some: { AND: [{ id: ownerId1 }, { id: ownerId2 }] } } } }
@@ -324,7 +350,22 @@ async getAllMessages(channelId: number) {
 		} catch (error) { console.log("Failed to create new channel: ", error); }
 	}
 
-	async	get_channels() { return await this.prisma.channel.findMany({ where: { dm: false } } ); }
+	async	get_channels() { 
+		return await this.prisma.channel.findMany( { where: { dm: false }});}
+	async	get_channels2(userId: number) { 
+		return await this.prisma.channel.findMany({ 
+			where: { 
+				dm: false,
+			NOT: {
+				banned: { 
+					some: { 
+						id: userId, 
+					},
+				},
+			}, 
+		}, 
+	}); 
+	}
 
 	async	get_channel_by_id(channelId: number) {
 		try {
