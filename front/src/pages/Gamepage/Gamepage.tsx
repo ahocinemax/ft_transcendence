@@ -88,15 +88,19 @@ function Gamepage() {
           let newPlayer1Y = playerBar1Y;
           let newPlayer2Y = playerBar2Y;
 
+          setPlayerBar1Y(newPlayer1Y);
+          setPlayerBar2Y(newPlayer2Y);
+          if(isUpPressed || isDownPressed)
+            socket?.emit("up arrow", roomID.roomID);
+
+
           if (isUpPressed) newPlayer1Y = Math.max(playerBar1Y - PLAYER_SPEED, 0);
           if (isDownPressed) newPlayer1Y = Math.min(playerBar1Y + PLAYER_SPEED, maxY);
 
-          setPlayerBar1Y(newPlayer1Y);
-          setPlayerBar2Y(newPlayer2Y);
           
           // envoyer la nouvelle direction (up/down)
-          if ( isUpPressed ) socket?.emit("up arrow", roomID.roomID);
-          else if ( isDownPressed ) socket?.emit("down arrow", roomID.roomID);
+          /* if ( isUpPressed ) socket?.emit("up arrow", roomID.roomID);
+          else if ( isDownPressed ) socket?.emit("down arrow", roomID.roomID); */
 
           // Set the new Y positions -> It should call BACK HERE ***
           // recevoir les infos du back concernant la partie
