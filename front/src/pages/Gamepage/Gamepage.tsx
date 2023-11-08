@@ -67,12 +67,20 @@ function Gamepage() {
     useEffect(() => {
         // Définir les gestionnaires d'événements pour les touches
         const handleKeyDown = (event: KeyboardEvent) => {
-          if (event.key === 'ArrowUp') setIsUpPressed(true);
-          if (event.key === 'ArrowDown') setIsDownPressed(true);
+          if (event.key === 'ArrowUp') {
+            setIsDownPressed(false); // Ensure down is not pressed
+            setIsUpPressed(true);
+          } else if (event.key === 'ArrowDown') {
+            setIsUpPressed(false); // Ensure up is not pressed
+            setIsDownPressed(true);
+          }
         };
         const handleKeyUp = (event: KeyboardEvent) => {
-          if (event.key === 'ArrowUp') setIsUpPressed(false);
-          if (event.key === 'ArrowDown') setIsDownPressed(false);
+          if (event.key === 'ArrowUp') {
+            setIsUpPressed(false);
+          } else if (event.key === 'ArrowDown') {
+            setIsDownPressed(false);
+          }
         };
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
@@ -87,7 +95,7 @@ function Gamepage() {
         const interval = setInterval(() => {
           let newPlayer1Y = playerBar1Y;
           let newPlayer2Y = playerBar2Y;
-          
+
           if (isUpPressed) newPlayer1Y = Math.max(playerBar1Y - PLAYER_SPEED, 0);
           if (isDownPressed) newPlayer1Y = Math.min(playerBar1Y + PLAYER_SPEED, maxY);
 
@@ -95,10 +103,12 @@ function Gamepage() {
           setPlayerBar2Y(newPlayer2Y);
 
           if(isUpPressed || isDownPressed)
-            socket?.emit("up arrow", roomID.roomID);
-
-
-
+          {
+            if(isUpPressed)
+                socket?.emit("up arrow", roomID.roomID);
+            else
+                socket?.emit("down arrow", roomID.roomID);
+          }
           
           // envoyer la nouvelle direction (up/down)
           /* if ( isUpPressed ) socket?.emit("up arrow", roomID.roomID);
