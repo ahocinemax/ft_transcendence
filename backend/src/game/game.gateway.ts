@@ -35,14 +35,26 @@ export class GameGateway implements OnGatewayDisconnect {
 		@MessageBody() roomId: string
 	) {
 		const room: Room = this.gameService.getRoomById(roomId, client);
-		if (room === null) {
-			this.logger.log("room not found!");
-			return;
-		}
+		if (room === null) return;
 		const roomIdNumber = Number(roomId.replace('room_', ''));
+		// vérifier que les deux players sont ready 'donc ont envoyé start'
 		this.gameService.startGame(roomIdNumber, this.server);
 	}
 
+	@SubscribeMessage('update direction')
+	async handleUpdateDirection(
+		@ConnectedSocket() client: AuthenticatedSocket,
+		@MessageBody() roomId: string,
+		@MessageBody() dir: number
+	) {
+		const room: Room = this.gameService.getRoomById(roomId, client);
+		if (room === null) return;
+		let direction = 'none';
+		if (dir === 1) direction = 'down'
+		else if (dir === 2) direction = 'up';
+		this.gameService.updateDirection(roomId, client, direction);
+	}
+ 
 	@SubscribeMessage('waitlist request')
 	async handleAddingToWaitlist(
 		@ConnectedSocket() client: AuthenticatedSocket,

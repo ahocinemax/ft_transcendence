@@ -220,11 +220,11 @@ export class GameService {
 		}
 		// end of point management
 		if (updatedRoom.xball >= 100 + 2 / 1.77) {
-			updatedRoom.ScorePlayer1 += 1;
+			// updatedRoom.ScorePlayer1 += 1;
 			this.initBall(updatedRoom.id);
 		}
 		if (updatedRoom.xball <= 0 - 2 / 1.77) {
-			updatedRoom.ScorePlayer2 += 1;
+			// updatedRoom.ScorePlayer2 += 1;
 			this.initBall(updatedRoom.id);
 		}
 		Object.assign(room, updatedRoom);
@@ -269,6 +269,25 @@ export class GameService {
 			updatedRoom.paddleRight += paddleSpeed;
 			if (updatedRoom.paddleRight > 90)
 				updatedRoom.paddleRight = 90;
+		}
+		Object.assign(room, updatedRoom);
+	}
+
+	async updateDirection(roomId: string, client: AuthenticatedSocket, direction: string) {
+		const room = GameService.rooms.find((room) => room.name === roomId);
+		if (!room) return;
+
+		// Clone de l'objet 'room'
+		const updatedRoom = { ...room };
+
+		if (client.data.name === updatedRoom.NamePlayer1) {
+			if (direction === 'none') updatedRoom.paddleLeftDir = 0;
+			else if (direction === 'up') updatedRoom.paddleLeftDir = 1;
+			else if (direction === 'down') updatedRoom.paddleLeftDir = 2;
+		} else if (client.data.name === updatedRoom.NamePlayer2) {
+			if (direction === 'none') updatedRoom.paddleRightDir = 0;
+			else if (direction === 'up') updatedRoom.paddleRightDir = 1;
+			else if (direction === 'down') updatedRoom.paddleRightDir = 2;
 		}
 		Object.assign(room, updatedRoom);
 	}
@@ -325,7 +344,7 @@ export class GameService {
 		const IdPlayer2: number = await this.userService.getUserByName(player2.name).then((user) => user.id);
 		player1.id = IdPlayer1; // set the id of each player to the room
 		console.log("🚀 ~ file: game.service.ts:327 ~ GameService ~ createRoomAddPlayers ~ player1:", player1)
-		player2.id = IdPlayer2; // to fix the problem of the interval
+		player2.id = IdPlayer2;
 		const room: Room = {
 			name: roomInfo.name,
 			NamePlayer1: player1.name,
