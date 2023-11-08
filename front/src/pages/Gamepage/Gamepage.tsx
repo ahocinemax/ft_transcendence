@@ -44,7 +44,7 @@ function Gamepage() {
 
 	let lastTimestamp = 0;
     const TICK_RATE = 60; // Fréquence à laquelle le jeu se met à jour (en ms)
-    const PLAYER_SPEED = 20; // La vitesse de déplacement du joueur
+    const PLAYER_SPEED = 17.5; // La vitesse de déplacement du joueur
     const gameCanvasHeightVh = 68; // hauteur du Gamecanvas en vh
     const playerBarHeightVh = 13; // hauteur de Playerbar1 en vh
     const vhInPixels = (vh: number): number => (vh * window.innerHeight) / 100; // hauteur du canva en px
@@ -85,10 +85,23 @@ function Gamepage() {
 
           if (isUpPressed) newPlayer1Y = Math.max(playerBar1Y - PLAYER_SPEED, 0);
           if (isDownPressed) newPlayer1Y = Math.min(playerBar1Y + PLAYER_SPEED, maxY);
-      
-          // Set the new Y positions -> It should call BACK HERE ***
+
           setPlayerBar1Y(newPlayer1Y);
           setPlayerBar2Y(newPlayer2Y);
+          
+          // envoyer la nouvelle direction (up/down)
+          if ( isUpPressed ) socket?.emit("up arrow", roomID.roomID);
+          else if ( isDownPressed ) socket?.emit("down arrow", roomID.roomID);
+
+          // Set the new Y positions -> It should call BACK HERE ***
+          // recevoir les infos du back concernant la partie
+          socket?.on("game data", ((data: any) => {
+            // enregistrer les différentes infos dans mes variables
+            console.log("data:", data);
+            setPlayerBar1Y(newPlayer1Y);
+            setPlayerBar2Y(newPlayer2Y);
+          }))
+          // utiliser ces variables pour les afficher
       
           // Here you would normally send the new position to the server
           // and then the server would respond with the "official" positions of the players
