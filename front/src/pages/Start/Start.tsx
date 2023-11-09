@@ -47,6 +47,15 @@ function Start() {
   }
 
   useEffect(() => {
+    if (!localStorage.getItem("userToken")) {
+      console.log("logged out");
+      navigate("/");
+    }
+    else console.log("logged in");
+    console.log(localStorage.getItem("userToken"));
+  }, []);
+
+  useEffect(() => {
     socket?.on("get room id", (response: {id: number, name: string}) => {
       setDisplayClose(false);
       const roomID: RoomID = {roomID: response.name};
