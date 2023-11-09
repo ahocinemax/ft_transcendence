@@ -9,7 +9,7 @@ function Gamepage() {
 	const [playerBar1Y, setPlayerBar1Y] = useState(150);
 	const [playerBar2Y, setPlayerBar2Y] = useState(150);
 	const [ballX, setBallX] = useState(0); // Position horizontale de la balle
-  	const [ballY, setBallY] = useState(0); // Position verticale de la balle
+  const [ballY, setBallY] = useState(0); // Position verticale de la balle
 	const { roomID } = useUserContext();
 	// AUTANT ENREGISTRER UN STATE ROOM DIRECTEMENT (INTERFACE ROOM)
 	// DEDANS IL Y AURAIT TOUTES LES DONNEES DE LA GAME
@@ -51,8 +51,10 @@ function Gamepage() {
     const TICK_RATE = 60; // Fréquence à laquelle le jeu se met à jour (en ms)
     const PLAYER_SPEED = 17.5; // La vitesse de déplacement du joueur
     const gameCanvasHeightVh = 68; // hauteur du Gamecanvas en vh
+    const gameCanvasWidthVw = 68; // largeur du Gamecanvas en vw
     const playerBarHeightVh = 13; // hauteur de Playerbar1 en vh
     const vhInPixels = (vh: number): number => (vh * window.innerHeight) / 100; // hauteur du canva en px
+    const vwInPixels = (vw: number): number => (vw * window.innerWidth) / 100; // largeur du canva en px
     const maxY = vhInPixels(gameCanvasHeightVh) - vhInPixels(playerBarHeightVh); // hauteur max du canva en pixels
     const [isUpPressed, setIsUpPressed] = useState(false);
     const [isDownPressed, setIsDownPressed] = useState(false);
@@ -149,6 +151,24 @@ function Gamepage() {
           });
         });
       }
+
+
+      useEffect(() => {
+        const ballDataInterval = setInterval(() => {
+          socket?.emit("room infos request'", roomID.roomID);
+        }, 1000 / TICK_RATE);
+
+        socket?.on("game data", ((data: any) => {
+          console.log("data:", data);
+          setBallX(data.xBall);
+          setBallY(data.yBall);
+        }))
+
+        return () => {
+          clearInterval(ballDataInterval);
+          socket?.off("game data");
+        };
+      }, [socket, roomID.roomID, TICK_RATE, ballX, ballY]);
 
 	return (
 		<div className="Gamebackground">
