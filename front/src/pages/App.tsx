@@ -12,7 +12,9 @@ import Settings from './Settings/Settings';
 import Gamepage from './Gamepage/Gamepage';
 import CreateProfile from './CreateProfile/CreateProfile';
 import CheckUser from './CreateProfile/CheckUser';
+import { useContext, useEffect, useState } from 'react';
 import { UserContextProvider } from '../context/userContent';
+import PrivateRoute from './PrivateRoute/PrivateRoute';
 import SocketContextComponent from '../context/socket';
 
 const socketOptions = { token: localStorage.getItem("userToken") };
@@ -23,6 +25,13 @@ function App() {
     const location = useLocation();
     const pathsWithoutSidebar = ['/login', '/create', '/'];
     const shouldRenderSidebar = !pathsWithoutSidebar.includes(location.pathname);
+
+    const isAuthenticated = () => {
+        const token = socketOptions.token;
+        // console.log("!!token : ", !!token)
+        // console.log(token);
+        return !!token;
+    };
     return (
         <UserContextProvider>
             <SocketContextComponent>
@@ -31,17 +40,19 @@ function App() {
                     <div className='content'>
                         <Routes>
                             <Route path="/" element={<Login />} />
-                            <Route path="/start" element={<Start />} />
-                            <Route path="/homepage" element={<Homepage />} />
-                            <Route path="/leaderboard" element={<Leaderboard />} />
-                            <Route path="/chat" element={<Chat />} />
-                            <Route path="/profile" element={<Profile />} />
-                            {/* <Route path="/friendprofile" element={<FriendProfile />} /> */}
-                            <Route path="/profile/:friendName" element={<FriendProfile />} />
-                            <Route path="/settings" element={<Settings />} />
-                            <Route path="/gamepage" element={<Gamepage />} />
-                            <Route path="/create" element={<CreateProfile />} />
-                            <Route path="/checkuser" element={<CheckUser />} />
+                            {/* <Route element={<PrivateRoute isAuthenticated={isAuthenticated()} />}> */}
+                                <Route path="/start" element={<Start />} />
+                                <Route path="/homepage" element={<Homepage />} />
+                                <Route path="/leaderboard" element={<Leaderboard />} />
+                                <Route path="/chat" element={<Chat />} />
+                                <Route path="/profile" element={<Profile />} />
+                                {/* <Route path="/friendprofile" element={<FriendProfile />} /> */}
+                                <Route path="/profile/:friendName" element={<FriendProfile />} />
+                                <Route path="/settings" element={<Settings />} />
+                                <Route path="/gamepage" element={<Gamepage />} />
+                                <Route path="/create" element={<CreateProfile />} />
+                                <Route path="/checkuser" element={<CheckUser />} />
+                           {/*  </Route> */}
                         </Routes>
                     </div>
                 </div>

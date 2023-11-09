@@ -202,8 +202,16 @@ async createDataBase42User(
     @Res() res: Response, 
     isRegistered: boolean | undefined,
     email: string | null | undefined) {
-    if (!isRegistered) res.redirect(301, "http://localhost:3000/checkuser");
-    else res.redirect(301, process.env.CLIENT_HOST + "profile");
+    if (!isRegistered)
+    {
+      res.redirect(301, "http://localhost:3000/checkuser");
+      console.log("check_user");
+    }
+    else
+    {
+      console.log("redirected to profile");
+      res.redirect(301, process.env.CLIENT_HOST + "profile");
+    }
   }
 
   async updateUserAccessToken(email: string, token: string) {
