@@ -8,6 +8,7 @@ import { backFunctions } from '../../outils_back/BackFunctions';
 import UserContext, { Email } from '../../context/userContent';
 import { channelModel } from '../../interface/global';
 import { userModel } from '../../interface/global';
+import { useNavigate } from 'react-router-dom';
 // import { act } from '@testing-library/react';
 
 const userInfoInit: userModel = {
@@ -70,6 +71,17 @@ const Chat = () => {
   const userInfos = useContext(UserContext);
   const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
   const [isFetched, setIsFetched] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!localStorage.getItem("userToken")) {
+      console.log("logged out");
+      navigate("/");
+    }
+    else console.log("logged in");
+    console.log(localStorage.getItem("userToken"));
+  }, []);
 
 
   const formatDate = (date: Date) => {

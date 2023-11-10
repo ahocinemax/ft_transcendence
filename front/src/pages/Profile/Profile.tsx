@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import './Profile.css';
 import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
 import { useParams, useNavigate, Link } from 'react-router-dom';
@@ -7,9 +6,11 @@ import { backFunctions } from '../../outils_back/BackFunctions';
 import SettingsIcon from '../../PencilPixel.png';
 import { userInfo } from 'os';
 import SocketContext from '../../context/socketContext';
+import './Profile.css';
+
 
 const userInfoInit: userModel = {
-	id: 0,
+    id: 0,
 	name: "",
 	image: "",
 	friends: [],
@@ -24,8 +25,8 @@ const userInfoInit: userModel = {
 };
 
 // function setGameHistory = (gameHistoryList: any) => {
-//     userInfoInit.gameHistory.player1 = gameHistoryList.;
-// }
+    //     userInfoInit.gameHistory.player1 = gameHistoryList.;
+    // }
 
 const initializeUser = async (result: any, setUserInfo: any) => {
     const friendList = await backFunctions.getFriend(result.name);
@@ -58,6 +59,17 @@ const Profile = () => {
     const [isUser, setIsUser] = useState(true);
 	const { users } = useContext(SocketContext).SocketState;
     let params = useParams();
+    
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      if (!localStorage.getItem("userToken")) {
+        console.log("logged out");
+        navigate("/");
+      }
+      else console.log("logged in");
+      console.log(localStorage.getItem("userToken"));
+    }, []);
 
     
     useEffect(() => {

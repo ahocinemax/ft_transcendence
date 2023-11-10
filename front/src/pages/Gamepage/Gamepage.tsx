@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import SocketContext from '../../context/socketContext';
 import { useUserContext } from '../../context/userContent';
+import { useNavigate } from 'react-router-dom';
 import { Room } from '../../interface/BackInterface';
 import './Gamepage.css';
 
@@ -63,6 +64,18 @@ function Gamepage() {
         player1Y: number;
         player2Y: number;
       }
+
+      
+      const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!localStorage.getItem("userToken")) {
+      console.log("logged out");
+      navigate("/");
+    }
+    else console.log("logged in");
+    console.log(localStorage.getItem("userToken"));
+  }, []);
 
     
     //// Gérer l'appui des touches ///////////////////
