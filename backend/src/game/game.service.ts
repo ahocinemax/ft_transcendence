@@ -431,12 +431,20 @@ export class GameService {
 		const username = client.data.name;
 		for (const room of GameService.rooms) {
 			if (room.NamePlayer1 === username || room.NamePlayer2 === username) {
-				if (room.NamePlayer1 === username) room.player1Disconnected = true;
-				else room.player2Disconnected = true;
+				if (room.NamePlayer1 === username)
+				{
+					room.player1Disconnected = true;
+					room.NamePlayer1 = "";
+				}
+				else
+				{
+					room.NamePlayer2 = "";
+					room.player2Disconnected = true;
+				}
+				console.log("user ", client.data.name, " left game ", room.name);
 				return true;
 			}
 		}
 		return false;
 	}
-
 }

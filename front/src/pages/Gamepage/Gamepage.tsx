@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import SocketContext from '../../context/socketContext';
 import { useUserContext } from '../../context/userContent';
 import { Room } from '../../interface/BackInterface';
@@ -8,9 +8,8 @@ function Gamepage() {
 	const { socket } = useContext(SocketContext).SocketState;
 	const [playerBar1Y, setPlayerBar1Y] = useState(150);
 	const [playerBar2Y, setPlayerBar2Y] = useState(150);
-	const [ballX, setBallX] = useState(0); // Position horizontale de la balle
-  	const [ballY, setBallY] = useState(0); // Position verticale de la balle
 	const { roomID } = useUserContext();
+  const ballRef = useRef<HTMLDivElement | null>(null);
 	// AUTANT ENREGISTRER UN STATE ROOM DIRECTEMENT (INTERFACE ROOM)
 	// DEDANS IL Y AURAIT TOUTES LES DONNEES DE LA GAME
 
@@ -40,6 +39,8 @@ function Gamepage() {
 		});
 		socket?.on("game data", (data: any) => {
 			console.log("game data: ", data);
+      ballRef.current?.style.setProperty('left', data.xBall);
+      ballRef.current?.style.setProperty('top', data.yBall);
 		});
 		return () => {
 			socket?.off("room infos response");
@@ -104,11 +105,12 @@ function Gamepage() {
 
           if(isUpPressed || isDownPressed)
           {
-            if(isUpPressed)
-                socket?.emit("up arrow", roomID.roomID);
+            if (isUpPressed)
+                socket?.emit("update direction", roomID.roomID, 2);
             else
-                socket?.emit("down arrow", roomID.roomID);
+                socket?.emit("update direction", roomID.roomID, 1);
           }
+          else socket?.emit("update direction", roomID.roomID, 0);
           
           // envoyer la nouvelle direction (up/down)
           /* if ( isUpPressed ) socket?.emit("up arrow", roomID.roomID);
@@ -116,6 +118,7 @@ function Gamepage() {
 
           // Set the new Y positions -> It should call BACK HERE ***
           // recevoir les infos du back concernant la partie
+          // throttle the number of requests sent to the server (loadash library)
           socket?.on("game data", ((data: any) => {
             // enregistrer les différentes infos dans mes variables
             console.log("data:", data);
@@ -161,7 +164,7 @@ function Gamepage() {
 					<div className="Player2Area" style={{ right: 0 }}>
 						<div className="Playerbar2" style={{ top: playerBar2Y }}></div>
 					</div>
-					{<div className="main_ball" style={{ left: ballX, top: ballY }}></div>}
+					{<div className="main_ball" ref={ballRef}></div>}
 				</div>
 			</div>
 		</div>
