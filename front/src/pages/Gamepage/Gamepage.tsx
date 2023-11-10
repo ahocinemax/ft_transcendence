@@ -5,41 +5,80 @@ import { useNavigate } from 'react-router-dom';
 import { Room } from '../../interface/BackInterface';
 import './Gamepage.css';
 
+// UNE FOIS LA PARTIE TERMINEE, IL FAUT ENVOYER UNE REQUETE POST AU BACK
+// POUR ENREGISTRER LA GAME DANS LA DB 
+// URL: '/Game/SaveGame'
+// BODY: { IdPalyer1, IdPalyer2, ScorePlayer1, ScorePlayer1, startTime, endTime, mode }
+
+// ET ENFIN REDIRIGER VERS LA PAGE DE FIN DE PARTIE
+// QUI AFFICHERA LES STATS DE LA GAME
+
+// CREER LES SOCKET.ON():
+//   - 'disconnected' QUI RENVOIE LE N° DU JOUEUR
+//   - 'game data' QUI RENVOIE LES DONNEES DE LA GAME
+//   - 'game over' QUI RENVOIE LE N° DU JOUEUR GAGNANT
+
 function Gamepage() {
 	const { socket } = useContext(SocketContext).SocketState;
 	const [playerBar1Y, setPlayerBar1Y] = useState(150);
 	const [playerBar2Y, setPlayerBar2Y] = useState(150);
 	const { roomID } = useUserContext();
   const ballRef = useRef<HTMLDivElement | null>(null);
-	// AUTANT ENREGISTRER UN STATE ROOM DIRECTEMENT (INTERFACE ROOM)
-	// DEDANS IL Y AURAIT TOUTES LES DONNEES DE LA GAME
+  const TICK_RATE = 60; // Fréquence à laquelle le jeu se met à jour (en ms)
+  const gameCanvasHeightVh = 68; // hauteur du Gamecanvas en vh
+  const gameCanvasWidthVw = 68; // largeur du Gamecanvas en vw
+  const playerBarHeightVh = 13; // hauteur de Playerbar1 en vh
+  const vhInPixels = (vh: number): number => (vh * window.innerHeight) / 100; // hauteur du canva en px
+  const vwInPixels = (vw: number): number => (vw * window.innerWidth) / 100; // largeur du canva en px
+  const maxY = vhInPixels(gameCanvasHeightVh) - vhInPixels(playerBarHeightVh); // hauteur max du canva en pixels
+  const [isUpPressed, setIsUpPressed] = useState(false);
+  const [isDownPressed, setIsDownPressed] = useState(false);
+  const navigate = useNavigate();
 
-	// UNE FOIS LA PARTIE TERMINEE, IL FAUT ENVOYER UNE REQUETE POST AU BACK
-	// POUR ENREGISTRER LA GAME DANS LA DB 
-	// URL: '/Game/SaveGame'
-	// BODY: { IdPalyer1, IdPalyer2, ScorePlayer1, ScorePlayer1, startTime, endTime, mode }
+  // Redirect if client is not logged in
+  useEffect(() => {
+    if (!localStorage.getItem("userToken")) {
+      console.log("logged out");
+      navigate("/");
+    }
+    else console.log("logged in");
+    console.log(localStorage.getItem("userToken"));
+    // Définir les gestionnaires d'événements pour les touches
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowUp') {
+        setIsDownPressed(false); // Ensure down is not pressed
+        setIsUpPressed(true);
+      } else if (event.key === 'ArrowDown') {
+        setIsUpPressed(false); // Ensure up is not pressed
+        setIsDownPressed(true);
+      }
+    };
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowUp') {
+        setIsUpPressed(false);
+      } else if (event.key === 'ArrowDown') {
+        setIsDownPressed(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
-	// ET ENFIN REDIRIGER VERS LA PAGE DE FIN DE PARTIE
-	// QUI AFFICHERA LES STATS DE LA GAME
-
-	// CREER LES SOCKET.ON():
-	//   - 'disconnected' QUI RENVOIE LE N° DU JOUEUR
-	//   - 'game data' QUI RENVOIE LES DONNEES DE LA GAME
-	//   - 'game over' QUI RENVOIE LE N° DU JOUEUR GAGNANT
-
-	// send request only once:
 	useEffect(() => {
-		console.log("emmiting roomID: ", roomID.roomID);
 		socket?.emit("room infos request", roomID.roomID);
-	}, [socket]);
-
-	useEffect(() => {
 		socket?.on("room infos response", (response: Room) => {
 			console.log("room infos: ", response);
-			socket?.emit('start', response.name);
+      if (response) socket?.emit('start', response.name);
+      else navigate('/start');
 		});
 		socket?.on("game data", (data: any) => {
 			console.log("game data: ", data);
+      setPlayerBar1Y(data.paddleLeft);
+      setPlayerBar2Y(data.paddleRight);
       ballRef.current?.style.setProperty('left', data.xBall);
       ballRef.current?.style.setProperty('top', data.yBall);
 		});
@@ -49,142 +88,41 @@ function Gamepage() {
 		}
 	}, [socket]);
 
-	let lastTimestamp = 0;
-    const TICK_RATE = 60; // Fréquence à laquelle le jeu se met à jour (en ms)
-    const PLAYER_SPEED = 17.5; // La vitesse de déplacement du joueur
-    const gameCanvasHeightVh = 68; // hauteur du Gamecanvas en vh
-    const gameCanvasWidthVw = 68; // largeur du Gamecanvas en vw
-    const playerBarHeightVh = 13; // hauteur de Playerbar1 en vh
-    const vhInPixels = (vh: number): number => (vh * window.innerHeight) / 100; // hauteur du canva en px
-    const vwInPixels = (vw: number): number => (vw * window.innerWidth) / 100; // largeur du canva en px
-    const maxY = vhInPixels(gameCanvasHeightVh) - vhInPixels(playerBarHeightVh); // hauteur max du canva en pixels
-    const [isUpPressed, setIsUpPressed] = useState(false);
-    const [isDownPressed, setIsDownPressed] = useState(false);
-
-    interface ServerResponse {
-        player1Y: number;
-        player2Y: number;
-      }
-
-      
-      const navigate = useNavigate();
-
+  ////// MAJ DE LA POSITION DANS LE BACKEND ////////////
   useEffect(() => {
-    if (!localStorage.getItem("userToken")) {
-      console.log("logged out");
-      navigate("/");
-    }
-    else console.log("logged in");
-    console.log(localStorage.getItem("userToken"));
-  }, []);
+    const interval = setInterval(() => {
+        if(isUpPressed || isDownPressed)
+        {
+          if (isUpPressed)
+            socket?.emit("update direction", roomID.roomID, 2);
+          else
+            socket?.emit("update direction", roomID.roomID, 1);
+        }
+        else socket?.emit("update direction", roomID.roomID, 0);
+    }, 1000 / TICK_RATE);
 
-    
-    //// Gérer l'appui des touches ///////////////////
-    useEffect(() => {
-        // Définir les gestionnaires d'événements pour les touches
-        const handleKeyDown = (event: KeyboardEvent) => {
-          if (event.key === 'ArrowUp') {
-            setIsDownPressed(false); // Ensure down is not pressed
-            setIsUpPressed(true);
-          } else if (event.key === 'ArrowDown') {
-            setIsUpPressed(false); // Ensure up is not pressed
-            setIsDownPressed(true);
-          }
-        };
-        const handleKeyUp = (event: KeyboardEvent) => {
-          if (event.key === 'ArrowUp') {
-            setIsUpPressed(false);
-          } else if (event.key === 'ArrowDown') {
-            setIsDownPressed(false);
-          }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
-        return () => {
-          window.removeEventListener('keydown', handleKeyDown);
-          window.removeEventListener('keyup', handleKeyUp);
-        };
-      }, []);
-
-    ////// MAJ DE LA POSITION DANS LE BACKEND ////////////
-    useEffect(() => {
-        const interval = setInterval(() => {
-          let newPlayer1Y = playerBar1Y;
-          let newPlayer2Y = playerBar2Y;
-
-          if (isUpPressed) newPlayer1Y = Math.max(playerBar1Y - PLAYER_SPEED, 0);
-          if (isDownPressed) newPlayer1Y = Math.min(playerBar1Y + PLAYER_SPEED, maxY);
-
-          setPlayerBar1Y(newPlayer1Y);
-          setPlayerBar2Y(newPlayer2Y);
-
-          if(isUpPressed || isDownPressed)
-          {
-            if (isUpPressed)
-                socket?.emit("update direction", roomID.roomID, 2);
-            else
-                socket?.emit("update direction", roomID.roomID, 1);
-          }
-          else socket?.emit("update direction", roomID.roomID, 0);
-          
-          // envoyer la nouvelle direction (up/down)
-          /* if ( isUpPressed ) socket?.emit("up arrow", roomID.roomID);
-          else if ( isDownPressed ) socket?.emit("down arrow", roomID.roomID); */
-
-          // Set the new Y positions -> It should call BACK HERE ***
-          // recevoir les infos du back concernant la partie
-          // throttle the number of requests sent to the server (loadash library)
-          socket?.on("game data", ((data: any) => {
-            // enregistrer les différentes infos dans mes variables
-            console.log("data:", data);
-            setPlayerBar1Y(newPlayer1Y);
-            setPlayerBar2Y(newPlayer2Y);
-          }))
-          // utiliser ces variables pour les afficher
+    return () => clearInterval(interval);
+  }, [isUpPressed, isDownPressed, maxY]);
+  
+  // interface ServerResponse {
+  //   player1Y: number;
+  //   player2Y: number;
+  // }
+  // function serverUpdate(inputs: { up: boolean; down: boolean }): Promise<ServerResponse> {
+  //   return new Promise((resolve) => {
+  //     let newPlayer1Y = playerBar1Y;
+  //     let newPlayer2Y = playerBar2Y;
       
-          // Here you would normally send the new position to the server
-          // and then the server would respond with the "official" positions of the players
-          // which you would then use to set the player bar positions
-          // For now, we're just simulating this with local state updates
-          
-        }, 1000 / TICK_RATE);
-        
-        return () => clearInterval(interval);
-      }, [isUpPressed, isDownPressed, playerBar1Y, playerBar2Y, TICK_RATE, PLAYER_SPEED, maxY]);
+  //     // Assuming player 1 controls are local and instant, supposed to be calculated within back?
+  //     if (inputs.up) newPlayer1Y = Math.max(playerBar1Y - PLAYER_SPEED, 0);
+  //     if (inputs.down) newPlayer1Y = Math.min(playerBar1Y + PLAYER_SPEED, maxY);
       
-      function serverUpdate(inputs: { up: boolean; down: boolean }): Promise<ServerResponse> {
-        return new Promise((resolve) => {
-          let newPlayer1Y = playerBar1Y;
-          let newPlayer2Y = playerBar2Y;
-          
-          // Assuming player 1 controls are local and instant, supposed to be calculated within back?
-          if (inputs.up) newPlayer1Y = Math.max(playerBar1Y - PLAYER_SPEED, 0);
-          if (inputs.down) newPlayer1Y = Math.min(playerBar1Y + PLAYER_SPEED, maxY);
-          
-          resolve({
-            player1Y: newPlayer1Y,
-            player2Y: newPlayer2Y,
-          });
-        });
-      }
-
-
-      useEffect(() => {
-        const ballDataInterval = setInterval(() => {
-          socket?.emit("room infos request'", roomID.roomID);
-        }, 1000 / TICK_RATE);
-
-        socket?.on("game data", ((data: any) => {
-          console.log("data:", data);
-          setBallX(data.xBall);
-          setBallY(data.yBall);
-        }))
-
-        return () => {
-          clearInterval(ballDataInterval);
-          socket?.off("game data");
-        };
-      }, [socket, roomID.roomID, TICK_RATE, ballX, ballY]);
+  //     resolve({
+  //       player1Y: newPlayer1Y,
+  //       player2Y: newPlayer2Y,
+  //     });
+  //   });
+  // }
 
 	return (
 		<div className="Gamebackground">
