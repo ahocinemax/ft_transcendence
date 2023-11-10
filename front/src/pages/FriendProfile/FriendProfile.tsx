@@ -63,6 +63,17 @@ const FriendProfile = () => {
 
     //console.log("name:     ", userInfo.name);
 
+    const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!localStorage.getItem("userToken")) {
+      console.log("logged out");
+      navigate("/");
+    }
+    else console.log("logged in");
+    console.log(localStorage.getItem("userToken"));
+  }, []);
+
 	let params =  useParams<{ friendName: string }>();
 	let friendName = params.friendName;
 		useEffect(() => {
