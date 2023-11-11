@@ -63,13 +63,9 @@ export class GameService {
 		if (intervals.indexOf('room_' + roomID) === -1)
 		{
 			this.initBall(roomID);
-			const interval = setInterval(() => {
-				this.gameLoop(roomID, server, gameData, mutex);
-			}, refreshRate);
+			const interval = setInterval(() => { this.gameLoop(roomID, server, gameData, mutex); }, refreshRate);
 			this.schedulerRegistry.addInterval('room_' + roomID, interval);
-			console.log("intervals: ", this.schedulerRegistry.getIntervals());
 		}
-		else console.log("interval already exists: ", 'room_' + roomID);
 	}
 
 	async gameLoop(roomID: number, server: Server, gameData: GameData, mutex: Mutex) {
@@ -96,12 +92,11 @@ export class GameService {
 		}
 		server.to(room.name).emit('game data', gameData);
 
-		if (room.ScorePlayer1 === 1 || room.ScorePlayer2 === 1) {
+		if (room.ScorePlayer1 === 10 || room.ScorePlayer2 === 10) {
 			this.schedulerRegistry.deleteInterval('room_' + roomID);
-			const winner = gameData.player1Score === 10 ? 1 : 2;
+			const winner = gameData.player1Score > gameData.player2Score ? 1 : 2;
 			server.to(room.name).emit('game over', winner);
 			const endTime = new Date();
-			console.log("game finished");
 			this.saveGame(
 				room.player1.data.user.id,
 				room.player2.data.user.id,
@@ -144,9 +139,21 @@ export class GameService {
 			where: { id: id },
 			data: { duration: duration },
 		});
-		await this.userService.updateUserStats.call(this, IdPlayer1, 1, ScorePlayer1 > ScorePlayer2 ? 1 : 0, ScorePlayer1 < ScorePlayer2 ? 1 : 0, id);
-		await this.userService.updateUserStats.call(this, IdPlayer2, 1, ScorePlayer2 > ScorePlayer1 ? 1 : 0, ScorePlayer2 < ScorePlayer1 ? 1 : 0, id);
-
+		await this.userService.updateUserStats(
+			IdPlayer1,
+			ScorePlayer1 > ScorePlayer2 ? 1 : 0,
+			ScorePlayer1 < ScorePlayer2 ? 1 : 0,
+			ScorePlayer1,
+			id
+		);
+		await this.userService.updateUserStats(
+			IdPlayer2,
+			ScorePlayer2 > ScorePlayer1 ? 1 : 0,
+			ScorePlayer2 < ScorePlayer1 ? 1 : 0,
+			ScorePlayer2,
+			id
+		);
+		this.updateRanks();
 		return game;
 	}
 
@@ -163,8 +170,7 @@ export class GameService {
 		updatedRoom.yball = 50;
 
 		// Détermine la vitesse de la balle en fonction du mode (normal, hard, hardcore)
-		updatedRoom.ballSpeed = room.mode === 'normal' ? 0.4 : room.mode === 'hard' ? 0.8 : 1.3 ;
-		updatedRoom.ballSpeed = 0.25;
+		updatedRoom.ballSpeed = room.mode === 'normal' ? 0.3 : room.mode === 'hard' ? 0.7 : 1.3 ;
 		updatedRoom.xSpeed = updatedRoom.ballSpeed;
 		updatedRoom.ySpeed = 0.15 + Math.random() * updatedRoom.ballSpeed;
 
@@ -445,5 +451,35 @@ export class GameService {
 			}
 		}
 		return false;
+	}
+
+	async updateRanks() {
+		const users = await this.prisma.user.findMany({
+			orderBy: {
+				score: 'asc',
+			},
+			select: {
+				id: true,
+				score: true,
+			},
+		});
+		const usersId: number[] = [];
+		for (const user of users) {
+			if (user.score !== 1200) usersId.push(user.id);
+		}
+
+		let index = 1;
+		for (const id of usersId) {
+			await this.prisma.user.update({
+				where: {
+					id: id,
+				},
+				data: {
+					rank: index,
+				},
+			});
+			index++;
+		}
+		return;
 	}
 }

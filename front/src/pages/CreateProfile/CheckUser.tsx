@@ -8,7 +8,7 @@ const CheckUser = () => {
 	const navigate = useNavigate();
 	const [tokenExists, setTokenExists] = useState(false);
 
-	async function checkCreateUser () { //!\/ if user logged out, token is removed (it will always return true)
+	async function checkCreateUser () {
 		const user = await backFunctions.getUserByToken();
 		if (user && user.isRegistered === true) { // user already created -> redirect to homepage
 			console.log('User already created');

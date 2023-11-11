@@ -13,14 +13,7 @@ const Settings = () => {
   const [tokenExists, setTokenExists] = useState(false);
   const [isUserCreated, setIsUserCreated] = useState(false);
 
-  useEffect(() => {
-    if (!localStorage.getItem("userToken")) {
-      console.log("logged out");
-      navigate("/");
-    }
-    else console.log("logged in");
-    console.log(localStorage.getItem("userToken"));
-  }, []);
+  useEffect(() => { if (!localStorage.getItem("userToken")) navigate("/"); }, []);
 
   const {
     userName,

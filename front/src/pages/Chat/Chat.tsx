@@ -75,12 +75,8 @@ const Chat = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!localStorage.getItem("userToken")) {
-      console.log("logged out");
+    if (!localStorage.getItem("userToken"))
       navigate("/");
-    }
-    else console.log("logged in");
-    console.log(localStorage.getItem("userToken"));
   }, []);
 
 

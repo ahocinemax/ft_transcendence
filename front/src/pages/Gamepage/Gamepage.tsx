@@ -6,22 +6,16 @@ import { Room } from '../../interface/BackInterface';
 import { debounce, throttle } from 'lodash';
 import './Gamepage.css';
 
-// UNE FOIS LA PARTIE TERMINEE, IL FAUT ENVOYER UNE REQUETE POST AU BACK
-// POUR ENREGISTRER LA GAME DANS LA DB 
-// URL: '/Game/SaveGame'
-// BODY: { IdPalyer1, IdPalyer2, ScorePlayer1, ScorePlayer1, startTime, endTime, mode }
-
-// ET ENFIN REDIRIGER VERS LA PAGE DE FIN DE PARTIE
+// REDIRIGER VERS LA PAGE DE FIN DE PARTIE
 // QUI AFFICHERA LES STATS DE LA GAME
 
 // CREER LES SOCKET.ON():
 //   - 'disconnected' QUI RENVOIE LE N° DU JOUEUR
-//   - 'game data' QUI RENVOIE LES DONNEES DE LA GAME
 //   - 'game over' QUI RENVOIE LE N° DU JOUEUR GAGNANT
 
 function Gamepage() {
 	const { socket } = useContext(SocketContext).SocketState;
-	const { roomID } = useUserContext();
+	const { roomID } = useUserContext().roomID;
   const ballRef = useRef<HTMLDivElement | null>(null);
   const player1Ref = useRef<HTMLDivElement | null>(null);
   const player2Ref = useRef<HTMLDivElement | null>(null);
@@ -45,30 +39,19 @@ function Gamepage() {
   ) => {
     if (isUpPressed || isDownPressed) {
       if (isUpPressed) {
-        // console.log("up");
         socket?.emit("update direction", 'room_0', 2);
       } else {
-        // console.log("down");
         socket?.emit("update direction", 'room_0', 1);
       }
     } else {
-      // console.log("none");
       socket?.emit("update direction", 'room_0', 0);
     }
   }, 1000 / TICK_RATE);
 
-  // Redirect if client is not logged in
-  useEffect(() => {
-    if (!localStorage.getItem("userToken")) {
-      console.log("logged out");
-      navigate("/");
-    }
-    else console.log("logged in");
-    console.log(localStorage.getItem("userToken"));
-  }, []);
+  useEffect(() => { if (!localStorage.getItem("userToken")) navigate("/"); }, []);
 
   useEffect(() => {
-		UpdateDirectionThrottled(socket, roomID.roomID, isUpPressed, isDownPressed);
+		UpdateDirectionThrottled(socket, roomID, isUpPressed, isDownPressed);
     // Définir les gestionnaires d'événements pour les touches
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowUp') {
@@ -95,14 +78,14 @@ function Gamepage() {
   }, [socket, roomID, isUpPressed, isDownPressed]);
 
 	useEffect(() => {
-    if (roomID.roomID) socket?.emit("room infos request", roomID.roomID);
+    if (roomID) socket?.emit("room infos request", roomID);
 		socket?.on("room infos response", (response: Room) => {
-			console.log("room infos: ", response);
       if (response) socket?.emit('start', response.name);
       else navigate('/start');
 		});
 		socket?.on("game data", (data: any) => {
-			console.log("game data: ", data);
+			console.log("score 1: ", data.player1Score);
+			console.log("score 2: ", data.player2Score);
       player1Ref.current?.style.setProperty('top', data.paddleLeft + '%');
       player2Ref.current?.style.setProperty('top', data.paddleRight + '%');
       ballRef.current?.style.setProperty('left', data.xBall + '%');

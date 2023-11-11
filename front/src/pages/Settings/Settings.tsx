@@ -163,15 +163,7 @@ const Settings = () => {
     fetchDoubleAuthStatus();
   }, []);
 
-  useEffect(() => {
-    if (!localStorage.getItem("userToken")) {
-      console.log("logged out");
-      navigate("/");
-    }
-    else console.log("logged in");
-    console.log(localStorage.getItem("userToken"));
-  }, []);
-
+  useEffect(() => { if (!localStorage.getItem("userToken")) navigate("/"); }, []);
 
   return (
     <div className="settings" onClick={closeModal}> // ?

@@ -105,7 +105,7 @@ async createDataBase42User(
 
   async getUserByToken(req: Request) : Promise< null | any > {
     try {
-      const accessToken = req.cookies.access_token; // problem when user is not logged in => no cookie yet
+      const accessToken = req.cookies.access_token;
       if (accessToken === undefined) return null;
       const user = await this.prisma.user.findFirst( { where: { accessToken: accessToken } } );
       return user ? user : null;
