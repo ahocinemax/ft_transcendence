@@ -71,3 +71,74 @@
     background-color: white;
     position: absolute;
   }
+
+  .Endpopup{
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  top: 50%;
+  height: 100%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  background-color: rgba(61, 43, 43, 0.9);
+  padding: 20px;
+  border: 2px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .WinLoose{
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    font-size: 9em;
+    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
+    font-family: 'Press Start 2P', sans-serif;
+    margin: 0 15%;
+    white-space: nowrap;
+  }
+
+  .GameStats{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60%;
+    width: 65%;
+  }
+
+  .FinalScore{
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    font-size: 3em;
+    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
+    font-family: 'Press Start 2P', sans-serif;
+    margin: 0 15%;
+    white-space: nowrap;
+  }
+
+
+  .playagain{
+    background-color: blue;
+    margin-top: 3%;
+    font-family: 'Press Start 2P', sans-serif;
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+    border: 2px solid #000;
+    background-color: #4caf50; /* Couleur de fond */
+    color: #fff; /* Couleur du texte */
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 10px;
+  }
+
+  .button-pixel-art:hover {
+    background-color: #fff; /* Couleur de fond au survol */
+    color: #4caf50; /* Couleur du texte au survol */
+  }
