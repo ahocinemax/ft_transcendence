@@ -240,5 +240,22 @@ export class UserService
 		return dtoUser;
 	}
 	
-	
+	async updateUserStats(userId, gamesPlayed, gamesWon, gamesLost, gameHistory, id) {
+		const user = await this.prisma.user.findUnique({ where: { id: userId } });
+		if (!user) {
+			console.log(`User with id ${userId} not found`);
+			return;
+		}
+
+		user.gamesPlayed += gamesPlayed;
+		user.gamesWon += gamesWon;
+		user.gamesLost += gamesLost;
+		user.winRate = user.gamesPlayed > 0 ? user.gamesWon / user.gamesPlayed : 0;
+		user.gameHistory.push(id);
+
+		await this.prisma.user.update({
+			where: { id: userId },
+			data: user
+		});
+	}
 }

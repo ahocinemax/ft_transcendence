@@ -45,7 +45,7 @@ model User {
   gamesLost     Int       @default(0)
   gamesWon      Int?      @default(0)
   gamesPlayed   Int       @default(0)
-  gameHistory   Int[]
+  gameHistory   Int[]     @default([])
 
   owner         Channel[] @relation("owner")
   admin         Channel[] @relation("admin")

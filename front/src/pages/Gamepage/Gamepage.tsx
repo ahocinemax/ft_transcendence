@@ -3,6 +3,7 @@ import SocketContext from '../../context/socketContext';
 import { useUserContext } from '../../context/userContent';
 import { useNavigate } from 'react-router-dom';
 import { Room } from '../../interface/BackInterface';
+import { debounce, throttle } from 'lodash';
 import './Gamepage.css';
 
 // UNE FOIS LA PARTIE TERMINEE, IL FAUT ENVOYER UNE REQUETE POST AU BACK
@@ -20,10 +21,10 @@ import './Gamepage.css';
 
 function Gamepage() {
 	const { socket } = useContext(SocketContext).SocketState;
-	const [playerBar1Y, setPlayerBar1Y] = useState(150);
-	const [playerBar2Y, setPlayerBar2Y] = useState(150);
 	const { roomID } = useUserContext();
   const ballRef = useRef<HTMLDivElement | null>(null);
+  const player1Ref = useRef<HTMLDivElement | null>(null);
+  const player2Ref = useRef<HTMLDivElement | null>(null);
   const TICK_RATE = 60; // Fréquence à laquelle le jeu se met à jour (en ms)
   const gameCanvasHeightVh = 68; // hauteur du Gamecanvas en vh
   const gameCanvasWidthVw = 68; // largeur du Gamecanvas en vw
@@ -35,6 +36,27 @@ function Gamepage() {
   const [isDownPressed, setIsDownPressed] = useState(false);
   const navigate = useNavigate();
 
+  ////// MAJ DE LA POSITION DANS LE BACKEND ////////////
+  const UpdateDirectionThrottled = throttle((
+    socket: any,
+    roomID: string,
+    isUpPressed: boolean,
+    isDownPressed: boolean
+  ) => {
+    if (isUpPressed || isDownPressed) {
+      if (isUpPressed) {
+        // console.log("up");
+        socket?.emit("update direction", 'room_0', 2);
+      } else {
+        // console.log("down");
+        socket?.emit("update direction", 'room_0', 1);
+      }
+    } else {
+      // console.log("none");
+      socket?.emit("update direction", 'room_0', 0);
+    }
+  }, 1000 / TICK_RATE);
+
   // Redirect if client is not logged in
   useEffect(() => {
     if (!localStorage.getItem("userToken")) {
@@ -43,6 +65,10 @@ function Gamepage() {
     }
     else console.log("logged in");
     console.log(localStorage.getItem("userToken"));
+  }, []);
+
+  useEffect(() => {
+		UpdateDirectionThrottled(socket, roomID.roomID, isUpPressed, isDownPressed);
     // Définir les gestionnaires d'événements pour les touches
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowUp') {
@@ -66,10 +92,10 @@ function Gamepage() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, []);
+  }, [socket, roomID, isUpPressed, isDownPressed]);
 
 	useEffect(() => {
-		socket?.emit("room infos request", roomID.roomID);
+    if (roomID.roomID) socket?.emit("room infos request", roomID.roomID);
 		socket?.on("room infos response", (response: Room) => {
 			console.log("room infos: ", response);
       if (response) socket?.emit('start', response.name);
@@ -77,33 +103,21 @@ function Gamepage() {
 		});
 		socket?.on("game data", (data: any) => {
 			console.log("game data: ", data);
-      setPlayerBar1Y(data.paddleLeft);
-      setPlayerBar2Y(data.paddleRight);
-      ballRef.current?.style.setProperty('left', data.xBall);
-      ballRef.current?.style.setProperty('top', data.yBall);
+      player1Ref.current?.style.setProperty('top', data.paddleLeft + '%');
+      player2Ref.current?.style.setProperty('top', data.paddleRight + '%');
+      ballRef.current?.style.setProperty('left', data.xBall + '%');
+      ballRef.current?.style.setProperty('top', data.yBall + '%');
 		});
+    socket?.on("game over", (winner: number) => {
+      console.log("winner is : ", winner);
+      navigate('/start');
+    });
 		return () => {
 			socket?.off("room infos response");
 			socket?.off("game data");
 		}
 	}, [socket]);
 
-  ////// MAJ DE LA POSITION DANS LE BACKEND ////////////
-  useEffect(() => {
-    const interval = setInterval(() => {
-        if(isUpPressed || isDownPressed)
-        {
-          if (isUpPressed)
-            socket?.emit("update direction", roomID.roomID, 2);
-          else
-            socket?.emit("update direction", roomID.roomID, 1);
-        }
-        else socket?.emit("update direction", roomID.roomID, 0);
-    }, 1000 / TICK_RATE);
-
-    return () => clearInterval(interval);
-  }, [isUpPressed, isDownPressed, maxY]);
-  
   // interface ServerResponse {
   //   player1Y: number;
   //   player2Y: number;
@@ -130,10 +144,10 @@ function Gamepage() {
 				<div className="Gamecanvas">
 					<div className="MiddleLine"></div>
 					<div className="Player1Area" style={{ left: 0 }}>
-						<div className="Playerbar1" style={{ top: playerBar1Y }}></div>
+						<div className="Playerbar1" ref={player1Ref}></div>
 					</div>
 					<div className="Player2Area" style={{ right: 0 }}>
-						<div className="Playerbar2" style={{ top: playerBar2Y }}></div>
+						<div className="Playerbar2" ref={player2Ref}></div>
 					</div>
 					{<div className="main_ball" ref={ballRef}></div>}
 				</div>

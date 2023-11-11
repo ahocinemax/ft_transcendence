@@ -42,11 +42,9 @@ export class GameGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('update direction')
-	async handleUpdateDirection(
-		@ConnectedSocket() client: AuthenticatedSocket,
-		@MessageBody() roomId: string,
-		@MessageBody() dir: number
-	) {
+	async handleUpdateDirection(@ConnectedSocket() client: AuthenticatedSocket, @MessageBody() data: any) {
+		const roomId = data[0];
+		const dir = data[1];
 		const room: Room = this.gameService.getRoomById(roomId, client);
 		if (room === null) return;
 		let direction = 'none';

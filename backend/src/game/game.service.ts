@@ -11,8 +11,9 @@ import { waitingPlayer } from './interface/player.interface';
 import { GameData } from './interface/game-data.interface';
 import { AuthenticatedSocket } from 'src/websocket/types/websocket.type';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import { finished } from 'stream';
 
-const paddleSpeed = 1;
+const paddleSpeed = 3;
 const refreshRate = 10;
 
 type Waitlist = waitingPlayer[];
@@ -73,14 +74,15 @@ export class GameService {
 
 	async gameLoop(roomID: number, server: Server, gameData: GameData, mutex: Mutex) {
 		const release = await mutex.acquire();
-		let room = GameService.rooms.find((room) => room.id === roomID);
+		let room: any = GameService.rooms.find((room) => room.id === roomID);
 		if (!room) {
 			release();
 			return;
 		}
-		if (room.player1Disconnected || room.player2Disconnected)
+		if (room.player1Disconnected || room.player2Disconnected){
+			console.log("player ", room.player1Disconnected ? room.NamePlayer1 : room.NamePlayer2, "disconnected");
 			server.to(room.name).emit('disconnected', room.player1Disconnected ? 1 : 2);
-		else {
+		} else {
 			this.updatePaddles(roomID);
 			this.updateBall(roomID);
 			gameData.paddleLeft = room.paddleLeft;
@@ -94,15 +96,15 @@ export class GameService {
 		}
 		server.to(room.name).emit('game data', gameData);
 
-		if (room.ScorePlayer1 === 10 || room.ScorePlayer2 === 10) {
+		if (room.ScorePlayer1 === 1 || room.ScorePlayer2 === 1) {
 			this.schedulerRegistry.deleteInterval('room_' + roomID);
 			const winner = gameData.player1Score === 10 ? 1 : 2;
 			server.to(room.name).emit('game over', winner);
 			const endTime = new Date();
-			console.log(room);
+			console.log("game finished");
 			this.saveGame(
-				room.player1.data.id,
-				room.player2.data.id,
+				room.player1.data.user.id,
+				room.player2.data.user.id,
 				room.ScorePlayer1,
 				room.ScorePlayer2,
 				gameData.startTime,
@@ -125,7 +127,6 @@ export class GameService {
 		endTime: Date,
 		mode: string
 	) {
-		console.log(IdPlayer1, IdPlayer2, ScorePlayer1, ScorePlayer2, startTime, endTime, mode);
 		const game = await this.prisma.game.create({
 			data: {
 				player1: IdPlayer1,
@@ -143,108 +144,103 @@ export class GameService {
 			where: { id: id },
 			data: { duration: duration },
 		});
+		await this.userService.updateUserStats.call(this, IdPlayer1, 1, ScorePlayer1 > ScorePlayer2 ? 1 : 0, ScorePlayer1 < ScorePlayer2 ? 1 : 0, id);
+		await this.userService.updateUserStats.call(this, IdPlayer2, 1, ScorePlayer2 > ScorePlayer1 ? 1 : 0, ScorePlayer2 < ScorePlayer1 ? 1 : 0, id);
 
 		return game;
 	}
 
 	initBall(roomId: number) {
-		const room = GameService.rooms.find(room => room.id === roomId);
+		// recherche une room dans la liste en utilisant roomId.
+		const room: Room = GameService.rooms.find(room => room.id === roomId);
 		if (!room) return; // Vérifiez si la salle a été trouvée
 
-		// Clone de l'objet 'room'
+		// Copie la room pour éviter de modifier directement l'objet d'origine.
 		const updatedRoom = { ...room };
 		
+		// Set la balle au centre du canvas
 		updatedRoom.xball = 50;
 		updatedRoom.yball = 50;
 
-		updatedRoom.ballSpeed = room.mode === 'normal' ? 0.75 : room.mode === 'hard' ? 1 : 1.50 ;
-		updatedRoom.xSpeed = this.ballSpeed;
-		updatedRoom.ySpeed = 0.15 + Math.random() * this.ballSpeed;
+		// Détermine la vitesse de la balle en fonction du mode (normal, hard, hardcore)
+		updatedRoom.ballSpeed = room.mode === 'normal' ? 0.4 : room.mode === 'hard' ? 0.8 : 1.3 ;
+		updatedRoom.ballSpeed = 0.25;
+		updatedRoom.xSpeed = updatedRoom.ballSpeed;
+		updatedRoom.ySpeed = 0.15 + Math.random() * updatedRoom.ballSpeed;
 
+		// Détermine aléatoirement la direction de la balle pour les composantes x et y
 		let direction = Math.round(Math.random());
 		if (direction) updatedRoom.xSpeed *= -1;
 		direction = Math.round(Math.random());
 		if (direction) updatedRoom.ySpeed *= -1;
+
+		// Copie les propriétés mises à jour vers la room d'origine
 		Object.assign(room, updatedRoom);
 	}
 
 	/**
 	 * update ball coordinate
 	 */
-
 	updateBall(roomId: number) {
 		const room = GameService.rooms.find(room => room.id === roomId);
-		if (!room) return; // Vérifiez si la salle a été trouvée
-	  
-		// Clone de l'objet 'room'
+		if (!room) return;
+
 		const updatedRoom = { ...room };
-	  
-		updatedRoom.xball += updatedRoom.xSpeed;
-		updatedRoom.yball += updatedRoom.ySpeed;
-	  
+
+		// Mise à jour des coordonnées de la balle
 		updatedRoom.xball += updatedRoom.xSpeed;
 		updatedRoom.yball += updatedRoom.ySpeed;
 
 		// game windows is 16/9 format - so 1.77, ball radius is 1vh
 
-		// ball collision with floor or ceilling
+		// Gestion des collisions avec les bords (haut et bas)
 		if (updatedRoom.yball > 98) {
 			updatedRoom.yball = 98;
 			updatedRoom.ySpeed *= -1;
 		}
-
 		if (updatedRoom.yball < 2) {
 			updatedRoom.yball = 2;
 			updatedRoom.ySpeed *= -1;
 		}
 
-		// ball collision with right paddle (paddle position is 3% from the border, paddle height is 10% of the game windows)
-		if (updatedRoom.xball >= 97 - 2 / 1.77 &&
-		updatedRoom.yball >= updatedRoom.paddleRight -1 &&
-		updatedRoom.yball <= updatedRoom .paddleRight + 11) {
+		// Gestion des collisions avec les paddle :
+		//   - paddle position : 3% du bord 
+		//   - hauteur du paddle: 20% de la hauteur du canvas
+		if (updatedRoom.xball >= 97 && updatedRoom.xball <= 99 && //
+		updatedRoom.yball >= updatedRoom.paddleRight - 1 &&
+		updatedRoom.yball <= updatedRoom.paddleRight + 21) {
 			// ball radius is 1vh
-			updatedRoom.xball = 97 - 2 / 1.77;
-			updatedRoom.ballSpeed *= 1.05;
-			updatedRoom.xSpeed *= -1.05;
+			updatedRoom.xball = 97; // Je remet la balle pile à la limite [gauche] du paddle
+			updatedRoom.xSpeed = Math.abs(updatedRoom.xSpeed) * -1;
 			updatedRoom.ySpeed = ((updatedRoom.yball - updatedRoom.paddleRight - 5) / 6) * updatedRoom.ballSpeed; // make ball go up, straight or down based on	the part of the paddle touched
 		}
 		// ball collision with left paddle
-		if (
-		updatedRoom.xball <= 3 + 2 / 1.77 &&
+		if (updatedRoom.xball >= 1 && updatedRoom.xball <= 1.5 &&
 		updatedRoom.yball >= updatedRoom.paddleLeft - 1 &&
-		updatedRoom.yball <= updatedRoom.paddleLeft + 11) {
-			updatedRoom.xball = 3 + 2 / 1.77;
-			updatedRoom.ballSpeed *= 1.05;
-			updatedRoom.xSpeed *= -1.05;
+		updatedRoom.yball <= updatedRoom.paddleLeft + 21) {
+			updatedRoom.xball = 1.4;
+			updatedRoom.xSpeed = Math.abs(updatedRoom.xSpeed);
 			updatedRoom.ySpeed = ((updatedRoom.yball - updatedRoom.paddleLeft - 5) / 6) * updatedRoom.ballSpeed;
 		}
 		// end of point management
-		if (updatedRoom.xball >= 100 + 2 / 1.77) {
-			// updatedRoom.ScorePlayer1 += 1;
+		if (updatedRoom.xball >= 99) {
+			updatedRoom.ScorePlayer1 += 1;
+			Object.assign(room, updatedRoom);
 			this.initBall(updatedRoom.id);
+			return;
 		}
-		if (updatedRoom.xball <= 0 - 2 / 1.77) {
-			// updatedRoom.ScorePlayer2 += 1;
+		if (updatedRoom.xball <= 1) {
+			updatedRoom.ScorePlayer2 += 1;
+			Object.assign(room, updatedRoom);
 			this.initBall(updatedRoom.id);
+			return;
 		}
 		Object.assign(room, updatedRoom);
 	}
 
 	/**
-	 * set paddle direction (0 = none, 1 = up, 2 = down) based on data received from clients
-	 */
-
-	updateRoom(player: number, roomId: number, direction: number) {
-		if (player == 1)
-			GameService.rooms.find((room) => room.id === roomId).paddleLeftDir = direction;
-		else
-			GameService.rooms.find((room) => room.id === roomId).paddleRightDir = direction;
-	}
-
-	/**
 	 * update paddle positions based on recorded paddle directions
 	 */
-
 	updatePaddles(roomId: number) {
 		const room = GameService.rooms.find(room => room.id === roomId);
 		if (!room) return; // Vérifiez si la salle a été trouvée
@@ -258,8 +254,8 @@ export class GameService {
 				updatedRoom.paddleLeft = 0;
 		} else if (updatedRoom.paddleLeftDir == 2) {
 			updatedRoom.paddleLeft += paddleSpeed;
-			if (updatedRoom.paddleLeft > 90)
-				updatedRoom.paddleLeft = 90;
+			if (updatedRoom.paddleLeft > 81)
+				updatedRoom.paddleLeft = 81;
 		}
 		if (updatedRoom.paddleRightDir == 1) {
 			updatedRoom.paddleRight -= paddleSpeed;
@@ -267,12 +263,15 @@ export class GameService {
 				updatedRoom.paddleRight = 0;
 		} else if (updatedRoom.paddleRightDir == 2) {
 			updatedRoom.paddleRight += paddleSpeed;
-			if (updatedRoom.paddleRight > 90)
-				updatedRoom.paddleRight = 90;
+			if (updatedRoom.paddleRight > 81)
+				updatedRoom.paddleRight = 81;
 		}
 		Object.assign(room, updatedRoom);
 	}
 
+	/**
+	 * set paddle direction (0 = none, 1 = up, 2 = down) based on data received from clients
+	 */
 	async updateDirection(roomId: string, client: AuthenticatedSocket, direction: string) {
 		const room = GameService.rooms.find((room) => room.name === roomId);
 		if (!room) return;
