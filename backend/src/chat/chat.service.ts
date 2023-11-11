@@ -322,8 +322,6 @@ async getAllMessages(channelId: number) {
 		const existingChannel = await this.prisma.channel.findFirst({
 			where: { dm: true, NOT: { owners: { some: { AND: [{ id: ownerId1 }, { id: ownerId2 }] } } } }
 		});
-		
-		console.log("🚀 ~ file: chat.service.ts:270 ~ ChatService ~ channelAlreadyExists ~ existingChannel:", existingChannel !== null ? true : false);
 		return  existingChannel !== null ? true : false; // Retourne true si un canal existe, sinon false
 	}
 
@@ -332,6 +330,7 @@ async getAllMessages(channelId: number) {
 			let ids: number[] = []; 
 			const ownerId = await this.getUserIdByName(creator);
 			const otherId = await this.getUserIdByName(otherClient.name);
+			if (ownerId === otherId) return ;
 			const channelAlreadyExists = await this.channelAlreadyExists(ownerId, otherId);
 			if (channelAlreadyExists) return null; 
 			ids.push(ownerId, otherId);
