@@ -9,7 +9,7 @@ import UserContext, { Email } from '../../context/userContent';
 import { channelModel } from '../../interface/global';
 import { userModel } from '../../interface/global';
 import { useNavigate } from 'react-router-dom';
-// import { act } from '@testing-library/react';
+import { RoomID, useUserContext } from '../../context/userContent';
 
 const userInfoInit = {
   id: 0,
@@ -64,8 +64,15 @@ const Chat = () => {
   const [selectedUserImage, setSelectedUserImage] = useState(''); // image de l'utilisateur sélectionné
   const [tempActiveChannel, setTempActiveChannel] = useState(0); // canal sur lequel le client a cliqué
   const [activeChannel, setActiveChannel] = useState(0);
+  
+  // Duel request
+  const [displayWaiting, setDisplayWaiting] = useState(false); // should open a pupup with a waiting animation
+  const [displayClose, setDisplayClose] = useState(true);
+  const [textToDisplay, setTextToDisplay] = useState("Waiting for response...");
+  const [mode, setMode] = useState("normal");
+  const [selectedUserID, setSelectedUserID] = useState(0);
 
-  const { socket } = useContext(SocketContext).SocketState;
+  const { socket, users } = useContext(SocketContext).SocketState;
   const userInfos = useContext(UserContext);
   const [userInfo, setUserInfo] = useState<any>(userInfoInit);
   const [isFetched, setIsFetched] = useState(false);
@@ -108,6 +115,20 @@ const Chat = () => {
 
   type MessagesArray = MessageData[];
 
+  function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function waitBeforeRedirection() {
+    await sleep(2580); // Pause de 2 secondes
+    navigate('/gamepage');
+  }
+
+  const {
+    roomID,
+    setRoomID,
+	} = useUserContext();
+
   // HOOKS
 
   useEffect(() => { // Handle events : 'fetch channels', 'fetch mp'
@@ -136,8 +157,16 @@ const Chat = () => {
       data = !Array.isArray(data) ? Array.from(data) : data;
       setPriv_msgs(data);
     });
+    socket?.on("get room id", (response: {id: number, name: string}) => {
+      setDisplayClose(false);
+      const roomID: RoomID = {roomID: response.name};
+      setRoomID(roomID);
+      setTextToDisplay(`Request accepted. Joining lobby: ${response.name}`);
+      waitBeforeRedirection();
+    });
     return () => {
       socket?.off('fetch mp');
+      socket?.off("get room id");
     };
   }, [socket]);
 
@@ -190,6 +219,22 @@ const Chat = () => {
     socket?.emit('new channel', data);
   }
 
+  const onClose = () => {
+    setDisplayWaiting(false);
+    socket?.emit("remove duel request", userInfos.userId.userId);
+    setMode("");
+  }
+
+  const handleDuelRequest = () => {
+    // check if requested user is connected
+    if (users.find((user: string) => user === selectedUser) !== undefined)
+    {
+      socket?.emit("duel request", selectedUserID, selectedUser, 'normal');
+      setDisplayWaiting(true);
+      setDisplayClose(true);
+    }
+      
+  }
   const handleChannelClick = (channelId: number) => {
     if (PasswordNeeded)
         return;
@@ -254,14 +299,16 @@ const Chat = () => {
     setMessageInput('');
   };
 
-  const handleUserClick = async (userName: string) => {
+  const handleUserClick = async (userName: string, userID: number) => {
     setSelectedUser(userName);
+    setSelectedUserID(userID);
     setSelectedUserImage(await backFunctions.getImage(userName));
     setIsUserPopupVisible(true);
   };
 
   const closeUserPopup = () => {
     setSelectedUser('');
+    setSelectedUserID(0);
     setSelectedUserImage('');
     setIsUserPopupVisible(false);
   };
@@ -366,7 +413,7 @@ const Chat = () => {
                     {selectedUser !== userInfos.userName.userName ? (
                       <span
                         className="message_sender"
-                        onClick={() => handleUserClick(message.name)}
+                        onClick={() => handleUserClick(message.name, message.id)}
                         style={{color: textColor}}
                       >
                         <strong>{message.name} </strong>
@@ -412,7 +459,7 @@ const Chat = () => {
                 >
                   <span
                     className="message_sender"
-                    onClick={() => handleUserClick(message.name)} // Gérer le clic sur le nom de l'utilisateur
+                    onClick={() => handleUserClick(message.name, message.id)} // Gérer le clic sur le nom de l'utilisateur
                   >
                     <strong>{message.name} </strong>
                   </span>
@@ -446,7 +493,7 @@ const Chat = () => {
           <p className="user_popup_name">{selectedUser}</p>
           <img src={selectedUserImage} alt="User Avatar" className="img_popup1"/>
           <div className="chat_button_container">
-            <div className="chat_buttons DUEL"></div>
+            <div className="chat_buttons DUEL" onClick={handleDuelRequest}></div>
             <div className="chat_buttons MSG" onClick={() => addPrivateUser(selectedUser)}></div>
             <div className="chat_buttons ADD_FRIEND" onClick={() => backFunctions.addFriend(userInfos.userName.userName, selectedUser, userInfos)}></div>
             <div className="chat_buttons BLOCK"  onClick={() => backFunctions.blockUser(userInfos.userName.userName, selectedUser, userInfos)}></div>
@@ -458,7 +505,23 @@ const Chat = () => {
             <div className="chat_buttons BAN"onClick={() => backFunctions.banUser(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
           </div>
         </div>
-      </div>      
+      </div>
+      {displayWaiting && (
+      <div className="waiting_popup">
+        <div className="waiting_popup_container">
+          {displayClose && (<span className="popup_close" onClick={onClose}>
+            &times;
+          </span>)}
+          <h1 className="game_mode_title">{mode}</h1>
+          <h2 className="h1_popup_waiting">{textToDisplay}</h2>
+          {displayClose && <div className="pong-animation">
+            <div className="player player1"></div>
+            <div className="player player2"></div>
+            <div className="ball-animation"></div>
+          </div>}
+        </div>
+      </div>
+      )}
     </div>
   );
 }

@@ -153,6 +153,20 @@ async getAllMessages(channelId: number) {
 		} catch (error) { console.log('User\'s not registered to any channel'); }
 	}
 
+	async	getChannelOwners(channelId: number) {
+		try {
+			const channelMP = await this.prisma.channel.findUnique({
+				where: { id: channelId },
+				select: { owners: true }
+			});
+			let ownersNames: string[] = [];
+			for (const owner of channelMP.owners) {
+				ownersNames.push(owner.name);
+			}
+			return ownersNames;
+		} catch (error) { console.log('getChannelMembers error:', error); }
+	}
+
 	async	get_message_by_id(id: number) {
 		try {
 			const message = await this.prisma.message.findUnique({

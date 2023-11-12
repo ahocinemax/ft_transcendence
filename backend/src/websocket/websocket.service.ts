@@ -40,6 +40,14 @@ export class WebsocketService {
 		});
 	}
 
+	public getConnectedUserByName(name: string): AuthenticatedSocket | undefined {
+		let user: AuthenticatedSocket | undefined;
+		this.websocketGateway.clientSocket.forEach((client: AuthenticatedSocket) => {
+			if (client.data.name === name) user = client;
+		});
+		return user;
+	}
+
 	public async emitUserListToLobby(userList: User[], lobbyId: string) {
 		this.websocketGateway.clientSocket.forEach((client: AuthenticatedSocket) => {
 			this.emitUserList(client, userList, lobbyId); 
@@ -130,5 +138,6 @@ export class WebsocketService {
 	) {
 		this.logger.log(`Emitting event [${event}] to connected clients`);
 		payload ? client.broadcast.emit(event, payload) : client.broadcast.emit(event);
+		this.server.to('default_all').emit(event, payload);
 	}
 }

@@ -24,7 +24,7 @@ function Start() {
 	} = useUserContext();
 
   async function HandleStart(param: string) {
-    await setMode(param);
+    setMode(param);
     socket?.emit("waitlist request", param);
     // run "waiting for players" animation
     setDisplayWaiting(true);

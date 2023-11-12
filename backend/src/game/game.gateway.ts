@@ -19,13 +19,16 @@ export class GameGateway implements OnGatewayDisconnect {
 
 	handleDisconnect(client: any) {
 		this.websocketService.updateStatus(client, 'online');
+		this.gameService.removeFromWaitlist(client, 'normal');
+		this.gameService.removeFromWaitlist(client, 'hard');
+		this.gameService.removeFromWaitlist(client, 'hardcore');
 		const roomId = this.gameService.isInRoom(client);
 		if (roomId === false) return ;
-		const room: Room = this.gameService.getRoomById(roomId as string, client);
+		const room: Room = this.gameService.getRoomById(roomId as string);
 		if (room && this.gameService.leftOngoingGame(client)) return;
 			// this.gameService.startGame(room.player1?.data.id,
 			// 	room.player2?.data.id, room.ScorePlayer1, room.ScorePlayer2,
-			// 	room., room.mode);
+			// 	room., room.mode); 
 	}
 
 	// IL FAUT IMPLEMENTER LE MESSAGE 'START' POUR LANCER LA PARTIE
@@ -34,7 +37,17 @@ export class GameGateway implements OnGatewayDisconnect {
 		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() roomId: string
 	) {
-		const room: Room = this.gameService.getRoomById(roomId, client);
+		if (this.gameService.getRoomById(roomId, false).player1?.data.id === client.data.id)
+		{
+			this.gameService.getRoomById(roomId, false).NamePlayer1 = client.data.name
+			this.gameService.getRoomById(roomId, false).AvatarPlayer1 = client.data.user.avatar;
+			this.gameService.getRoomById(roomId, false).player1 = client;
+		} else {
+			this.gameService.getRoomById(roomId, false).NamePlayer2 = client.data.name;
+			this.gameService.getRoomById(roomId, false).AvatarPlayer2 = client.data.user.avatar;
+			this.gameService.getRoomById(roomId, false).player2 = client;
+		}
+		const room: Room = this.gameService.getRoomById(roomId);
 		if (room === null) return;
 		const roomIdNumber = Number(roomId.replace('room_', ''));
 		// vérifier que les deux players sont ready 'donc ont envoyé start'
@@ -45,7 +58,7 @@ export class GameGateway implements OnGatewayDisconnect {
 	async handleUpdateDirection(@ConnectedSocket() client: AuthenticatedSocket, @MessageBody() data: any) {
 		const roomId = data[0];
 		const dir = data[1];
-		const room: Room = this.gameService.getRoomById(roomId, client);
+		const room: Room = this.gameService.getRoomById(roomId);
 		if (room === null) return;
 		let direction = 'none';
 		if (dir === 1) direction = 'down'
@@ -63,8 +76,6 @@ export class GameGateway implements OnGatewayDisconnect {
 			return;
 		}
 		await this.gameService.addToWaitlist(client, mode);
-		console.log("user ", client.data.name, " added to waitlist ", mode);
-		console.log("updated waitlist [", mode, "]: ", this.gameService.getWaitlist(mode).map(player => player.name));
 		if (this.gameService.getWaitlist(mode).length >= 2) {
 			const roomId: {id: number, name: string} = this.gameService.generateRoomId();
 			await this.gameService.createRoomAddPlayers(roomId, mode);
@@ -78,11 +89,8 @@ export class GameGateway implements OnGatewayDisconnect {
 		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() mode: string 
 	) {
-		console.log("🚀 ~ file: GameGateway ~ remove user from mode:", mode)
 		if (this.gameService.isInWaitlist(client, mode)) {
 			this.gameService.removeFromWaitlist(client, mode);
-			console.log("user ", client.data.name, " removed from waitlist ", mode);
-			console.log("updated waitlist [", mode, "]: ", this.gameService.getWaitlist(mode));
 		}
 	}
 
@@ -91,12 +99,33 @@ export class GameGateway implements OnGatewayDisconnect {
 		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() roomId: string
 	) {
-		console.log("🚀 ~ file: GameGateway ~ handleGetRoomInfos ~ roomId", roomId)
-		const room: Room = this.gameService.getRoomById(roomId, client);
+		const room: Room = this.gameService.getRoomById(roomId);
 		if (room === null) {
 			this.logger.log("room not found!");
 			return;
 		}
 		client.emit('room infos response', room);
+	}
+
+	@SubscribeMessage('duel request')
+	async handleDuelRequest(
+		@ConnectedSocket() client: AuthenticatedSocket,
+		@MessageBody() data: any
+	) {
+		const opponentID: number = data[0];
+		const opponentName: string = data[1];
+		const mode: string = data[2];
+		const opponent = this.websocketService.getConnectedUserByName(opponentName);
+		if (opponent === null) {
+			console.log("opponent not found!");
+			return;
+		}
+		if (this.gameService.isInRoom(client) || this.gameService.isInRoom(opponent)) {
+			console.log("user or opponent is already in a room");
+			return;
+		}
+		const roomId: {id: number, name: string} = this.gameService.generateRoomId();
+		await this.gameService.createCustomRoomAddPlayers(roomId, mode, client, opponent);
+		this.gameService.sendRoomIdToUsers(roomId, mode);
 	}
 }

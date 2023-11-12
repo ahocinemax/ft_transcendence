@@ -8,8 +8,8 @@ import './Gamepage.css';
 
 function Gamepage() {
 	const { socket } = useContext(SocketContext).SocketState;
-	const { roomID } = useUserContext().roomID;
-  const [RoomID, setRoomID] = useState("");
+	const { roomID, setRoomID } = useUserContext();
+  const [localRoomID, setLocalRoomID] = useState("");
   const ballRef = useRef<HTMLDivElement | null>(null);
   const player1Ref = useRef<HTMLDivElement | null>(null);
   const player2Ref = useRef<HTMLDivElement | null>(null);
@@ -29,26 +29,25 @@ function Gamepage() {
   ////// MAJ DE LA POSITION DANS LE BACKEND ////////////
   const UpdateDirectionThrottled = throttle((
     socket: any,
-    roomID: string,
     isUpPressed: boolean,
     isDownPressed: boolean
   ) => {
     if (isUpPressed || isDownPressed) {
       if (isUpPressed) {
-        socket?.emit("update direction", RoomID, 2);
+        socket?.emit("update direction", localRoomID, 2);
       } else {
-        socket?.emit("update direction", RoomID, 1);
+        socket?.emit("update direction", localRoomID, 1);
       }
     } else {
-      socket?.emit("update direction", RoomID, 0);
+      socket?.emit("update direction", localRoomID, 0);
     }
   }, 100);
 
   useEffect(() => { if (!localStorage.getItem("userToken")) navigate("/"); }, []);
 
   useEffect(() => {
-    console.log("ROOM ID: ", RoomID);
-		UpdateDirectionThrottled(socket, roomID, isUpPressed, isDownPressed);
+    console.log('localRoomID: ', localRoomID);
+		UpdateDirectionThrottled(socket, isUpPressed, isDownPressed);
     // Définir les gestionnaires d'événements pour les touches
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowUp') {
@@ -72,19 +71,27 @@ function Gamepage() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [socket, roomID, isUpPressed, isDownPressed]);
+  }, [socket, roomID.roomID, isUpPressed, isDownPressed]);
 
 	useEffect(() => {
-    if (roomID) socket?.emit("room infos request", roomID);
+    if (roomID.roomID) {
+      socket?.emit("room infos request", roomID.roomID);
+      console.log("sending room infos request:", roomID.roomID);
+    }
     else navigate('/start');
 		socket?.on("room infos response", (response: Room) => {
       if (response){
+        console.log("received room infos:", response);
+        console.log("sending start");
         socket?.emit('start', response.name);
-        setRoomID(response.name);
+        setLocalRoomID(response.name);
       }
       else navigate('/start');
+      console.log("ROOM ID: ", localRoomID);
+      console.log("roomID: ", roomID.roomID);
 		});
 		socket?.on("game data", (data: any) => {
+      console.log("received game data", data);
       player1Ref.current?.style.setProperty('top', data.paddleLeft + '%');
       player2Ref.current?.style.setProperty('top', data.paddleRight + '%');
       ballRef.current?.style.setProperty('left', data.xBall + '%');
@@ -93,6 +100,8 @@ function Gamepage() {
     socket?.on("game over", (winner: number) => {
       setGameOver(true);
       setPlayerWinner(winner);
+      setLocalRoomID("");
+      setRoomID({roomID: ""});
     });
 		return () => {
 			socket?.off("room infos response");

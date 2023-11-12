@@ -82,7 +82,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('get channels') //ban / kick
 	async handleFetchChannels(@MessageBody() email: string, @ConnectedSocket() client: Socket) {
-		const userId = client.data.user.id;
+		const userId = client.data?.user?.id;
 		this.logger.log("[GET CHANNELS]");
 		const data = await this.chatService.get_channels2(userId);
 		client.emit('fetch channels', data);
@@ -128,6 +128,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleFetchMP(@MessageBody() email: string, @ConnectedSocket() client: Socket) {
 		this.logger.log("[GET MP]");
 		const data = await this.chatService.getUsersMPs(email);
+		for (const mp of data) {
+			let ownersNames: string[] = [];
+			let tempOwners: string[] = await this.chatService.getChannelOwners(mp.id);
+			ownersNames.push(tempOwners[0]);
+			ownersNames.push(tempOwners[1]);
+			mp['owners'] = ownersNames;
+		}
 		client.emit('fetch mp', data);
 	}
 }
