@@ -16,6 +16,7 @@ import './Gamepage.css';
 function Gamepage() {
 	const { socket } = useContext(SocketContext).SocketState;
 	const { roomID } = useUserContext().roomID;
+  const [RoomID, setRoomID] = useState("");
   const ballRef = useRef<HTMLDivElement | null>(null);
   const player1Ref = useRef<HTMLDivElement | null>(null);
   const player2Ref = useRef<HTMLDivElement | null>(null);
@@ -29,6 +30,9 @@ function Gamepage() {
   const [isUpPressed, setIsUpPressed] = useState(false);
   const [isDownPressed, setIsDownPressed] = useState(false);
   const navigate = useNavigate();
+  const [gameOver, setGameOver] = useState(false);
+  const [PlayerWinner, setPlayerWinner] = useState<number | null>(null);
+
 
   ////// MAJ DE LA POSITION DANS LE BACKEND ////////////
   const UpdateDirectionThrottled = throttle((
@@ -39,18 +43,19 @@ function Gamepage() {
   ) => {
     if (isUpPressed || isDownPressed) {
       if (isUpPressed) {
-        socket?.emit("update direction", 'room_0', 2);
+        socket?.emit("update direction", RoomID, 2);
       } else {
-        socket?.emit("update direction", 'room_0', 1);
+        socket?.emit("update direction", RoomID, 1);
       }
     } else {
-      socket?.emit("update direction", 'room_0', 0);
+      socket?.emit("update direction", RoomID, 0);
     }
   }, 1000 / TICK_RATE);
 
   useEffect(() => { if (!localStorage.getItem("userToken")) navigate("/"); }, []);
 
   useEffect(() => {
+    console.log("ROOM ID: ", RoomID);
 		UpdateDirectionThrottled(socket, roomID, isUpPressed, isDownPressed);
     // Définir les gestionnaires d'événements pour les touches
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -80,7 +85,10 @@ function Gamepage() {
 	useEffect(() => {
     if (roomID) socket?.emit("room infos request", roomID);
 		socket?.on("room infos response", (response: Room) => {
-      if (response) socket?.emit('start', response.name);
+      if (response){
+        socket?.emit('start', response.name);
+        setRoomID(response.name);
+      }
       else navigate('/start');
 		});
 		socket?.on("game data", (data: any) => {
@@ -93,7 +101,9 @@ function Gamepage() {
 		});
     socket?.on("game over", (winner: number) => {
       console.log("winner is : ", winner);
-      navigate('/start');
+      setGameOver(true);
+      setPlayerWinner(winner);
+      // navigate('/start');
     });
 		return () => {
 			socket?.off("room infos response");
@@ -134,6 +144,15 @@ function Gamepage() {
 					</div>
 					{<div className="main_ball" ref={ballRef}></div>}
 				</div>
+        {gameOver && (
+        <div className="Endpopup">
+          <div className="WinLoose">Player {PlayerWinner} won</div>
+          <div className="GameStats">
+            <div className="FinalScore">Player 1 9 - 0 Player 2</div>
+          </div>
+          <button className="playagain" onClick={() => navigate('/start')}>Play Again</button>
+        </div>
+        )}
 			</div>
 		</div>
 	);
