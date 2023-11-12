@@ -334,7 +334,7 @@ async getAllMessages(channelId: number) {
 
 	async channelAlreadyExists(ownerId1, ownerId2) {
 		const existingChannel = await this.prisma.channel.findFirst({
-			where: { dm: true, NOT: { owners: { some: { AND: [{ id: ownerId1 }, { id: ownerId2 }] } } } }
+			where: { dm: true, owners: { some: { AND: [{ id: ownerId1 }, { id: ownerId2 }] } } }
 		});
 		return  existingChannel !== null ? true : false; // Retourne true si un canal existe, sinon false
 	}

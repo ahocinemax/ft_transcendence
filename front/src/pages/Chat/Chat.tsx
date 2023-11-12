@@ -300,6 +300,8 @@ const Chat = () => {
   };
 
   const handleUserClick = async (userName: string, userID: number) => {
+    if (userInfos.userName.userName == userName)
+        return;
     setSelectedUser(userName);
     setSelectedUserID(userID);
     setSelectedUserImage(await backFunctions.getImage(userName));
