@@ -94,7 +94,7 @@ export class GameService {
 			winner = room.player2Disconnected ? 1 : 2;
 			console.log("a player disconnected, winner is ", winner);
 		}
-		if (room.ScorePlayer1 === 10 || room.ScorePlayer2 === 10 || winner) {
+		if (room.ScorePlayer1 === 1000000 || room.ScorePlayer2 === 1000000 || winner) {
 			if (!winner) {
 				winner = room.ScorePlayer1 > room.ScorePlayer2 ? 1: 2;
 				console.log("game over, winner is ", winner);
