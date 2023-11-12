@@ -68,7 +68,8 @@ model Game {
   startTime     DateTime @default(now())
   endTime       DateTime
   duration      Int?
-  mode          String 
+  mode          String
+  winner        Int?
 }
 
 model Channel {

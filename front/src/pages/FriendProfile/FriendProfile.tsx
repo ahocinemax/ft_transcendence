@@ -188,7 +188,7 @@ const FriendProfile = () => {
 					</div>
 					<div className="scores_div_bottom">
 						<h1 className="info right">Winrate</h1>
-						<h1 className="stat main">{userInfo.winRate ? userInfo.winRate + "%" : "X"}</h1>
+						<h1 className="stat main">{userInfo.winRate ? userInfo.winRate.toFixed(2) + "%" : "X"}</h1>
 					</div>
 				</div>
 			</div>

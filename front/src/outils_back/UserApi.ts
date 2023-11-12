@@ -36,7 +36,9 @@ export const UserApi = {
 				});
 				const result_1 = await response.json();
 				return (!response.ok) ? "error" : callback(result_1);
-			} catch (error) { return console.log("error fetchGet", error); }
+			} catch (error) {
+				return console.log("error fetchGet", error);
+			}
 		}
 	},
 

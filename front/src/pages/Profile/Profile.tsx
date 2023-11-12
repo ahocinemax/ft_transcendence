@@ -37,7 +37,6 @@ const initializeUser = async (result: any, setUserInfo: any) => {
     userInfoInit.image = result.image;
     userInfoInit.friends = friendList;
     userInfoInit.blocked = blockedList;
-    // setGameHistory(gameHistoryList);
     userInfoInit.gameHistory = gameHistoryList;
     userInfoInit.gamesLost = result.gamesLost;
     userInfoInit.gamesPlayed = result.gamesPlayed;
@@ -47,7 +46,7 @@ const initializeUser = async (result: any, setUserInfo: any) => {
     userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
     // console.log("friendList", userInfoInit.friends);
     // console.log("blockedList", userInfoInit.blocked);
-    // console.log("gameHistoryList", userInfoInit.gameHistory);
+    console.log("gameHistoryList", gameHistoryList);
     setUserInfo(userInfoInit);
 };
 
@@ -70,7 +69,7 @@ const Profile = () => {
             if (!isFetched && userData.userName.userName !== undefined) {
                 result = await backFunctions.getUserByToken();
                 if (result === undefined) return ;
-                await initializeUser(result, setUserInfo);
+                await initializeUser(result, setUserInfo); // Remonte le composant plusieurs fois ?
                 setIsFetched(true);
                 setIsUser(false);
                 setIsUserDataUpdated(false);
@@ -118,7 +117,7 @@ const Profile = () => {
                         </div>
                         <div className="scores_div_bottom main">
                             <h1 className="info right">Winrate</h1>
-                            <h1 className="stat main">{userInfo.winRate ? userInfo.winRate + "%" : "X"}</h1>
+                            <h1 className="stat main">{userInfo.winRate ? userInfo.winRate.toFixed(2) + "%" : "X"}</h1>
                         </div>
                     </div>
                 </div>
@@ -137,12 +136,12 @@ const Profile = () => {
                     <div className='match_history main'>
                     {userInfo.gameHistory && userInfo.gameHistory.map((match, index) => (
                         <div key={index} className={match.victory ? "win" : "loose"}>
-                        <div className='match_infos'>{userInfo.name}</div>
-                        <div className='match_infos'>{match.userScore} - </div>
-                        <div className='match_infos'>{match.opponentScore}</div>
-                        <div className='match_infos'>{match.opponentUser.name}</div>
-                        <div className='match_infos'>{match.mode}</div>
-                      </div>
+                            <div className='match_infos'>{userInfo.name}</div>
+                            <div className='match_infos'>{match.userScore} - </div>
+                            <div className='match_infos'>{match.opponentScore}</div>
+                            <div className='match_infos'>{match.opponentUser.name}</div>
+                            <div className='match_infos'>{match.mode}</div>
+                        </div>
                     ))}
                     </div>
             </div>

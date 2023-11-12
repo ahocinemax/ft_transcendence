@@ -50,7 +50,14 @@ export class UserController {
 
 	@Post('getGameHistory')
 	async getGameHistory(@Req() req: Request) {
-		const ret = await this.userService.getGameHistory(req.body.id)
-		return ret;
+		return await this.userService.getGameHistory(req.body.id);
+	}
+
+	@Get('getImage/:name')
+	async getImage(@Req() req: Request, @Res() res: Response) {
+		const user = await this.userService.getUserByName(req.params.name);
+		if (user === null) return res.status(404).send('User not found');
+		if (user.image === null) return res.status(404).send('User has no image');
+		return res.status(200).send(user.image as string);
 	}
 }

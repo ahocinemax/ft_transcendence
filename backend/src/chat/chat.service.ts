@@ -355,15 +355,15 @@ async getAllMessages(channelId: number) {
 		return await this.prisma.channel.findMany({ 
 			where: { 
 				dm: false,
-			NOT: {
-				banned: { 
-					some: { 
-						id: userId, 
+				NOT: {
+					banned: { 
+						some: { 
+							id: userId, 
+						},
 					},
-				},
+				}, 
 			}, 
-		}, 
-	}); 
+		}); 
 	}
 
 	async	get_channel_by_id(channelId: number) {

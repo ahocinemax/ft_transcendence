@@ -11,7 +11,7 @@ import { userModel } from '../../interface/global';
 import { useNavigate } from 'react-router-dom';
 // import { act } from '@testing-library/react';
 
-const userInfoInit: userModel = {
+const userInfoInit = {
   id: 0,
   name: "",
   image: "",
@@ -23,19 +23,16 @@ const userInfoInit: userModel = {
   rank: 0,
   score: 0,
   winRate: 0,
-  gameHistory: []
 };
 
 const initializeUser = async (result: any, setUserInfo: any) => {
   const friendList = await backFunctions.getFriend(result.name);
   const blockedList = await backFunctions.getBlockedUser(result.name);
-  const gameHistoryList = await backFunctions.getGameHistory(result.id);
   userInfoInit.id = result.id;
   userInfoInit.name = result.name;
   userInfoInit.image = result.image;
   userInfoInit.friends = friendList;
   userInfoInit.blocked = blockedList;
-  userInfoInit.gameHistory = gameHistoryList;
   userInfoInit.gamesLost = result.gamesLost;
   userInfoInit.gamesPlayed = result.gamesPlayed;
   userInfoInit.gamesWon = result.gamesWon;
@@ -64,12 +61,13 @@ const Chat = () => {
   // Commun aux deux
   const [messageInput, setMessageInput] = useState(''); // message en cours de frappe
   const [selectedUser, setSelectedUser] = useState(''); // le client a cliqué sur ce nom d'utilisateur
+  const [selectedUserImage, setSelectedUserImage] = useState(''); // image de l'utilisateur sélectionné
   const [tempActiveChannel, setTempActiveChannel] = useState(0); // canal sur lequel le client a cliqué
   const [activeChannel, setActiveChannel] = useState(0);
 
   const { socket } = useContext(SocketContext).SocketState;
   const userInfos = useContext(UserContext);
-  const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
+  const [userInfo, setUserInfo] = useState<any>(userInfoInit);
   const [isFetched, setIsFetched] = useState(false);
 
   const navigate = useNavigate();
@@ -136,7 +134,6 @@ const Chat = () => {
     socket?.emit('get mp', userInfos.email.email);
     socket?.on('fetch mp', (data: channelModel[]) => {
       data = !Array.isArray(data) ? Array.from(data) : data;
-      console.log("updating mp: ", data);
       setPriv_msgs(data);
     });
     return () => {
@@ -153,7 +150,6 @@ const Chat = () => {
     socket?.on('fetch messages', (updatedMessagesData) => { // Just clicked on chan, must fetch messages
         setMessagesData(updatedMessagesData);
         setPrivateMessagesData(updatedMessagesData);
-        console.log("setting updated messges: ", updatedMessagesData);
     });
     socket?.on('update private request', () => {
       socket?.emit('get mp', userInfos.email.email);
@@ -161,16 +157,12 @@ const Chat = () => {
     socket?.on('update message request', () => {
       if (activeChannel) socket?.emit('get messages', activeChannel);
       else if (activePrivateChannel) socket?.emit('get messages', activePrivateChannel);
-      console.log('asking for new messages');
     });
     socket?.on('update channel request', () => {
-      console.log("update channel request");
       socket?.emit('get channels');
     });
     socket?.on('new channel id', (channelId: number) => {
       setTempActiveChannel(channelId);
-      console.log("🚀 ~ file: Chat.tsx:164 ~ socket?.on ~ channelId:", channelId)
-      console.log("setting temp active::", tempActiveChannel);
     });
     return () => {
       socket?.off('fetch messages');
@@ -262,13 +254,15 @@ const Chat = () => {
     setMessageInput('');
   };
 
-  const handleUserClick = (userName: string) => {
+  const handleUserClick = async (userName: string) => {
     setSelectedUser(userName);
+    setSelectedUserImage(await backFunctions.getImage(userName));
     setIsUserPopupVisible(true);
   };
 
   const closeUserPopup = () => {
     setSelectedUser('');
+    setSelectedUserImage('');
     setIsUserPopupVisible(false);
   };
 
@@ -450,7 +444,7 @@ const Chat = () => {
         </div>
         <div className="popup_content">
           <p className="user_popup_name">{selectedUser}</p>
-          <img src="./avatar.png" alt="User Avatar" className="img_popup1"/>
+          <img src={selectedUserImage} alt="User Avatar" className="img_popup1"/>
           <div className="chat_button_container">
             <div className="chat_buttons DUEL"></div>
             <div className="chat_buttons MSG" onClick={() => addPrivateUser(selectedUser)}></div>

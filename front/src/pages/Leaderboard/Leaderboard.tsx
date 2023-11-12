@@ -49,6 +49,7 @@ useEffect(() => {
 		}
 	}).then(response => response.json()).then((data: User[]) => {
 		setLeaderboardData(data);
+		console.log("leaderboard:", data);
 	}).catch(error => { console.error('Error:', error); });
 	}, []);
 
@@ -74,7 +75,7 @@ useEffect(() => {
 					{leaderboardData ? leaderboardData.map((user: User, index: number) => (
 						<div className={`rank_div ${index === 0 ? 'rank_div_gold' : index === 1 ? 'rank_div_silver' : index === 2 ? 'rank_div_bronze' : ''}`} key={index}>
 							<div className="position">
-								<h1 className="h1 leaderboard">#{index + 1}</h1>
+								<h1 className="h1 leaderboard">#{user.rank}</h1>
 							</div>
 							<div className="pseudo_div">
 								<h1 className="h1 leaderboard">{user.name}</h1>

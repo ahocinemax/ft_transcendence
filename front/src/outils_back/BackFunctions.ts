@@ -5,29 +5,56 @@ export const backFunctions = {
     /* user */
     async getUserByName(name: string): Promise<User | null> {
         // console.log("fetching getUser...");
-        try{ return await UserApi.fetchGet('/user/name/' + name, getUserCallback); }
+        try{ return await UserApi.fetchGet('/user/name/' + name, getCallback); }
         catch(err) { return null; }
     },
 
+    async getImage(name: string): Promise<string> {
+        try{
+            let headers = new Headers();
+            let fetchUrl = process.env.REACT_APP_SERVER_HOST + '/user/getImage/' + name;
+            if (localStorage.getItem("userToken") !== null)
+			    headers.append("Authorization", "Bearer " + localStorage.getItem("userToken"));
+            headers.append("Content-Type", "application/json");
+            if (localStorage.getItem("userToken") !== null) {
+                try {
+                    const response = await fetch(fetchUrl, {
+                        method: "GET",
+                        headers,
+                        body: null,
+                        redirect: "follow",
+                        credentials: "include",
+                    });
+                    const result_1 = await response.text();
+                    return (!response.ok) ? "error" : result_1;
+                } catch (error) {
+                    console.log("error fetchGet", error);
+                    return 'error';
+                }
+            }
+        } catch(err) { return ''; }
+        return '';
+    },
+
     async createUser(user: {name: string, isRegistered: boolean}): Promise<any> {
-		return await UserApi.fetchPost('/auth/Oauth42', user, createUserCallback);
+		return await UserApi.fetchPost('/auth/Oauth42', user, getCallback);
 	},
 
     async getUserByToken(): Promise<any> {
         if (localStorage.getItem('userToken') === undefined) return null;
-		return await UserApi.fetchGet('/auth/getuserbytoken', getUserCallback);
+		return await UserApi.fetchGet('/auth/getuserbytoken', getCallback);
 	},
 
     async checkIfTokenValid(): Promise<any> {
-		return await UserApi.fetchGet('/auth/token', getTokenCallback);
+		return await UserApi.fetchGet('/auth/token', getCallback);
 	},
 
     async updateUser(username: string, UpdateUser: unknown): Promise<any> {
-        return await UserApi.fetchPatch('/user/' + username, UpdateUser, patchUserUpdateCallback);
+        return await UserApi.fetchPatch('/user/' + username, UpdateUser, getCallback);
     },
 
     async logout(): Promise<any> {
-        return await UserApi.fetchGet('/auth/logout', getTokenCallback);
+        return await UserApi.fetchGet('/auth/logout', getCallback);
     },  
 
     /* auth 2FA*/
@@ -35,143 +62,101 @@ export const backFunctions = {
 		return await UserApi.fetchPost(
             '/auth-2FA/send2FAMail', 
             user, 
-            sendMailTwoFactorCallback);
+            getCallback);
 	},
 
     async confirmCodeForTwoFactor(user: unknown): Promise<any> {
 		return await UserApi.fetchPost(
             '/auth-2FA/confirmCode', 
             user, 
-            sendMailTwoFactorCallback);
+            getCallback);
 	}, 
 
     async disableTwoFactor(user: unknown): Promise<any> {
 		return await UserApi.fetchPost(
             '/auth-2FA/disable2FA', 
             user, 
-            disableTwoFactorCallback);
+            getCallback);
 	},
 
     /* LeaderBoard */
     async getLeaderBoard(): Promise<any> {
-        return await UserApi.fetchGet('/user/getLeaderboard', getLeaderboardCallback);
+        return await UserApi.fetchGet('/user/getLeaderboard', getCallback);
     },
 
     /*friends*/
     async getFriend(name: string): Promise<any> {
-        return await UserApi.fetchGet('/friend/' + name, getFriendCallback);
+        return await UserApi.fetchGet('/friend/' + name, getCallback);
     },  
 
     async getFriendOfUser(name: string): Promise<any> {
-        return await UserApi.fetchGet('/friend/' + name + '/friendOf', getFriendOfUserCallback);
+        return await UserApi.fetchGet('/friend/' + name + '/friendOf', getCallback);
     },
 
     async addFriend(name: string, friend: string, UpdateUser: unknown): Promise<any> {
-        return await UserApi.fetchPatch('/friend/add/' + name + '/' + friend, UpdateUser, addFriendCallback);
+        return await UserApi.fetchPatch('/friend/add/' + name + '/' + friend, UpdateUser, getCallback);
     },
 
     async removeFriend(name: string, friend: string): Promise<any> {
-        return await UserApi.fetchDelete('/friend/remove/' + name + '/' + friend, removeFriendCallback);
+        return await UserApi.fetchDelete('/friend/remove/' + name + '/' + friend, getCallback);
     },
 
     /*block*/
     async getBlockedUser(name: string): Promise<any> {
-        return await UserApi.fetchGet('/block/' + name, getBlockCallback);
+        return await UserApi.fetchGet('/block/' + name, getCallback);
     },  
 
     async getBlockOfUser(name: string): Promise<any> {
-        return await UserApi.fetchGet('/block/' + name + '/blockedOf', getBlockOfUserCallback);
+        return await UserApi.fetchGet('/block/' + name + '/blockedOf', getCallback);
     },
 
     async blockUser(name: string, blockUser: string, UpdateUser: unknown): Promise<any> {
-        return await UserApi.fetchPatch('/block/' + name + '/' + blockUser, UpdateUser, blockCallback);
+        return await UserApi.fetchPatch('/block/' + name + '/' + blockUser, UpdateUser, getCallback);
     },
 
     async removeBlock(name: string, blockUser: string): Promise<any> {
-        return await UserApi.fetchDelete('/block/remove/' + name + '/' + blockUser, removeBlockCallback);
+        return await UserApi.fetchDelete('/block/remove/' + name + '/' + blockUser, getCallback);
     },
 
     /*mute*/
     async getMutedUser(name: string): Promise<any> {
-        const response = await UserApi.fetchGet('/mute/' + name, getMutedCallback);
+        const response = await UserApi.fetchGet('/mute/' + name, getCallback);
         return await response;
     },
 
     async addMute(name: string, muteUser: string, channelId: unknown): Promise<any> {
-        const response = await UserApi.fetchPost('/mute/add/' + name + '/' + muteUser, channelId, addMuteCallback);
+        const response = await UserApi.fetchPost('/mute/add/' + name + '/' + muteUser, channelId, getCallback);
         return await response;
     },
 
     async removeMute(name: string, muteUser: string, channelId: number): Promise<any> {
-        const response = await UserApi.fetchDelete('/mute/remove/' + name + '/' + muteUser + '/?channelId=' + channelId, removeMuteCallback);
+        const response = await UserApi.fetchDelete('/mute/remove/' + name + '/' + muteUser + '/?channelId=' + channelId, getCallback);
         return await response;
     },
 
     /*ban*/
     async banUser(name: string, banUser: string, channelId: unknown): Promise<any> {
-        const response = await UserApi.fetchPost('/ban/add/' + name + '/' + banUser, channelId, banUserCallback);
+        const response = await UserApi.fetchPost('/ban/add/' + name + '/' + banUser, channelId, getCallback);
         return await response;
     },
     /*kick*/
     async kickUser(name: string, kickUser: string, channelId: number): Promise<any> {
-        const response = await UserApi.fetchDelete('/kick/remove/' + name + '/' + kickUser + '/?channelId=' + channelId, kickUserCallback);
+        const response = await UserApi.fetchDelete('/kick/remove/' + name + '/' + kickUser + '/?channelId=' + channelId, getCallback);
         return await response;
     },
 
     /*admin*/
 
     async addNewAdminUser(name: string, addNewAdminUser: string, channelId: unknown): Promise<any> {
-        const response = await UserApi.fetchPost('/admin/add/' + name + '/' + addNewAdminUser, channelId, addAdminCallback);
+        const response = await UserApi.fetchPost('/admin/add/' + name + '/' + addNewAdminUser, channelId, getCallback);
         return await response;
     },
     
     /*game history*/
     async getGameHistory(id: number): Promise<any> {
-        return await UserApi.fetchPost('/user/getGameHistory', {id: id}, getGameHitoryCallback);
+        return await UserApi.fetchPost('/user/getGameHistory', {id: id}, getCallback);
     },
 };
 
 /* Callbacks */
-export const getUserCallback = (result: any) => { return result; }
-
-export const getTokenCallback = (result: any) => { return result; }
-
-export const getLeaderboardCallback = (result: any) => { return result; }
-
-export const patchUserUpdateCallback = (result: any) => { return result; }
-
-export const sendMailTwoFactorCallback = (result: any) => { return result; }
-
-export const disableTwoFactorCallback = (result: any) => { return result; }
-
-export const createUserCallback = (result: any) => { return result; }
-
-export const getFriendCallback = (result: any) => { return result; }
-
-export const getFriendOfUserCallback = (result: any) => { return result; }
-
-export const addFriendCallback = (result: any) => { return result; }
-
-export const removeFriendCallback = (result: any) => { return result; }
-
-export const getBlockCallback = (result: any) => { return result; }
-
-export const getBlockOfUserCallback = (result: any) => { return result; }
-
-export const blockCallback = (result: any) => { return result; }
-
-export const removeBlockCallback = (result: any) => { return result; }
-
-export const getMutedCallback = (result: any) => { return result;}
-
-export const addMuteCallback = (result: any) => { return result;}
-
-export const removeMuteCallback = (result: any) => { return result;}
-
-export const kickUserCallback = (result: any) => { return result;}
-
-export const banUserCallback = (result: any) => { return result;}
-
-export const addAdminCallback = (result: any) => { return result;}
-
-export const getGameHitoryCallback = (result: any) => { return result; }
+export const getCallback = (result: any) => { return result; }

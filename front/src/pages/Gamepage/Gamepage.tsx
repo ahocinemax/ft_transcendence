@@ -6,13 +6,6 @@ import { Room } from '../../interface/BackInterface';
 import { debounce, throttle } from 'lodash';
 import './Gamepage.css';
 
-// REDIRIGER VERS LA PAGE DE FIN DE PARTIE
-// QUI AFFICHERA LES STATS DE LA GAME
-
-// CREER LES SOCKET.ON():
-//   - 'disconnected' QUI RENVOIE LE N° DU JOUEUR
-//   - 'game over' QUI RENVOIE LE N° DU JOUEUR GAGNANT
-
 function Gamepage() {
 	const { socket } = useContext(SocketContext).SocketState;
 	const { roomID } = useUserContext().roomID;
@@ -20,7 +13,6 @@ function Gamepage() {
   const ballRef = useRef<HTMLDivElement | null>(null);
   const player1Ref = useRef<HTMLDivElement | null>(null);
   const player2Ref = useRef<HTMLDivElement | null>(null);
-  const TICK_RATE = 60; // Fréquence à laquelle le jeu se met à jour (en ms)
   const gameCanvasHeightVh = 68; // hauteur du Gamecanvas en vh
   const gameCanvasWidthVw = 68; // largeur du Gamecanvas en vw
   const playerBarHeightVh = 13; // hauteur de Playerbar1 en vh
@@ -50,7 +42,7 @@ function Gamepage() {
     } else {
       socket?.emit("update direction", RoomID, 0);
     }
-  }, 1000 / TICK_RATE);
+  }, 100);
 
   useEffect(() => { if (!localStorage.getItem("userToken")) navigate("/"); }, []);
 
@@ -84,6 +76,7 @@ function Gamepage() {
 
 	useEffect(() => {
     if (roomID) socket?.emit("room infos request", roomID);
+    else navigate('/start');
 		socket?.on("room infos response", (response: Room) => {
       if (response){
         socket?.emit('start', response.name);
@@ -92,22 +85,19 @@ function Gamepage() {
       else navigate('/start');
 		});
 		socket?.on("game data", (data: any) => {
-			console.log("score 1: ", data.player1Score);
-			console.log("score 2: ", data.player2Score);
       player1Ref.current?.style.setProperty('top', data.paddleLeft + '%');
       player2Ref.current?.style.setProperty('top', data.paddleRight + '%');
       ballRef.current?.style.setProperty('left', data.xBall + '%');
       ballRef.current?.style.setProperty('top', data.yBall + '%');
 		});
     socket?.on("game over", (winner: number) => {
-      console.log("winner is : ", winner);
       setGameOver(true);
       setPlayerWinner(winner);
-      // navigate('/start');
     });
 		return () => {
 			socket?.off("room infos response");
 			socket?.off("game data");
+      socket?.off("game over");
 		}
 	}, [socket]);
 

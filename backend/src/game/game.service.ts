@@ -76,8 +76,7 @@ export class GameService {
 			return;
 		}
 		if (room.player1Disconnected || room.player2Disconnected){
-			console.log("player ", room.player1Disconnected ? room.NamePlayer1 : room.NamePlayer2, "disconnected");
-			server.to(room.name).emit('disconnected', room.player1Disconnected ? 1 : 2);
+			server.to(room.name).emit('game over', room.player1Disconnected ? 1 : 2, this.getRoomById(room.name, null));
 		} else {
 			this.updatePaddles(roomID);
 			this.updateBall(roomID);
@@ -89,13 +88,20 @@ export class GameService {
 
 			gameData.player1Score = room.ScorePlayer1;
 			gameData.player2Score = room.ScorePlayer2;
+			server.to(room.name).emit('game data', gameData);
 		}
-		server.to(room.name).emit('game data', gameData);
-
-		if (room.ScorePlayer1 === 10 || room.ScorePlayer2 === 10) {
+		let winner: number = 0;
+		if (room.player1Disconnected || room.player2Disconnected) {
+			winner = room.player2Disconnected ? 1 : 2;
+			console.log("a player disconnected, winner is ", winner);
+		}
+		if (room.ScorePlayer1 === 10 || room.ScorePlayer2 === 10 || winner) {
+			if (!winner) {
+				winner = room.ScorePlayer1 > room.ScorePlayer2 ? 1: 2;
+				console.log("game over, winner is ", winner);
+			}
+			server.to(room.name).emit('game over', winner, this.getRoomById(room.name, null));
 			this.schedulerRegistry.deleteInterval('room_' + roomID);
-			const winner = gameData.player1Score > gameData.player2Score ? 1 : 2;
-			server.to(room.name).emit('game over', winner);
 			const endTime = new Date();
 			this.saveGame(
 				room.player1.data.user.id,
@@ -104,12 +110,14 @@ export class GameService {
 				room.ScorePlayer2,
 				gameData.startTime,
 				endTime,
-				room.mode
+				room.mode,
+				winner
 			);
 			GameService.rooms.splice(GameService.rooms.findIndex((room) => room.id === roomID), 1);
 		}
 		release();
 	}
+
 	/**
 	* Call this method when the game is over to save infos in the database
 	*/
@@ -120,7 +128,8 @@ export class GameService {
 		ScorePlayer2: number,
 		startTime: Date,
 		endTime: Date,
-		mode: string
+		mode: string,
+		winner: number
 	) {
 		const game = await this.prisma.game.create({
 			data: {
@@ -130,7 +139,8 @@ export class GameService {
 				ScorePlayer2: ScorePlayer2,
 				startTime: startTime,
 				endTime: endTime,
-				mode: mode
+				mode: mode,
+				winner: winner,
 			},
 		});
 		const id = game.id;
@@ -141,15 +151,15 @@ export class GameService {
 		});
 		await this.userService.updateUserStats(
 			IdPlayer1,
-			ScorePlayer1 > ScorePlayer2 ? 1 : 0,
-			ScorePlayer1 < ScorePlayer2 ? 1 : 0,
+			winner === 1 ? 1 : 0, // GamesWon += 1
+			winner === 2 ? 1 : 0, // GamesLost += 1
 			ScorePlayer1,
 			id
 		);
 		await this.userService.updateUserStats(
 			IdPlayer2,
-			ScorePlayer2 > ScorePlayer1 ? 1 : 0,
-			ScorePlayer2 < ScorePlayer1 ? 1 : 0,
+			winner === 2 ? 1 : 0,
+			winner === 1 ? 1 : 0,
 			ScorePlayer2,
 			id
 		);
@@ -170,7 +180,7 @@ export class GameService {
 		updatedRoom.yball = 50;
 
 		// Détermine la vitesse de la balle en fonction du mode (normal, hard, hardcore)
-		updatedRoom.ballSpeed = room.mode === 'normal' ? 0.3 : room.mode === 'hard' ? 0.7 : 1.3 ;
+		updatedRoom.ballSpeed = room.mode === 'normal' ? 0.3 : room.mode === 'hard' ? 0.7 : 1 ;
 		updatedRoom.xSpeed = updatedRoom.ballSpeed;
 		updatedRoom.ySpeed = 0.15 + Math.random() * updatedRoom.ballSpeed;
 
@@ -348,7 +358,6 @@ export class GameService {
 		const IdPlayer1: number = await this.userService.getUserByName(player1.name).then((user) => user.id);
 		const IdPlayer2: number = await this.userService.getUserByName(player2.name).then((user) => user.id);
 		player1.id = IdPlayer1; // set the id of each player to the room
-		console.log("🚀 ~ file: game.service.ts:327 ~ GameService ~ createRoomAddPlayers ~ player1:", player1)
 		player2.id = IdPlayer2;
 		const room: Room = {
 			name: roomInfo.name,
@@ -456,7 +465,7 @@ export class GameService {
 	async updateRanks() {
 		const users = await this.prisma.user.findMany({
 			orderBy: {
-				score: 'asc',
+				score: 'desc',
 			},
 			select: {
 				id: true,

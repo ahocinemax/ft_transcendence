@@ -195,6 +195,7 @@ export class UserService
 		const gameHistory: Game[] = [];
 		for (const gameID of gameHistoryInt)
 			gameHistory.push(await this.gameService.getGame(gameID));
+		// console.log("🚀 ~ file: user.service.ts:198 ~ gameHistory:", gameHistory);
 
 		const gameDTOs: SubjectiveGameDto[] = [];
 
@@ -203,10 +204,17 @@ export class UserService
 			let opponentScore: number;
 			let opponentID: number;
 			let userScore: number;
-
-			game.player1 === id ? (opponentID = game.player2) : (opponentID = game.player1);
-			game.player1 === id ? (userScore = game.ScorePlayer1) : (userScore = game.ScorePlayer2);
-			game.player1 === id ? (opponentScore = game.ScorePlayer2) : (opponentScore = game.ScorePlayer1);
+			let victory: boolean;
+			let i_am_the_player_one: boolean;
+			opponentID = game.player1 === id ? game.player2 : game.player1;
+			userScore = game.player1 === id ? game.ScorePlayer1 : game.ScorePlayer2;
+			opponentScore = game.player1 === id ? game.ScorePlayer2 : game.ScorePlayer1;
+			i_am_the_player_one = game.player1 === id ? true : false;
+			if (i_am_the_player_one) victory = game.winner === 1 ? true : false;
+			else victory = game.winner === 2 ? true : false;
+			// console.log("🚀 ~ I WON ?: ", victory);
+			// console.log("my score: ", userScore);
+			// console.log("opponent score: ", opponentScore);
 			const opponent: UserDto = await this.getUser(opponentID);
 
 			const gameDTO: SubjectiveGameDto =
@@ -222,7 +230,7 @@ export class UserService
 				opponentRank: opponent.rank,
 				opponentID: opponent.id,
 				opponentUser: opponent,
-				victory: userScore > opponentScore ? true : false,
+				victory: victory,
 				mode: game.mode,
 			};
 			gameDTOs.push(gameDTO);
@@ -232,7 +240,6 @@ export class UserService
 
 	async getUser(id: number)
 	{
-		console.log("🚀 ~ file: user.service.ts:231 ~ id:", id)
 		if (id === undefined)
 			throw new BadRequestException('getUser error : id is undefined');
 		const user = await this.prisma.user.findUniqueOrThrow({ where: { id: id } });
@@ -240,7 +247,7 @@ export class UserService
 		return dtoUser;
 	}
 	
-	async updateUserStats(userId, gamesWon, gamesLost, playerScore, id) {
+	async updateUserStats(userId, gamesWon, gamesLost, playerScore, gameID: number) {
 		const user = await this.prisma.user.findUnique({ where: { id: userId } });
 		if (!user) {
 			console.log(`User with id ${userId} not found`);
@@ -251,6 +258,7 @@ export class UserService
 		user.gamesLost += gamesLost;
 		user.winRate = user.gamesPlayed > 0 ? user.gamesWon / user.gamesPlayed : 0;
 		user.score += playerScore;
+		user.gameHistory.push(gameID);
 
 		await this.prisma.user.update({
 			where: { id: userId },
