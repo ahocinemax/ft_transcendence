@@ -255,6 +255,8 @@ const Chat = () => {
   };
 
   const handleUserClick = async (userName: string) => {
+    if (userInfos.userName.userName == userName)
+        return;
     setSelectedUser(userName);
     setSelectedUserImage(await backFunctions.getImage(userName));
     setIsUserPopupVisible(true);

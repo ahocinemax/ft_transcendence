@@ -7,9 +7,8 @@
   }
 
 .Gamepage{
-    position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 }
 
 .Gamecanvas{
@@ -18,7 +17,7 @@
     background-color: black;
     margin: 15vw;
     margin-top: 15vh;
-    position: relative;
+    position: absolute;
     border: 1vh solid indigo;
 }
 
@@ -141,4 +140,11 @@
   .button-pixel-art:hover {
     background-color: #fff; /* Couleur de fond au survol */
     color: #4caf50; /* Couleur du texte au survol */
+  }
+
+  .scores_container {
+    position: absolute;
+    background-color: red;
+    width: 100%;
+    height: 15%;
   }

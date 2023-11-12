@@ -1,10 +1,20 @@
 import React from 'react';
 import './Login.css';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+
 
 function Login() {
   const googleAuthUrl = `${process.env.REACT_APP_GOOGLE_AUTH_URL}`;
   const fortytwoAuthUrl = `${process.env.REACT_APP_AUTH42_URL}`;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem("userToken"))
+      navigate("/profile");
+  }, []);
+  
   return (
     <div className="Login">
       <div className="VideoContainer">{/* 

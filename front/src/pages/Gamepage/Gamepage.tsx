@@ -75,8 +75,8 @@ function Gamepage() {
   }, [socket, roomID, isUpPressed, isDownPressed]);
 
 	useEffect(() => {
-    if (roomID) socket?.emit("room infos request", roomID);
-    else navigate('/start');
+    /* if (roomID) socket?.emit("room infos request", roomID);
+    else navigate('/start'); */
 		socket?.on("room infos response", (response: Room) => {
       if (response){
         socket?.emit('start', response.name);
@@ -101,29 +101,14 @@ function Gamepage() {
 		}
 	}, [socket]);
 
-  // interface ServerResponse {
-  //   player1Y: number;
-  //   player2Y: number;
-  // }
-  // function serverUpdate(inputs: { up: boolean; down: boolean }): Promise<ServerResponse> {
-  //   return new Promise((resolve) => {
-  //     let newPlayer1Y = playerBar1Y;
-  //     let newPlayer2Y = playerBar2Y;
-      
-  //     // Assuming player 1 controls are local and instant, supposed to be calculated within back?
-  //     if (inputs.up) newPlayer1Y = Math.max(playerBar1Y - PLAYER_SPEED, 0);
-  //     if (inputs.down) newPlayer1Y = Math.min(playerBar1Y + PLAYER_SPEED, maxY);
-      
-  //     resolve({
-  //       player1Y: newPlayer1Y,
-  //       player2Y: newPlayer2Y,
-  //     });
-  //   });
-  // }
-
 	return (
 		<div className="Gamebackground">
 			<div className="Gamepage">
+                <div className="scores_container">
+                    <div className="scores firstplayer">
+
+                    </div>
+                </div>
 				<div className="Gamecanvas">
 					<div className="MiddleLine"></div>
 					<div className="Player1Area" style={{ left: 0 }}>

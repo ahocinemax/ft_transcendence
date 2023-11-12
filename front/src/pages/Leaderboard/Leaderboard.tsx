@@ -66,8 +66,8 @@ useEffect(() => {
 								{/* <p>PlayTime: {play.play}</p> */}
 								<p>Score: {score.score}</p>
 								<p>Victoires: {wins.wins}</p>
-								<p>WinRate: {rate.rate.toFixed(2)} %</p>
-								{/* <p>(↑PlayTime + score: example d'affichage. vous pouvez changer!)</p> */}
+								<p>WinRate: {rate.rate?.toFixed(2)} %</p>
+                                {/* <p>(↑PlayTime + score: example d'affichage. vous pouvez changer!)</p> */}
 							</div>
 						</div>
 				</div>
@@ -87,7 +87,7 @@ useEffect(() => {
 								<h1 className="h1 leaderboard">Wins: {user.gamesWon}</h1>
 							</div>
 							<div className="pseudo_div">
-								<h1 className="h1 leaderboard">Ratio: {user.winRate.toFixed(2)}%</h1>
+								<h1 className="h1 leaderboard">Ratio: {user.winRate?.toFixed(2)}%</h1>
 							</div>
 						</div>
 					)) : 'Loading...'}
