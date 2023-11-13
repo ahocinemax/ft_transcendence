@@ -69,7 +69,7 @@ const Chat = () => {
   const [displayWaiting, setDisplayWaiting] = useState(false); // should open a pupup with a waiting animation
   const [displayClose, setDisplayClose] = useState(true);
   const [textToDisplay, setTextToDisplay] = useState("Waiting for response...");
-  const [mode, setMode] = useState("normal");
+  const [mode, setMode] = useState('');
   const [selectedUserID, setSelectedUserID] = useState(0);
 
   const { socket, users } = useContext(SocketContext).SocketState;
@@ -217,6 +217,11 @@ const Chat = () => {
     };
   }, [activeChannel, activePrivateChannel, socket]);
 
+  useEffect(() => {
+    if (mode === '') return;
+    socket?.emit("duel request", selectedUserID, selectedUser, mode);
+  }, [socket, mode]);
+
 /**
  * Envoie au back une demande d'inscription en tant que membre sur le channel
  * socket?.emit('register to channel', <channelId>);
@@ -256,13 +261,13 @@ const Chat = () => {
 
   const handleDuelRequest = () => {
     // check if requested user is connected
+    console.log("clicked on duel request", selectedUser);
     if (users.find((user: string) => user === selectedUser) !== undefined)
     {
-      socket?.emit("duel request", selectedUserID, selectedUser, 'normal');
       setDisplayWaiting(true);
       setDisplayClose(true);
     }
-      
+    console.log('display waiting : ', displayWaiting);
   }
   const handleChannelClick = (channelId: number) => {
     if (PasswordNeeded)
@@ -543,8 +548,20 @@ const Chat = () => {
           {displayClose && (<span className="popup_close" onClick={onClose}>
             &times;
           </span>)}
-          <h1 className="game_mode_title">{mode}</h1>
-          <h2 className="h1_popup_waiting">{textToDisplay}</h2>
+          {mode !== '' ?
+          (<div>
+            <h1 className="game_mode_title">{mode}</h1>
+            <h2 className="h1_popup_waiting">{textToDisplay}</h2>
+          </div>) :
+          (<div>
+            <h1 className="game_mode_title">Choose a game mode</h1>
+            <div className="game_mode_container">
+              <div className="game_mode" onClick={() => {setMode("normal");}}>Normal</div>
+              <div className="game_mode" onClick={() => {setMode("hard");}}>Hard</div>
+              <div className="game_mode" onClick={() => {setMode("hardcore");}}>Impossible</div>
+            </div>
+          </div>
+          )}
           {displayClose && <div className="pong-animation">
             <div className="player player1"></div>
             <div className="player player2"></div>
