@@ -291,6 +291,20 @@ async getAllMessages(channelId: number) {
 		}
 	}
 
+	async check_password(channelId: number, password: string) {
+		try {
+			const channel = await this.prisma.channel.findUnique({
+				where: { id: channelId, },
+				select: { password: true, },
+			});
+			const isPasswordCorrect = await argon.verify(channel.password, password);
+			return isPasswordCorrect;
+		} catch (error) {
+			console.log('check_password error:', error);
+			throw new WsException(error);
+		}
+	}
+
 	async	create_channel(info: ChannelDTO) {
 		try {
 			const password = info.password ? await argon.hash(info.password) : null;

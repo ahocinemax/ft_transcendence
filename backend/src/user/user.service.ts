@@ -142,7 +142,7 @@ export class UserService
 		});
 		return leaderboard;
 	}
-		
+
 	async updateUser(req: Request) {
 		try{
 			const accessToken : string = req.cookies.access_token;

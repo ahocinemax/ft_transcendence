@@ -61,6 +61,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client.removeAllListeners();
 	}
 
+	@SubscribeMessage("check password")
+	async handleCheckPassword(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+		const isPasswordCorrect = await this.chatService.checkPassword(data);
+		client.emit('check password', isPasswordCorrect);
+	}
+
 	@SubscribeMessage('new channel')
 	async handleNewChannel(
 		@MessageBody() data: ChannelDTO,

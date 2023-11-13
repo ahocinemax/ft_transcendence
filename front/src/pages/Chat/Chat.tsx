@@ -319,7 +319,7 @@ const Chat = () => {
     // Vérifiez si le mot de passe saisi correspond à celui du canal actif
     const channel: channelModel = channels.find((c: any) => c.name === tempActiveChannel);
     
-    if (channel && channel.password === password) {
+    if (channel && channel.password === password) { // socket.emit('check password'); envoyer le mdp pour savoir si c'est le bon
       // Mot de passe correct, accédez au canal
       setPassword(false); // Fermez le pop-up de mot de passe
       setActiveChannel(tempActiveChannel);
