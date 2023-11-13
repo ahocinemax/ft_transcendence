@@ -159,7 +159,6 @@ const Chat = () => {
     socket?.on('fetch channels', (data: channelModel[]) => {
       data = !Array.isArray(data) ? Array.from(data) : data;
       setChannels(data);
-      console.log(channels);
       if (tempActiveChannel != 0) setActiveChannel(tempActiveChannel);
       setTempActiveChannel(0);
     });

@@ -50,7 +50,6 @@ useEffect(() => {
 		}
 	}).then(response => response.json()).then((data: User[]) => {
 		setLeaderboardData(data);
-		console.log("leaderboard:", data);
 	}).catch(error => { console.error('Error:', error); });
 	}, []);
 

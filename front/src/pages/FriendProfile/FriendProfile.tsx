@@ -4,11 +4,7 @@ import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
 import { useParams, useNavigate, Link} from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
-import SettingsIcon from '../../Settings_Icon.png';
-import BlockIcon from '../../BlockUserPixel.png';
-import AddIcon from '../../AddUserPixel.png';
 import SocketContext from '../../context/socketContext';
-import { Socket } from 'socket.io-client';
 
 
 const userInfoInit: userModel = {
@@ -47,9 +43,6 @@ const userInfoInit: userModel = {
 			winRate: result.winRate === null ? 0 : result.winRate,
 		};
 		setUserInfo(newUserInfo);
-		// console.log("friendList", userInfoInit.friends);
-		// console.log("blockedList", userInfoInit.blocked);
-		// console.log("gameHistoryList", userInfoInit.gameHistory);
 	};
 
 const FriendProfile = () => {
@@ -57,10 +50,8 @@ const FriendProfile = () => {
     const userData = useUserContext();
     const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
     const [isFetched, setIsFetched] = useState(false);
-    const [isUser, setIsUser] = useState(true);
 	const [myFriendList, setMyFriendList] = useState<userModel[]>([]);
 	const [myBlockedList, setMyBlockedList] = useState<userModel[]>([]);
-	const isUserFriend = userInfo.friends.some((friend) => friend.name === userData.userName.userName);
 	const [isOnline, setIsOnline] = useState(false);
 	const { users, socket } = useContext(SocketContext).SocketState;
     const navigate = useNavigate();
@@ -122,7 +113,6 @@ const FriendProfile = () => {
 		if (friendName) {
 			const result = await backFunctions.getUserByName(friendName);
 			if (result) {
-				console.log("getUserByName", result);
 				await initializeUser(result, setUserInfo);
 			}
 		}

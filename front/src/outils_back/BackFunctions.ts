@@ -45,6 +45,33 @@ export const backFunctions = {
 		return await UserApi.fetchGet('/auth/getuserbytoken', getCallback);
 	},
 
+    async getStatus(name: string): Promise<string> {
+        try{
+            let headers = new Headers();
+            let fetchUrl = process.env.REACT_APP_SERVER_HOST + '/user/getStatus/' + name;
+            if (localStorage.getItem("userToken") !== null)
+			    headers.append("Authorization", "Bearer " + localStorage.getItem("userToken"));
+            headers.append("Content-Type", "application/json");
+            if (localStorage.getItem("userToken") !== null) {
+                try {
+                    const response = await fetch(fetchUrl, {
+                        method: "GET",
+                        headers,
+                        body: null,
+                        redirect: "follow",
+                        credentials: "include",
+                    });
+                    const result_1 = await response.text();
+                    return (!response.ok) ? "error" : result_1;
+                } catch (error) {
+                    console.log("error fetchGet", error);
+                    return 'error';
+                }
+            }
+        } catch(err) { return ''; }
+        return '';
+    },
+
     async checkIfTokenValid(): Promise<any> {
 		return await UserApi.fetchGet('/auth/token', getCallback);
 	},

@@ -60,4 +60,12 @@ export class UserController {
 		if (user.image === null) return res.status(404).send('User has no image');
 		return res.status(200).send(user.image as string);
 	}
+
+	// récupérer le status du user
+	@Get('getStatus/:name')
+	async getStatus(@Req() req: Request, @Res() res: Response) {
+		const user = await this.userService.getUserByName(req.params.name);
+		if (user === null) return res.status(404).send('User not found');
+		return res.status(200).send(user.status as string);
+	}
 }

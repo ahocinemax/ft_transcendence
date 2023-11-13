@@ -1,11 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUserContext } from '../../context/userContent';
 import { userModel } from '../../interface/global';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
 import SettingsIcon from '../../PencilPixel.png';
-import { userInfo } from 'os';
-import SocketContext from '../../context/socketContext';
 import './Profile.css';
 
 
@@ -24,10 +22,6 @@ const userInfoInit: userModel = {
     gameHistory: []
 };
 
-// function setGameHistory = (gameHistoryList: any) => {
-    //     userInfoInit.gameHistory.player1 = gameHistoryList.;
-    // }
-
 const initializeUser = async (result: any, setUserInfo: any) => {
     const friendList = await backFunctions.getFriend(result.name);
     const blockedList = await backFunctions.getBlockedUser(result.name);
@@ -44,9 +38,6 @@ const initializeUser = async (result: any, setUserInfo: any) => {
     userInfoInit.rank = result.rank;
     userInfoInit.score = result.score;
     userInfoInit.winRate = result.winRate === null ? 0 : result.winRate;
-    // console.log("friendList", userInfoInit.friends);
-    // console.log("blockedList", userInfoInit.blocked);
-    console.log("gameHistoryList", gameHistoryList);
     setUserInfo(userInfoInit);
 };
 
@@ -55,9 +46,7 @@ const Profile = () => {
     const userData = useUserContext();
     const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
     const [isFetched, setIsFetched] = useState(false);
-    const [isUser, setIsUser] = useState(true);
-	const { users } = useContext(SocketContext).SocketState;
-    let params = useParams();
+    const [userStatus, setUserStatus] = useState("Offline");
     
     const navigate = useNavigate();
 
@@ -71,8 +60,10 @@ const Profile = () => {
                 if (result === undefined) return ;
                 await initializeUser(result, setUserInfo); // Remonte le composant plusieurs fois ?
                 setIsFetched(true);
-                setIsUser(false);
                 setIsUserDataUpdated(false);
+                var tmp = await backFunctions.getStatus(userInfo.name);
+                if (!tmp) setUserStatus("Offline");
+                else setUserStatus(tmp);
             }
 			};
 			fetchIsUser();
@@ -86,7 +77,7 @@ const Profile = () => {
                 <div className="profile_info">
                         <div className="info_container">
                             <h1 className="info firstinfo">{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
-                            <h1 className="info">online</h1>
+                            <h1 className="info">{userStatus}</h1>
                             <h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
                         </div>
                         <Link to="/settings" className="nav_link_profile"><img src={SettingsIcon} alt="Logo 5" /></Link>
