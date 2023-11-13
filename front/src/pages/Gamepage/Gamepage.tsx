@@ -23,7 +23,19 @@ function Gamepage() {
   const [isDownPressed, setIsDownPressed] = useState(false);
   const navigate = useNavigate();
   const [gameOver, setGameOver] = useState(false);
+  const [player1, setPlayer1] = useState('');
+  const [player2, setPlayer2] = useState('');
+  const [player1img, setPlayer1img] = useState('');
+  const [player2img, setPlayer2img] = useState('');
+  const [player1Score, setplayer1Score] = useState('');
+  const [player2Score, setplayer2Score] = useState('');
   const [PlayerWinner, setPlayerWinner] = useState<number | null>(null);
+  const [PlayerLooser, setPlayerLooser] = useState<number | null>(null);
+  const [WinnerScore, setWinnerScore] = useState<number | null>(null);
+  const [LooserScore, setLooserScore] = useState<number | null>(null);
+  const [WinnerName, setWinnerName] = useState<string | null>(null);
+  const [LooserName, setLooserName] = useState<string | null>(null);
+
 
 
   ////// MAJ DE LA POSITION DANS LE BACKEND ////////////
@@ -82,6 +94,10 @@ function Gamepage() {
         console.log("sending start");
         socket?.emit('start', response.name);
         setLocalRoomID(response.name);
+        setPlayer1(response.NamePlayer1);
+        setPlayer2(response.NamePlayer2);
+        setPlayer1img(response.AvatarPlayer1);
+        setPlayer2img(response.AvatarPlayer2);
       }
       else navigate('/start');
 		});
@@ -91,12 +107,21 @@ function Gamepage() {
       player2Ref.current?.style.setProperty('top', data.paddleRight + '%');
       ballRef.current?.style.setProperty('left', data.xBall + '%');
       ballRef.current?.style.setProperty('top', data.yBall + '%');
+      setplayer1Score(data.player1Score);
+      setplayer2Score(data.player2Score);
 		});
-    socket?.on("game over", (winner: number) => {
+    socket?.on("game over", ({ winner, room }: { winner: number, room: Room }) => {
       setGameOver(true);
       setPlayerWinner(winner);
       setLocalRoomID("");
       setRoomID({roomID: ""});
+      winner == 1 ? setPlayerLooser(2) : setPlayerLooser(1);
+      winner == 1 ? setWinnerScore(room.ScorePlayer1) : setWinnerScore(room.ScorePlayer2);
+      winner == 1 ? setLooserScore(room.ScorePlayer2) : setLooserScore(room.ScorePlayer1);
+      winner == 1 ? setWinnerName(room.NamePlayer1) : setWinnerName(room.NamePlayer2);
+      winner == 1 ? setLooserName(room.NamePlayer2) : setLooserName(room.NamePlayer1);
+      console.log("P1 NAME: ", room.NamePlayer1);
+      console.log("P2 NAME: ", room.NamePlayer2);
     });
 		return () => {
 			socket?.off("room infos response");
@@ -106,35 +131,50 @@ function Gamepage() {
 	}, [socket]);
 
 	return (
-		<div className="Gamebackground">
-			<div className="Gamepage">
-                <div className="scores_container">
-                    <div className="scores firstplayer">
-
-                    </div>
+        <div className="Gamebackground">
+          <div className="Gamepage">
+            <div className="scores_container">
+              <div className="player_details player1_details">
+                <div 
+                  className="player_image" 
+                  style={{ backgroundImage: `url(${player1img})` }}
+                />
+                <div className="player_name leftside">{player1}</div>
+                <div className="player_score leftside">{player1Score}</div>
+              </div>
+              <div className="player_details player2_details">
+                <div className="player_score rightside">{player2Score}</div>
+                <div className="player_name rightside">{player2}</div>
+                <div 
+                  className="player_image" 
+                  style={{ backgroundImage: `url(${player2img})` }}
+                />
+              </div>
+            </div>
+      
+            <div className="Gamecanvas">
+              <div className="MiddleLine"></div>
+              <div className="Player1Area" style={{ left: 0 }}>
+                <div className="Playerbar1" ref={player1Ref}></div>
+              </div>
+              <div className="Player2Area" style={{ right: 0 }}>
+                <div className="Playerbar2" ref={player2Ref}></div>
+              </div>
+              <div className="main_ball" ref={ballRef}></div>
+            </div>
+      
+            {gameOver && (
+              <div className="Endpopup">
+                <div className="WinLoose">{WinnerName} won</div>
+                <div className="GameStats">
+                  <div className="FinalScore">{WinnerName} {WinnerScore} - {LooserScore} {LooserName}</div>
                 </div>
-				<div className="Gamecanvas">
-					<div className="MiddleLine"></div>
-					<div className="Player1Area" style={{ left: 0 }}>
-						<div className="Playerbar1" ref={player1Ref}></div>
-					</div>
-					<div className="Player2Area" style={{ right: 0 }}>
-						<div className="Playerbar2" ref={player2Ref}></div>
-					</div>
-					{<div className="main_ball" ref={ballRef}></div>}
-				</div>
-        {gameOver && (
-        <div className="Endpopup">
-          <div className="WinLoose">Player {PlayerWinner} won</div>
-          <div className="GameStats">
-            <div className="FinalScore">Player 1 9 - 0 Player 2</div>
+                <button className="playagain" onClick={() => navigate('/start')}>Play Again</button>
+              </div>
+            )}
           </div>
-          <button className="playagain" onClick={() => navigate('/start')}>Play Again</button>
         </div>
-        )}
-			</div>
-		</div>
-	);
+      );      
 }
 
 export default Gamepage;

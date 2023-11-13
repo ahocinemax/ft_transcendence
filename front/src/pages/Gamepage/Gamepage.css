@@ -92,7 +92,7 @@
   .WinLoose{
     color: rgb(255, 255, 255);
     font-weight: bold;
-    font-size: 9em;
+    font-size: 6.5em;
     text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
     font-family: 'Press Start 2P', sans-serif;
     margin: 0 15%;
@@ -144,7 +144,69 @@
 
   .scores_container {
     position: absolute;
-    background-color: red;
-    width: 100%;
-    height: 15%;
-  }
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 15vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    padding: 0 15vw;
+}
+
+.player_details {
+    display: flex;
+    align-items: center;
+}
+
+.player_image {
+    width: 7.5vh;
+    height: 7.5vh;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin: 2vw;
+    background-size: cover;
+}
+
+.player_name {
+    color: rgb(255, 255, 255);
+    font: bold;
+    font-size: 1.25em;
+    font-family: 'Press Start 2P', sans-serif;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.767);
+}
+
+.score_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%; /* Ensure the container spans the full width */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.score_box {
+    /* Styling for score number */
+    padding: 0 1vh;
+}
+
+.score_dash {
+    /* Styling for the dash '-' */
+}
+
+.player_score {
+    color: rgb(255, 255, 255);
+    font: bold;
+    font-size: 2em;
+    font-family: 'Press Start 2P', sans-serif;
+    text-shadow: 3.5px 3.5px 3.5px rgba(116, 46, 182, 0.767);
+}
+
+.player_score.leftside {
+    margin-left : 5vw;
+}
+
+.player_score.rightside {
+    margin-right : 5vw;
+}
