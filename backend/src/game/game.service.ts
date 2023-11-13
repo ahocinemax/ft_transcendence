@@ -93,7 +93,7 @@ export class GameService {
 		if (room.player1Disconnected || room.player2Disconnected) {
 			winner = room.player2Disconnected ? 1 : 2;
 		}
-		if (room.ScorePlayer1 === 1 || room.ScorePlayer2 === 1 || winner) {
+		if (room.ScorePlayer1 === 10 || room.ScorePlayer2 === 10 || winner) {
 			if (!winner) {
 				winner = room.ScorePlayer1 > room.ScorePlayer2 ? 1: 2;
 			}
