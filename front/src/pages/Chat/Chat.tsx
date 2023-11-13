@@ -261,13 +261,11 @@ const Chat = () => {
 
   const handleDuelRequest = () => {
     // check if requested user is connected
-    console.log("clicked on duel request", selectedUser);
     if (users.find((user: string) => user === selectedUser) !== undefined)
     {
       setDisplayWaiting(true);
       setDisplayClose(true);
     }
-    console.log('display waiting : ', displayWaiting);
   }
   const handleChannelClick = (channelId: number) => {
     if (PasswordNeeded)
@@ -323,7 +321,6 @@ const Chat = () => {
       
     } else if (activePrivateChannel) {
       // send private message to backend
-      console.log("sending private message");
       socket?.emit('new message', {
         channelId: activePrivateChannel,
         message: newMessage.content,
@@ -562,7 +559,7 @@ const Chat = () => {
             </div>
           </div>
           )}
-          {displayClose && <div className="pong-animation">
+          {mode !== '' && displayClose && <div className="pong-animation">
             <div className="player player1"></div>
             <div className="player player2"></div>
             <div className="ball-animation"></div>
