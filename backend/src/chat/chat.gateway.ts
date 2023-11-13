@@ -163,6 +163,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			ownersNames.push(tempOwners[0]);
 			ownersNames.push(tempOwners[1]);
 			mp['owners'] = ownersNames;
+			if (mp.name === client.data.name)
+			mp.name = ownersNames[0] === client.data.name ? ownersNames[1] : ownersNames[0];
 		}
 		client.emit('fetch mp', data);
 	}

@@ -54,9 +54,10 @@ const Chat = () => {
   const [PasswordNeeded, setPassword] = useState(false); // faut il un mot de passe (booléen)
 
   // Etat pour les channels privés
-  const [priv_msgs, setPriv_msgs] = useState<any>([]); // liste des channels privés
+  const [priv_msgs, setPriv_msgs] = useState<channelModelList>([]); // liste des channels privés
   const [privateMessagesData, setPrivateMessagesData] = useState<MessagesArray>([]); // messages du channel privé actif
-  const [activePrivateChannel, setActivePrivateChannel] = useState(0); 
+  const [activePrivateChannel, setActivePrivateChannel] = useState(0);
+  const [mpInfos, setMpInfos] = useState<channelModel>(); // nom du channel privé
 
   // Commun aux deux
   const [messageInput, setMessageInput] = useState(''); // message en cours de frappe
@@ -284,10 +285,14 @@ const Chat = () => {
       setActivePrivateChannel(0);
       setActiveChannel(channelId);
     }
+    setMpInfos(undefined);
   };
 
   const handlePrivMsgClick = (channelId: number) => {
-    const channel: channelModel = priv_msgs.find((c: any) => c.id === channelId);
+    const channel: channelModel | undefined = priv_msgs.find((c: any) => c.id === channelId);
+    if (!channel) return;
+    setMpInfos(channel);
+    console.log("🚀 ~ file: Chat.tsx:295 ~ handlePrivMsgClick ~ channel:", channel)
     setChannelName(channel.name);
     setActiveChannel(0);
     setActivePrivateChannel(channelId);
@@ -480,7 +485,7 @@ const Chat = () => {
         ) : null} 
         {activePrivateChannel ? (
         <div className="message_list">
-          <h1 className="channel_title active_channel_title">#{channelName}</h1>
+          <h1 className="channel_title active_channel_title">#{mpInfos?.name}</h1>
           <ul>
             {privateMessagesData && privateMessagesData.map((message: MessageData, index: number) => (
               <li key={index}>

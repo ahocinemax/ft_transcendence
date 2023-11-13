@@ -51,7 +51,6 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 
 		socket.emit('handshake');
 		socket.on('handshake', (users: any) => {
-			// console.log("🚀 ~ file: socket.tsx:30 ~ socket.on ~ params:", name, users) // cannot get userslist
 			SocketDispatch({type: 'update_name', payload: name});
 			SocketDispatch({type: 'update_users', payload: users});
 			console.info('Handshake completed');
@@ -87,7 +86,6 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 
 	useEffect(() => {
 		socket.on('user_connected', (users: string[]) => {
-			console.log("new connexion: ", users);
 			SocketDispatch({type: 'update_users', payload: users});
 		});
 
@@ -97,7 +95,6 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		});
 
 		socket.on('user_disconnected', (users: string[]) => {
-			console.log("user disconnected: ", users);
 			SocketDispatch({type: 'update_users', payload: users});
 		});
 
@@ -106,7 +103,6 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		});
 
 		socket.on('duel request', (data: {name: string, mode: string}) => { 
-			// console.log("🚀 ~ file: socket.tsx:30 ~ socket.on ~ params:", data.name, data.mode);
 			navigate('/start');
 			setIsInvited(true);
 			setMode(data.mode);
