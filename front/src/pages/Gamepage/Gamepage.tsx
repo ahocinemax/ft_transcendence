@@ -118,10 +118,10 @@ function Gamepage() {
       setLocalRoomID("");
       setRoomID({roomID: ""});
       winner == 1 ? setPlayerLooser(2) : setPlayerLooser(1);
-      winner == 1 ? setWinnerScore(room.ScorePlayer1) : setWinnerScore(room.ScorePlayer2);
-      winner == 1 ? setLooserScore(room.ScorePlayer2) : setLooserScore(room.ScorePlayer1);
-      winner == 1 ? setWinnerName(room.NamePlayer1) : setWinnerName(room.NamePlayer2);
-      winner == 1 ? setLooserName(room.NamePlayer2) : setLooserName(room.NamePlayer1);
+      winner == 1 ? setWinnerScore(room?.ScorePlayer1) : setWinnerScore(room?.ScorePlayer2);
+      winner == 1 ? setLooserScore(room?.ScorePlayer2) : setLooserScore(room?.ScorePlayer1);
+      winner == 1 ? setWinnerName(room?.NamePlayer1) : setWinnerName(room?.NamePlayer2);
+      winner == 1 ? setLooserName(room?.NamePlayer2) : setLooserName(room?.NamePlayer1);
     });
 		return () => {
 			socket?.off("room infos response");

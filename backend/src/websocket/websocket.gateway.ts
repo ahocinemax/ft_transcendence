@@ -55,7 +55,7 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   async handleDisconnect(client: AuthenticatedSocket) {
     this.logger.log(`[DISCONNECTED] :  Client ID ${client.data.name}`);
     this.websocketService.removeUser(client);
-		const users = Object.keys(this.websocketService.clients);
+		const users: string[] = Array.from(this.websocketService.clients.keys());
 		this.websocketService.sendMessage(client, 'user_disconnected', users);
     client.removeAllListeners();
 		await this.websocketService.updateStatus(client, 'offline');

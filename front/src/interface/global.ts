@@ -20,10 +20,10 @@ export interface channelModel {
 	isPrivate: boolean;
 	password: string;
 	updateAt: string;
-	lastMsg: string;
-	unreadCount?: number;
-	ownerEmail: string;
-	ownerId: number;
+	owners: Array<{id: number, email: string, name: string}>;
+	admins: Array<{id: number, email: string, name: string}>;
+	members: Array<{id: number, email: string, name: string}>;
+	banned: Array<{id: number, email: string, name: string}>;
 }
 
 export interface gameModel {

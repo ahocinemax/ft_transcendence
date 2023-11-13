@@ -115,8 +115,30 @@ export class GameGateway implements OnGatewayDisconnect {
 			console.log("user or opponent is already in a room");
 			return;
 		}
-		const roomId: {id: number, name: string} = this.gameService.generateRoomId();
-		await this.gameService.createCustomRoomAddPlayers(roomId, mode, client, opponent);
-		this.gameService.sendRoomIdToUsers(roomId, mode);
+		opponent.emit('duel request', {name: client.data.name as string, mode: mode});
+	}
+
+	@SubscribeMessage('duel response')
+	async handleDuelResponse(
+		@ConnectedSocket() client: AuthenticatedSocket,
+		@MessageBody() data: [string, string, boolean]
+	) {
+		const opponentName = data[0];
+		const mode = data[1];
+		const response = data[2];
+		const opponent = this.websocketService.getConnectedUserByName(opponentName);
+		if (opponent === null) {
+			console.log("opponent not found!");
+			return;
+		}
+		if (response === true) {
+			opponent.emit('duel response', {name: client.data.name, mode: mode, response: response});
+			const roomId: {id: number, name: string} = this.gameService.generateRoomId();
+			await this.gameService.createCustomRoomAddPlayers(roomId, mode, client, opponent);
+			this.gameService.sendRoomIdToUsers(roomId, mode);
+		}
+		else {
+			opponent.emit('duel response', {name: client.data.name, mode: mode, response: false});
+		}
 	}
 }

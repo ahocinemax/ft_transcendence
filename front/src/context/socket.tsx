@@ -1,5 +1,6 @@
 import { defaultSocketContextState, SocketContextProvider, SocketReducer } from './socketContext';
 import React, { PropsWithChildren, useEffect, useReducer, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useUserContext } from './userContent';
 import { useSocket } from './useSocket';
 
@@ -7,7 +8,7 @@ export interface ISocketContextComponentProps extends PropsWithChildren {}
 
 const SocketContextComponent: React.FunctionComponent<ISocketContextComponentProps> = (props) => {
     const {children} = props;
-
+	const navigate = useNavigate();
 	const [SocketState, SocketDispatch] = useReducer(SocketReducer, defaultSocketContextState);
 	const [loading, setLoading] = useState(true);
 	const name = useUserContext().userName.userName;
@@ -19,6 +20,31 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		transports: ['websocket'],
 		extraHeaders: {'Access-Control-Allow-Origin': `${process.env.REACT_APP_SERVER_HOST}`}
 	});
+	const [isInvited, setIsInvited] = useState(false);
+	const [mode, setMode] = useState('');
+	const [opponentName, setOpponnentName] = useState('');
+
+	const accept = () => {
+		socket.emit('duel response', opponentName, mode, true);
+		setIsInvited(false);
+	}
+
+	const decline = () => {
+		socket.emit('duel response', opponentName, mode, false);
+		setIsInvited(false);
+	}
+
+	const invitationPopup = () => {
+		return (
+		<div className="waiting_popup">
+			<div className="waiting_popup_container">
+				<h1 className="game_mode_title">{mode}</h1>
+				<h2 className="h1_popup_waiting">{opponentName} challenged you for a '{mode}' game</h2>
+				<button className={'accept_button'} onClick={accept}>Accept</button>
+				<button className={'decline_button'} onClick={decline}>Decline</button>
+			</div>
+		</div>);
+	}
 
 	const SendHandshake = () => {
 		console.info(`Sending handshake to server...`);
@@ -71,10 +97,20 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		});
 
 		socket.on('user_disconnected', (users: string[]) => {
+			console.log("user disconnected: ", users);
 			SocketDispatch({type: 'update_users', payload: users});
 		});
+
 		socket.on('exception', (error: string) => {
 			console.error(`Socket error: `, error);
+		});
+
+		socket.on('duel request', (data: {name: string, mode: string}) => { 
+			// console.log("🚀 ~ file: socket.tsx:30 ~ socket.on ~ params:", data.name, data.mode);
+			navigate('/start');
+			setIsInvited(true);
+			setMode(data.mode);
+			setOpponnentName(data.name);
 		});
 
 		return () => {
@@ -87,6 +123,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 
 	return loading ? (<p>"Loading socket IO..."</p>) :
 		(<SocketContextProvider value={{SocketState, SocketDispatch}}>
+			{isInvited && invitationPopup()}
 			{children}
 		</SocketContextProvider>);
 };

@@ -51,6 +51,34 @@ export class UserService
 		return (await this.prisma.user.findMany());
 	}
 
+	async	getUserIdByMail(mail: string)
+	{
+		try
+		{
+			const user = await this.prisma.user.findFirst({
+				where: { email: mail, },
+				select: { id: true, },
+			});
+			return (user.id);
+		}
+		catch (error)
+		{
+			console.log("getUserIdByEmail error: ", error);
+		}
+	}
+
+	async getUserIdByName(name: string) {
+		try {
+			const user = await this.prisma.user.findFirst({
+				where: { name: name, },
+				select: { id: true, },
+			});
+			return (user.id);
+		} catch (error) {
+			console.log("getUserByName error: ", error);
+		}
+	}
+
 	async getUserByEmail(email: string){
 		try {
 			const userAlreadyRegisterd = await this.prisma.user.findUnique({

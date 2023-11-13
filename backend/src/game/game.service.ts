@@ -122,8 +122,8 @@ export class GameService {
 	) {
 		const room: any = GameService.rooms.find((room) => room.id === roomId);
 		if (!room) return;
-		const IdPlayer1: number = room.player1.data.user.id;
-		const IdPlayer2: number = room.player2.data.user.id;
+		const IdPlayer1: number = await this.userService.getUserIdByName(room.NamePlayer1);
+		const IdPlayer2: number = await this.userService.getUserIdByName(room.NamePlayer2);
 		const ScorePlayer1: number = room.ScorePlayer1;
 		const ScorePlayer2: number = room.ScorePlayer2;
 		const mode: string = room.mode;

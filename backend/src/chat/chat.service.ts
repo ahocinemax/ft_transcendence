@@ -55,8 +55,9 @@ export class ChatService {
 		});
 	
 		return mutedUsers.map(mute => mute.mutedId);
-	  }
-async getAllMessages(channelId: number) {
+	}
+
+	async getAllMessages(channelId: number) {
 		try {
 			const mutedUsers = await this.prisma.mute.findMany({
 			where: { channelId: channelId },
@@ -98,8 +99,7 @@ async getAllMessages(channelId: number) {
 		  console.log('getAllMessages error:', error);
 		  throw new WsException(error);
 		}
-	  }
-	
+	}
 
 	async	loadMessages(param: any): Promise<oneMessage[]> {
 		try {
@@ -248,11 +248,7 @@ async getAllMessages(channelId: number) {
 			console.log("id::: ", id);
 			await this.prisma.channel.update({ 
 				where: { id: data.channelId },
-				data: {
-					members: {
-						connect: {id: id}
-					}
-				}});
+				data: { members: { connect: {id: id} } }});
 			const message = await this.prisma.message.create({
 				data: {
 					content: data.message,
@@ -291,6 +287,36 @@ async getAllMessages(channelId: number) {
 		}
 	}
 
+	async	add_channel_member(channelId: number, userId: number) {
+		try {
+			const channel = await this.prisma.channel.findUnique({
+				where: { id: channelId, },
+				select: { members: true }
+			});
+			const isMember = channel.members.find((member) => member.id === userId);
+			if (isMember) return ;
+			await this.prisma.channel.update({
+				where: { id: channelId },
+				data: { members: { connect: { id: userId } } }
+			});
+		} catch (error) {
+			console.log('add_channel_member error:', error);
+			throw new WsException(error);
+		}
+	}
+
+	async	remove_channel_member(channelId: number, userId: number) {
+		try {
+			await this.prisma.channel.update({
+				where: { id: channelId },
+				data: { members: { disconnect: { id: userId } } }
+			});
+		} catch (error) {
+			console.log('remove_channel_member error:', error);
+			throw new WsException(error);
+		}
+	}
+
 	async check_password(channelId: number, password: string) {
 		try {
 			const channel = await this.prisma.channel.findUnique({
@@ -318,7 +344,10 @@ async getAllMessages(channelId: number) {
 					admins : { connect: { email: info.email, }, },
 				},
 			});
-			this.prisma.channel.update({ where: { id: channel.id }, data: { updatedAt: new Date() } });
+			this.prisma.channel.update({
+				where: {id: channel.id },
+				data: { updatedAt: new Date() }
+			});
 			return channel.id;
 		} catch (error) {
 			console.log("Failed to create new channel: ", error);
@@ -326,27 +355,7 @@ async getAllMessages(channelId: number) {
 		}
 	}
 
-	async addNewChannelMember(channelId: number) {
-		try {
-				const allUsers = await this.prisma.user.findMany();
-				const connectUsersTochannel = allUsers.map((user) => {
-					return this.prisma.channel.update({
-						where: { id : channelId },
-						data: {
-							members: {
-								connect: { id: user.id },
-							},
-						},
-		})});
-		await this.prisma.$transaction(connectUsersTochannel);
-		}
-		 catch (error) {
-			console.log('addNewChannelMenmber error:', error);
-			throw new WsException(error);
-		}
-	}
-
-	async channelAlreadyExists(ownerId1, ownerId2) {
+	async channelAlreadyExists(ownerId1: number, ownerId2: number) {
 		const existingChannel = await this.prisma.channel.findFirst({
 			where: { dm: true, owners: { some: { AND: [{ id: ownerId1 }, { id: ownerId2 }] } } }
 		});
@@ -377,20 +386,29 @@ async getAllMessages(channelId: number) {
 		} catch (error) { console.log("Failed to create new channel: ", error); }
 	}
 
-	async	get_channels() { 
-		return await this.prisma.channel.findMany( { where: { dm: false }});}
+	async	get_channels() {
+		return await this.prisma.channel.findMany( { where: { dm: false }});
+	}
+
 	async	get_channels2(userId: number) { 
 		return await this.prisma.channel.findMany({ 
 			where: { 
 				dm: false,
 				NOT: {
-					banned: { 
-						some: { 
-							id: userId, 
-						},
-					},
-				}, 
-			}, 
+					banned: { some: { id: userId } }
+				}
+			},
+			// select members, admins, owners, invited, banned:
+			select: {
+				id: true,
+				name: true,
+				isProtected: true,
+				updatedAt: true,
+				owners: { select: { id: true, email: true, name: true } },
+				admins: { select: { id: true, email: true, name: true } },
+				members: { select: { id: true, email: true, name: true } },
+				banned: { select: { id: true, email: true, name: true } }
+			}
 		}); 
 	}
 
@@ -404,6 +422,7 @@ async getAllMessages(channelId: number) {
 					name: true,
 					isProtected: true,
 					updatedAt: true,
+					password: true,
 					owners: {
 						select: {
 							id: true,
@@ -426,7 +445,30 @@ async getAllMessages(channelId: number) {
 		}
 	}
 
-	async	get_members_of_channel() {
+	async is_member(channelId: number, userId: number) {
+		try {
+			const channel = await this.prisma.channel.findUnique({
+				where: { id: channelId, },
+				select: {
+					members: true,
+					owners: true,
+					admins: true,
+				}
+			});
+			let isMember = channel.members.find((member) => member.id === userId);
+			if (isMember !== undefined) return true;
+			isMember = channel.owners.find((owner) => owner.id === userId);
+			if (isMember !== undefined) return true;
+			isMember = channel.admins.find((admin) => admin.id === userId);
+			if (isMember !== undefined) return true;
+			return false;
+		} catch (error) {
+			console.log('is_member error:', error);
+			throw new WsException(error);
+		}
+	}
+
+	async	display_members_of_channel() {
 		try {
 			const members = await this.prisma.user.findMany({}); // Get all users
 			let count = 0;

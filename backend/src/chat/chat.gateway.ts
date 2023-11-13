@@ -61,7 +61,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client.removeAllListeners();
 	}
 
-	@SubscribeMessage("check password")
+	@SubscribeMessage('check password')
 	async handleCheckPassword(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
 		this.logger.log("[CHECK PASSWORD]");
 		const channelID = data[0];
@@ -82,7 +82,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('exception', 'failed to create the channel, please try again');
 		else {
 			await client.join(data.name);
-			await this.chatService.addNewChannelMember(channelId);
+			await this.chatService.add_channel_member(channelId, client.data?.user?.id);
 			// demande à tous les clients connectés de mettre à jour la liste des channels
 		}
 		client.emit('new channel id', channelId);
@@ -95,6 +95,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.logger.log("[GET CHANNELS]");
 		const data = await this.chatService.get_channels2(userId);
 		client.emit('fetch channels', data);
+	}
+
+	@SubscribeMessage('register to channel')
+	async handleRegisterToChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+		this.logger.log("[REGISTER TO CHANNEL]");
+		const channelId = data[0];
+		const userId = client.data.user.id;
+		const channel = await this.chatService.get_channel_by_id(channelId);
+		await this.chatService.add_channel_member(channelId, userId);
+		await client.join(channel.name);
+	}
+
+	@SubscribeMessage('leave channel')
+	async handleLeaveChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+		this.logger.log("[LEAVE CHANNEL]");
+		const channelId = data[0];
+		const userId = client.data.user.id;
+		await this.chatService.remove_channel_member(channelId, userId);
 	}
 
 	@SubscribeMessage('new message') 
@@ -112,6 +130,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('get messages') // mute
 	async handleGetMessages(@MessageBody() channelId: number, @ConnectedSocket() client: Socket) {
 		const userId = client.data.user.id;
+		const isMember = await this.chatService.is_member(channelId, userId);
+		// if (!isMember) return; A ACTIVER QUAND ON POURRA S'INSCRIRE EN TANT QUE MEMBRE
 		const data = await this.chatService.messages_from_channel_id(channelId); 
 		client.emit('fetch messages', data);
 	}

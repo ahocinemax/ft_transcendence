@@ -25,13 +25,14 @@ function App() {
     const location = useLocation();
     const pathsWithoutSidebar = ['/login', '/create', '/'];
     const shouldRenderSidebar = !pathsWithoutSidebar.includes(location.pathname);
-
+    const [isInvite, setIsInvite] = useState(false);
     const isAuthenticated = () => {
         const token = socketOptions.token;
         // console.log("!!token : ", !!token)
         // console.log(token);
         return !!token;
     };
+        
     return (
         <UserContextProvider>
             <SocketContextComponent>

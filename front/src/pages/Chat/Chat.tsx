@@ -47,7 +47,7 @@ const Chat = () => {
   const [isUserPopupVisible, setIsUserPopupVisible] = useState(false);
 
   // Etat pour les channels publics
-  const [channels, setChannels] = useState<any>([]); // liste des channels publics
+  const [channels, setChannels] = useState<channelModelList>([]); // liste des channels publics
   const [messagesData, setMessagesData] = useState<MessagesArray>([]); // messages du channel public actif
   const [channelName, setChannelName] = useState(''); // nom du channel public pour création
   const [privatePassword, setPrivatePassword] = useState(''); // mot de passe saisi par l'utilisateur
@@ -115,13 +115,21 @@ const Chat = () => {
 
   type MessagesArray = MessageData[];
 
+  type channelModelList = channelModel[];
+
   function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  async function waitBeforeRedirection() {
+  async function waitBeforeRedirection(url: string) {
     await sleep(2580); // Pause de 2 secondes
-    navigate('/gamepage');
+    navigate(url);
+  }
+
+  async function waitBeforeClose() {
+    await sleep(2580); // Pause de 2 secondes
+    setDisplayClose(false);
+    setDisplayWaiting(false);
   }
 
   const {
@@ -147,6 +155,7 @@ const Chat = () => {
     socket?.on('fetch channels', (data: channelModel[]) => {
       data = !Array.isArray(data) ? Array.from(data) : data;
       setChannels(data);
+      console.log(channels);
       if (tempActiveChannel != 0) setActiveChannel(tempActiveChannel);
       setTempActiveChannel(0);
     });
@@ -157,15 +166,21 @@ const Chat = () => {
       data = !Array.isArray(data) ? Array.from(data) : data;
       setPriv_msgs(data);
     });
+    socket?.on('duel response', (data: any) => {
+      if (data.response === true) setTextToDisplay(`Request accepted. Creating lobby with ${data.name}`);
+      else setTextToDisplay(`Request declined by ${data.name}.`);
+      waitBeforeClose();
+    });
     socket?.on("get room id", (response: {id: number, name: string}) => {
       setDisplayClose(false);
       const roomID: RoomID = {roomID: response.name};
       setRoomID(roomID);
-      setTextToDisplay(`Request accepted. Joining lobby: ${response.name}`);
-      waitBeforeRedirection();
+      waitBeforeRedirection('/gamepage');
     });
     return () => {
       socket?.off('fetch mp');
+      socket?.off('fetch channels');
+      socket?.off('duel response');
       socket?.off("get room id");
     };
   }, [socket]);
@@ -201,6 +216,20 @@ const Chat = () => {
       socket?.off('new channel id');
     };
   }, [activeChannel, activePrivateChannel, socket]);
+
+/**
+ * Envoie au back une demande d'inscription en tant que membre sur le channel
+ * socket?.emit('register to channel', <channelId>);
+ * 
+ * Envoie au back une demande de désinscription du channel
+ * socket?.emit('leave channel', <channelId>);
+ * 
+ * Vérifie si le mot de passe saisi correspond à celui du channel demandé
+ * socket?.emit('check password', <channelId>, <password>, (data: boolean) => {
+ *   <code here>
+ * });
+ * le callback reçpot true si le mot de passe est correct, false sinon
+ */
 
   // EVENT HANDLERS
   const handleSearch = (query: string) => {
@@ -238,7 +267,7 @@ const Chat = () => {
   const handleChannelClick = (channelId: number) => {
     if (PasswordNeeded)
         return;
-    const channel: channelModel = channels.find((c: any) => c.id === channelId);
+    const channel: channelModel|undefined = channels.find((c: any) => c.id === channelId);
     if (channel && channel.isPrivate)
     {
       // Salon privé, demandez le mot de passe d'abord
@@ -248,7 +277,7 @@ const Chat = () => {
         setChannelName(channel.name);
     } else {
       // Salon public, accédez directement
-      setChannelName(channel.name);
+      setChannelName(channel? channel.name : '');
       setActivePrivateChannel(0);
       setActiveChannel(channelId);
     }
@@ -317,9 +346,9 @@ const Chat = () => {
 
   const handlePasswordSubmit = (password: string) => {
     // Vérifiez si le mot de passe saisi correspond à celui du canal actif
-    const channel: channelModel = channels.find((c: any) => c.name === tempActiveChannel);
-    
-    if (channel && channel.password === password) { // socket.emit('check password'); envoyer le mdp pour savoir si c'est le bon
+    const channel: channelModel|undefined = channels.find((c: any) => c.name === tempActiveChannel);
+
+    if (channel && channel?.password === password) {
       // Mot de passe correct, accédez au canal
       setPassword(false); // Fermez le pop-up de mot de passe
       setActiveChannel(tempActiveChannel);
