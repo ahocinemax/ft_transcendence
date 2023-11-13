@@ -25,32 +25,23 @@ export class GameGateway implements OnGatewayDisconnect {
 		const roomId = this.gameService.isInRoom(client);
 		if (roomId === false) return ;
 		const room: Room = this.gameService.getRoomById(roomId as string);
-		if (room && this.gameService.leftOngoingGame(client)) return;
-			// this.gameService.startGame(room.player1?.data.id,
-			// 	room.player2?.data.id, room.ScorePlayer1, room.ScorePlayer2,
-			// 	room., room.mode); 
+		if (room) this.gameService.leftOngoingGame(client);
 	}
 
-	// IL FAUT IMPLEMENTER LE MESSAGE 'START' POUR LANCER LA PARTIE
 	@SubscribeMessage('start')
 	async handleStartGame(
 		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() roomId: string
 	) {
-		if (this.gameService.getRoomById(roomId, false).player1?.data.id === client.data.id)
-		{
-			this.gameService.getRoomById(roomId, false).NamePlayer1 = client.data.name
-			this.gameService.getRoomById(roomId, false).AvatarPlayer1 = client.data.user.avatar;
-			this.gameService.getRoomById(roomId, false).player1 = client;
-		} else {
-			this.gameService.getRoomById(roomId, false).NamePlayer2 = client.data.name;
-			this.gameService.getRoomById(roomId, false).AvatarPlayer2 = client.data.user.avatar;
-			this.gameService.getRoomById(roomId, false).player2 = client;
-		}
-		const room: Room = this.gameService.getRoomById(roomId);
+		const room: Room = this.gameService.getRoomById(roomId, false);
 		if (room === null) return;
+		if (room.player1?.data.id === client.data.id)
+			room.player1 = client;
+		else if (room.player2?.data.id === client.data.id)
+			room.player2 = client;
+		else return;
+		Object.assign(room, room);
 		const roomIdNumber = Number(roomId.replace('room_', ''));
-		// vérifier que les deux players sont ready 'donc ont envoyé start'
 		this.gameService.startGame(roomIdNumber, this.server);
 	}
 

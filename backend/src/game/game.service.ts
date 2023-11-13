@@ -92,12 +92,10 @@ export class GameService {
 		let winner: number = 0;
 		if (room.player1Disconnected || room.player2Disconnected) {
 			winner = room.player2Disconnected ? 1 : 2;
-			console.log("a player disconnected, winner is ", winner);
 		}
 		if (room.ScorePlayer1 === 1 || room.ScorePlayer2 === 1 || winner) {
 			if (!winner) {
 				winner = room.ScorePlayer1 > room.ScorePlayer2 ? 1: 2;
-				console.log("game over, winner is ", winner);
 			}
 			server.to(room.name).emit('game over', { winner, room: this.getRoomById(room.name) });
 			this.schedulerRegistry.deleteInterval('room_' + roomID);
@@ -145,7 +143,7 @@ export class GameService {
 		const duration = Math.abs(game.endTime.getTime() - game.startTime.getTime());
 		await this.prisma.game.update({
 			where: { id: id },
-			data: { duration: duration },
+			data: { duration: duration }
 		});
 		await this.userService.updateUserStats(
 			IdPlayer1,
@@ -321,7 +319,7 @@ export class GameService {
 		const username = client?.data.name;
 		if (!username) return false;
 		for (const room of GameService.rooms)
-			if (room.NamePlayer1 === username || room.NamePlayer2 === username) return room.name; // change back tu true after testing
+			if (room.NamePlayer1 === username || room.NamePlayer2 === username) return room.name;
 		return false;
 	}
 
@@ -440,9 +438,8 @@ export class GameService {
 	getRoomById(roomId: string, excludeClients: boolean = true): Room | null {
 		for (const room of GameService.rooms) {
 			if (room.name === roomId) {
-				// Create a copy of the room object
-				const filteredRoom: Room = { ...room };
 				if (excludeClients) {
+					const filteredRoom: Room = { ...room };
 					filteredRoom.player1 = null;
 					filteredRoom.player2 = null;
 					return filteredRoom;
@@ -458,17 +455,8 @@ export class GameService {
 		const username = client.data.name;
 		for (const room of GameService.rooms) {
 			if (room.NamePlayer1 === username || room.NamePlayer2 === username) {
-				if (room.NamePlayer1 === username)
-				{
-					room.player1Disconnected = true;
-					room.NamePlayer1 = "";
-				}
-				else
-				{
-					room.NamePlayer2 = "";
-					room.player2Disconnected = true;
-				}
-				console.log("user ", client.data.name, " left game ", room.name);
+				if (room.NamePlayer1 === username) room.player1Disconnected = true;
+				else room.player2Disconnected = true;
 				return true;
 			}
 		}
@@ -477,9 +465,7 @@ export class GameService {
 
 	async updateRanks() {
 		const users = await this.prisma.user.findMany({
-			orderBy: {
-				score: 'desc',
-			},
+			orderBy: { score: 'desc' },
 			select: {
 				id: true,
 				score: true,
@@ -493,14 +479,9 @@ export class GameService {
 		let index = 1;
 		for (const id of usersId) {
 			await this.prisma.user.update({
-				where: {
-					id: id,
-				},
-				data: {
-					rank: index,
-				},
+				where: { id: id },
+				data: { rank: index++ }
 			});
-			index++;
 		}
 		return;
 	}
