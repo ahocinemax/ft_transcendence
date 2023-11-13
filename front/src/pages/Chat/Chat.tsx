@@ -586,9 +586,9 @@ const createChannel = () =>
           (<div>
             <h1 className="game_mode_title">Choose a game mode</h1>
             <div className="game_mode_container">
-              <div className="game_mode" onClick={() => {setMode("normal");}}>Normal</div>
-              <div className="game_mode" onClick={() => {setMode("hard");}}>Hard</div>
-              <div className="game_mode" onClick={() => {setMode("hardcore");}}>Impossible</div>
+              <div className="game_mode normal" onClick={() => {setMode("normal");}}>Normal</div>
+              <div className="game_mode hard" onClick={() => {setMode("hard");}}>Hard</div>
+              <div className="game_mode hardcore" onClick={() => {setMode("hardcore");}}>Hardcore</div>
             </div>
           </div>
           )}

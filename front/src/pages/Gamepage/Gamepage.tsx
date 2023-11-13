@@ -4,6 +4,10 @@ import { useUserContext } from '../../context/userContent';
 import { useNavigate } from 'react-router-dom';
 import { Room } from '../../interface/BackInterface';
 import { debounce, throttle } from 'lodash';
+import spaceWithPlanet from './/../..//SpaceWithPlanet.png';
+import hardModeBackground from './/../..//hell1.gif';
+import hardcoreModeBackground from './/../..//hell.gif';
+/* import hardcoreModeBackground from './/../..//hardcore_mode_background.png'; */
 import './Gamepage.css';
 
 function Gamepage() {
@@ -36,7 +40,6 @@ function Gamepage() {
   const [LooserScore, setLooserScore] = useState<number | null>(null);
   const [WinnerName, setWinnerName] = useState<string | null>(null);
   const [LooserName, setLooserName] = useState<string | null>(null);
-
 
 
   ////// MAJ DE LA POSITION DANS LE BACKEND ////////////
@@ -99,6 +102,7 @@ function Gamepage() {
         setPlayer2(response.NamePlayer2);
         setPlayer1img(response.AvatarPlayer1);
         setPlayer2img(response.AvatarPlayer2);
+        setMode(response.mode);
       }
       else navigate('/start');
 		});
@@ -110,18 +114,17 @@ function Gamepage() {
       ballRef.current?.style.setProperty('top', data.yBall + '%');
       setplayer1Score(data.player1Score);
       setplayer2Score(data.player2Score);
-      setMode(data.mode);
 		});
     socket?.on("game over", ({ winner, room }: { winner: number, room: Room }) => {
       setGameOver(true);
       setPlayerWinner(winner);
       setLocalRoomID("");
       setRoomID({roomID: ""});
-      winner == 1 ? setPlayerLooser(2) : setPlayerLooser(1);
-      winner == 1 ? setWinnerScore(room?.ScorePlayer1) : setWinnerScore(room?.ScorePlayer2);
-      winner == 1 ? setLooserScore(room?.ScorePlayer2) : setLooserScore(room?.ScorePlayer1);
-      winner == 1 ? setWinnerName(room?.NamePlayer1) : setWinnerName(room?.NamePlayer2);
-      winner == 1 ? setLooserName(room?.NamePlayer2) : setLooserName(room?.NamePlayer1);
+      winner === 1 ? setPlayerLooser(2) : setPlayerLooser(1);
+      winner === 1 ? setWinnerScore(room?.ScorePlayer1) : setWinnerScore(room?.ScorePlayer2);
+      winner === 1 ? setLooserScore(room?.ScorePlayer2) : setLooserScore(room?.ScorePlayer1);
+      winner === 1 ? setWinnerName(room?.NamePlayer1) : setWinnerName(room?.NamePlayer2);
+      winner === 1 ? setLooserName(room?.NamePlayer2) : setLooserName(room?.NamePlayer1);
     });
 		return () => {
 			socket?.off("room infos response");
@@ -131,7 +134,18 @@ function Gamepage() {
 	}, [socket]);
 
 	return (
-        <div className="Gamebackground">
+        <div
+            className="Gamebackground"
+            style={{ 
+                backgroundImage: `url(${
+                    mode === 'normal' ? spaceWithPlanet :
+                    mode === 'hard' ? hardModeBackground :
+                    hardcoreModeBackground
+                })`,
+                backgroundPosition: mode === 'hardcore' ? '70% 250%' : 'initial',
+                backgroundSize: mode === 'hardcore' ? 'contain' : 'cover'
+            }}
+>
           <div className="Gamepage">
             <div className="scores_container">
               <div className="player_details player1_details">
@@ -152,8 +166,22 @@ function Gamepage() {
               </div>
             </div>
       
-            <div className="Gamecanvas">
-              <div className="MiddleLine"></div>
+            <div 
+              className="Gamecanvas"
+              style={{ 
+                border: `1vh solid ${
+                  mode === 'normal' ? 'indigo' : 
+                  mode === 'hard' ? '#EC631F' : 
+                  'red'
+                }`
+              }}
+            >
+              <div 
+                className="MiddleLine"
+                style={{ 
+                  backgroundColor: mode === 'hardcore' ? 'red' : 'white'
+                }}
+              ></div>
               <div className="Player1Area" style={{ left: 0 }}>
                 <div className="Playerbar1" ref={player1Ref}></div>
               </div>

@@ -3,6 +3,7 @@ import React, { PropsWithChildren, useEffect, useReducer, useState } from 'react
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from './userContent';
 import { useSocket } from './useSocket';
+import './socket.css'; 
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
@@ -40,8 +41,8 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 			<div className="waiting_popup_container">
 				<h1 className="game_mode_title">{mode}</h1>
 				<h2 className="h1_popup_waiting">{opponentName} challenged you for a '{mode}' game</h2>
-				<button className={'accept_button'} onClick={accept}>Accept</button>
-				<button className={'decline_button'} onClick={decline}>Decline</button>
+				<button className="accept_button" onClick={accept}>Accept</button>
+				<button className="decline_button" onClick={decline}>Decline</button>
 			</div>
 		</div>);
 	}
