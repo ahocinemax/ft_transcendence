@@ -94,12 +94,12 @@ export class GameService {
 			winner = room.player2Disconnected ? 1 : 2;
 			console.log("a player disconnected, winner is ", winner);
 		}
-		if (room.ScorePlayer1 === 1000000 || room.ScorePlayer2 === 1000000 || winner) {
+		if (room.ScorePlayer1 === 1 || room.ScorePlayer2 === 1 || winner) {
 			if (!winner) {
 				winner = room.ScorePlayer1 > room.ScorePlayer2 ? 1: 2;
 				console.log("game over, winner is ", winner);
 			}
-			server.to(room.name).emit('game over', winner, this.getRoomById(room.name));
+			server.to(room.name).emit('game over', { winner, room: this.getRoomById(room.name) });
 			this.schedulerRegistry.deleteInterval('room_' + roomID);
 			const endTime = new Date();
 			this.saveGame(

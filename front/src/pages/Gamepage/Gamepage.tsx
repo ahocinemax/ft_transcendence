@@ -23,13 +23,18 @@ function Gamepage() {
   const [isDownPressed, setIsDownPressed] = useState(false);
   const navigate = useNavigate();
   const [gameOver, setGameOver] = useState(false);
-  const [PlayerWinner, setPlayerWinner] = useState<number | null>(null);
   const [player1, setPlayer1] = useState('');
   const [player2, setPlayer2] = useState('');
   const [player1img, setPlayer1img] = useState('');
   const [player2img, setPlayer2img] = useState('');
   const [player1Score, setplayer1Score] = useState('');
   const [player2Score, setplayer2Score] = useState('');
+  const [PlayerWinner, setPlayerWinner] = useState<number | null>(null);
+  const [PlayerLooser, setPlayerLooser] = useState<number | null>(null);
+  const [WinnerScore, setWinnerScore] = useState<number | null>(null);
+  const [LooserScore, setLooserScore] = useState<number | null>(null);
+  const [WinnerName, setWinnerName] = useState<string | null>(null);
+  const [LooserName, setLooserName] = useState<string | null>(null);
 
 
 
@@ -105,11 +110,18 @@ function Gamepage() {
       setplayer1Score(data.player1Score);
       setplayer2Score(data.player2Score);
 		});
-    socket?.on("game over", (winner: number) => {
+    socket?.on("game over", ({ winner, room }: { winner: number, room: Room }) => {
       setGameOver(true);
       setPlayerWinner(winner);
       setLocalRoomID("");
       setRoomID({roomID: ""});
+      winner == 1 ? setPlayerLooser(2) : setPlayerLooser(1);
+      winner == 1 ? setWinnerScore(room.ScorePlayer1) : setWinnerScore(room.ScorePlayer2);
+      winner == 1 ? setLooserScore(room.ScorePlayer2) : setLooserScore(room.ScorePlayer1);
+      winner == 1 ? setWinnerName(room.NamePlayer1) : setWinnerName(room.NamePlayer2);
+      winner == 1 ? setLooserName(room.NamePlayer2) : setLooserName(room.NamePlayer1);
+      console.log("P1 NAME: ", room.NamePlayer1);
+      console.log("P2 NAME: ", room.NamePlayer2);
     });
 		return () => {
 			socket?.off("room infos response");
@@ -153,9 +165,9 @@ function Gamepage() {
       
             {gameOver && (
               <div className="Endpopup">
-                <div className="WinLoose">Player {PlayerWinner} won</div>
+                <div className="WinLoose">{WinnerName} won</div>
                 <div className="GameStats">
-                  <div className="FinalScore">Player 1 9 - 0 Player 2</div>
+                  <div className="FinalScore">{WinnerName} {WinnerScore} - {LooserScore} {LooserName}</div>
                 </div>
                 <button className="playagain" onClick={() => navigate('/start')}>Play Again</button>
               </div>
