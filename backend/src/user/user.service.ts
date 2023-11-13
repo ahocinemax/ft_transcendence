@@ -126,7 +126,6 @@ export class UserService
 
 	async getLeaderBoard()
 	{
-		console.log("getLeaderBoard");
 		// return all users id sorted by rank
 		const leaderboard = await this.prisma.user.findMany({
 			where: { NOT: { gamesPlayed: { equals: 0 }}},
@@ -141,7 +140,6 @@ export class UserService
 			},
 			orderBy: {rank: 'asc'},
 		});
-		console.log("leaderboard: ", leaderboard);
 		return leaderboard;
 	}
 		

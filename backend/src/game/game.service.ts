@@ -351,7 +351,7 @@ export class GameService {
 		return {name: roomId + id, id: id};
 	}
 
-	async createRoomAddPlayers(roomInfo: {name, id}, mode: string) {
+	async createRoomAddPlayers(roomInfo: {name: string, id: number}, mode: string) {
 		const player1 = GameService.waitlists[mode][0];
 		const player2 = GameService.waitlists[mode][1];
 		const IdPlayer1: number = await this.userService.getUserByName(player1.name).then((user) => user.id);

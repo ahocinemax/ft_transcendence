@@ -84,8 +84,6 @@ function Gamepage() {
         setLocalRoomID(response.name);
       }
       else navigate('/start');
-      console.log("ROOM ID: ", localRoomID);
-      console.log("roomID: ", roomID.roomID);
 		});
 		socket?.on("game data", (data: any) => {
       console.log("received game data", data);
