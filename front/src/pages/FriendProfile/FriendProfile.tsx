@@ -22,28 +22,28 @@ const userInfoInit: userModel = {
     gameHistory: []
 };
 
-	const initializeUser = async  (result: any, setUserInfo: any) => {
-		const friendList = await backFunctions.getFriend(result.name);
-		const blockedList = await backFunctions.getBlockedUser(result.name);
-		const gameHistoryList = await backFunctions.getGameHistory(result.id);
+const initializeUser = async  (result: any, setUserInfo: any) => {
+	const friendList = await backFunctions.getFriend(result.name);
+	const blockedList = await backFunctions.getBlockedUser(result.name);
+	const gameHistoryList = await backFunctions.getGameHistory(result.id);
 
-		const newUserInfo = {
-			...userInfoInit,
-			id: result.id,
-			name: result.name,
-			image: result.image,
-			friends: friendList,
-			blocked: blockedList,
-			gameHistory: gameHistoryList,
-			gamesLost: result.gamesLost,
-			gamesPlayed: result.gamesPlayed,
-			gamesWon: result.gamesWon,
-			rank: result.rank,
-			score: result.score,
-			winRate: result.winRate === null ? 0 : result.winRate,
-		};
-		setUserInfo(newUserInfo);
+	const newUserInfo = {
+		...userInfoInit,
+		id: result.id,
+		name: result.name,
+		image: result.image,
+		friends: friendList,
+		blocked: blockedList,
+		gameHistory: gameHistoryList,
+		gamesLost: result.gamesLost,
+		gamesPlayed: result.gamesPlayed,
+		gamesWon: result.gamesWon,
+		rank: result.rank,
+		score: result.score,
+		winRate: result.winRate === null ? 0 : result.winRate,
 	};
+	setUserInfo(newUserInfo);
+};
 
 const FriendProfile = () => {
 	const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
@@ -52,8 +52,9 @@ const FriendProfile = () => {
     const [isFetched, setIsFetched] = useState(false);
 	const [myFriendList, setMyFriendList] = useState<userModel[]>([]);
 	const [myBlockedList, setMyBlockedList] = useState<userModel[]>([]);
+	const [isBusyState, setIsBusyState] = useState(false);
 	const [isOnline, setIsOnline] = useState(false);
-	const { users, socket } = useContext(SocketContext).SocketState;
+	const { users, isBusy, socket } = useContext(SocketContext).SocketState;
     const navigate = useNavigate();
 	let params =  useParams<{ friendName: string }>();
 	let friendName = params.friendName;
@@ -123,7 +124,12 @@ const FriendProfile = () => {
 	}, [friendName]);
 
 	useEffect(() => {
+		socket?.on('user_busy', () => {
+			if (isBusy.length && isBusy?.find((user) => user === friendName)) setIsBusyState(true);
+		});
+
 		socket?.on('user_connected', (users: string[]) => {
+			if (isBusyState) return;
 			if (users.length && users?.find((user) => user === friendName)) setIsOnline(true);
 			else setIsOnline(false);
 		});
@@ -136,7 +142,7 @@ const FriendProfile = () => {
 			<div className="profile_info">
 					<div className="info_container">
 						<h1 className="info firstinfo">{userInfo.name ? `${userInfo.name}` : "#PlayerName?"}</h1>
-						<h1 className="info">{isOnline ? 'online' : 'offline'}</h1>
+						<h1 className="info">{isBusyState ? 'busy' : isOnline ? 'online' : 'offline'}</h1>
 						<h1 className="info">{userInfo.rank ? `Rank #${userInfo.rank}` : "#Rank?"}</h1>
 					</div>
 					{myFriendList.some((friend) => userInfo.id === friend.id) ? (

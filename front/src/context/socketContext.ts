@@ -5,16 +5,18 @@ export interface ISocketContextState {
 	socket: Socket | undefined;
 	name: string;
 	users: string[];
+	isBusy: string[];
 }
 
 export const defaultSocketContextState: ISocketContextState = {
 	socket: undefined,
 	name: '',
 	users: [],
+	isBusy: [],
 };
 
 export interface ISocketContextActions {
-	type: 'update_socket' | 'update_users' | 'remove_user' | 'update_name';
+	type: 'update_socket' | 'update_users' | 'remove_user' | 'update_name' | 'update_busy';
 	payload: string | string[] | Socket;
 }
 
@@ -27,6 +29,8 @@ export const SocketReducer = (
 			return {...state, socket: action.payload as Socket};
 		case 'update_users':
 			return {...state, users: action.payload as string[]};
+		case 'update_busy':
+			return {...state, isBusy: action.payload as string[]};
 		case 'remove_user':
 			return {
 				...state,

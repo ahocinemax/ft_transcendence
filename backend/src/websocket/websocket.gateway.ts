@@ -12,6 +12,7 @@ import { Inject, Logger, forwardRef } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { WebsocketService} from './websocket.service';
 import { AuthenticatedSocket, ServerEvents } from './types/websocket.type';
+import { subscribe } from 'diagnostics_channel';
 
 export enum Status {
 	offline,
@@ -80,5 +81,15 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 		client?.emit('handshake', client.data.name, users); // not working
 		this.websocketService.sendMessage(client, 'user_connected', users);
 		await this.websocketService.updateStatus(client, 'online');
+    const busy = await this.websocketService.getBusy();
+		this.websocketService.sendMessage(client, 'user_inGame', busy);
 	}
+
+  @SubscribeMessage('busy')
+  async handleBusy(@ConnectedSocket() client: AuthenticatedSocket) {
+    this.logger.log(`[BUSY] :  Client ID ${client.data.name}`);
+    this.websocketService.updateStatus(client, 'busy');
+    const busy = await this.websocketService.getBusy();
+    this.websocketService.sendMessage(client, 'user_inGame', busy);
+  }
 }

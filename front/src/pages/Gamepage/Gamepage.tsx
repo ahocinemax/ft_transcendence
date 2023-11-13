@@ -57,7 +57,7 @@ function Gamepage() {
   }, 100);
 
   useEffect(() => { if (!localStorage.getItem("userToken")) navigate("/"); }, []);
-
+  useEffect(() => { if (roomID.roomID) socket?.emit('busy'); }, [socket, roomID])
   useEffect(() => {
     console.log('localRoomID: ', localRoomID);
 		UpdateDirectionThrottled(socket, isUpPressed, isDownPressed);
