@@ -109,7 +109,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('register to channel')
 	async handleRegisterToChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
 		this.logger.log("[REGISTER TO CHANNEL]");
-		const channelId = data[0];
+		const channelId = data;
 		const userId = client.data.user.id;
 		const channel = await this.chatService.get_channel_by_id(channelId);
 		await this.chatService.add_channel_member(channelId, userId);
@@ -119,7 +119,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('leave channel')
 	async handleLeaveChannel(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
 		this.logger.log("[LEAVE CHANNEL]");
-		const channelId = data[0];
+		const channelId = data;
 		const userId = client.data.user.id;
 		await this.chatService.remove_channel_member(channelId, userId);
 	}

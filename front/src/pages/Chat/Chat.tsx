@@ -159,6 +159,7 @@ const Chat = () => {
     socket?.on('fetch channels', (data: channelModel[]) => {
       data = !Array.isArray(data) ? Array.from(data) : data;
       setChannels(data);
+      console.log("CHANNELS: ", channels);
       if (tempActiveChannel != 0) setActiveChannel(tempActiveChannel);
       setTempActiveChannel(0);
     });
@@ -432,14 +433,19 @@ const createChannel = () =>
             </div>
             <div className="channel_div_container">
               {channels.map((channel: channelModel, index: number) => (
-                <div className="channel_div" key={index} onClick={() => handleChannelClick(channel.id)}>
-                  {PasswordNeeded && (
+                <div key={index} className="channel_div" onClick={() => channel.members.some(member => member.name === userInfo.name) && handleChannelClick(channel.id)}>
+                {PasswordNeeded && (
                     <PrivateChanPopup onClose={PasswordDone} onPasswordSubmit={handlePasswordSubmit} />
                   )}
                   <div className="channel_content">
                     <h1 className="channel_title">#{channel.name}</h1>
                     {channel.isProtected && (
                       <img src="lock.png" alt="Private Channel" className="lock_icon" />
+                    )}
+                    {channel.members.some(member => member.name === userInfo.name) ? (
+                      <div className="leaveChannelButton" onClick={(e) => socket?.emit('leave channel', channel.id)}></div>
+                      ) : (
+                        <div className="joinChannelButton" onClick={(e) => socket?.emit('register to channel', channel.id)}></div>
                     )}
                   </div>
                 </div>
