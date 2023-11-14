@@ -331,6 +331,7 @@
 .match_infos{
   color: rgb(255, 255, 255);
   text-align: center;
+  align-items: start;
   font-weight: bold;
   font-size: 0.8vw;
   text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
