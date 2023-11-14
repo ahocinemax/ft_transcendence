@@ -244,3 +244,12 @@ h1.leaderboard
 {
     font-size: 0.9vw;
 }
+
+.rank_div_gold.bis
+{
+    position: absolute;
+    top: 0vh;
+    background-color: rgb(0, 0, 0, 0.85);
+    box-shadow: rgb(0, 0, 0);
+    border: 0.6vh solid rgba(39, 38, 38, 0.774)
+}

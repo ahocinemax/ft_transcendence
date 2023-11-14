@@ -66,12 +66,32 @@ useEffect(() => {
 								{/* <p>PlayTime: {play.play}</p> */}
 								<p>Score: {score.score}</p>
 								<p>Victoires: {wins.wins}</p>
-								<p>WinRate: {rate.rate?.toFixed(2)} %</p>
+                                <p>WinRate: {rate.rate ? (rate.rate * 100).toFixed(2) : "X"} %</p>
                                 {/* <p>(↑PlayTime + score: example d'affichage. vous pouvez changer!)</p> */}
 							</div>
 						</div>
 				</div>
 				<div className="leaderboard_main_div">
+                    <div className="rank_div_gold bis">
+                        <div className="position">
+                            <h1 className="h1 leaderboard">Rank</h1>
+                        </div>
+                        <div className="position">
+                            <h1 className="h1 leaderboard">Name</h1>
+                        </div>
+                        <div className="position">
+                            <h1 className="h1 leaderboard">Games</h1>
+                        </div>
+                        <div className="position">
+                            <h1 className="h1 leaderboard">Wins</h1>
+                        </div>
+                        <div className="position">
+                            <h1 className="h1 leaderboard">Score</h1>
+                        </div>
+                        <div className="position">
+                            <h1 className="h1 leaderboard">Winrate</h1>
+                        </div>
+                    </div>
 					{leaderboardData ? leaderboardData.map((user: User, index: number) => (
 						<div className={`rank_div ${index === 0 ? 'rank_div_gold' : index === 1 ? 'rank_div_silver' : index === 2 ? 'rank_div_bronze' : ''}`} key={index}>
 							<div className="position">
@@ -81,16 +101,16 @@ useEffect(() => {
 								<h1 className="h1 leaderboard">{user.name}</h1>
 							</div>
 							<div className="games_div">
-								<h1 className="h1 leaderboard">Games {user.gamesPlayed}</h1>
+								<h1 className="h1 leaderboard">{user.gamesPlayed}</h1>
 							</div>
 							<div className="pseudo_div">
-								<h1 className="h1 leaderboard">Wins {user.gamesWon}</h1>
+								<h1 className="h1 leaderboard">{user.gamesWon}</h1>
 							</div>
 							<div className="pseudo_div">
-								<h1 className="h1 leaderboard">Score {user.score}</h1>
+								<h1 className="h1 leaderboard">{user.score}</h1>
 							</div>
 							<div className="pseudo_div">
-								<h1 className="h1 leaderboard">Ratio {user.winRate?.toFixed(2)}%</h1>
+								<h1 className="h1 leaderboard">{user.winRate ? (user.winRate * 100).toFixed(2) + "%" : "X"}</h1>
 							</div>
 						</div>
 					)) : 'Loading...'}
