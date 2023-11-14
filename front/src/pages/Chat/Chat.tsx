@@ -226,20 +226,6 @@ const Chat = () => {
     socket?.emit("duel request", selectedUserID, selectedUser, mode);
   }, [socket, mode]);
 
-/**
- * Envoie au back une demande d'inscription en tant que membre sur le channel
- * socket?.emit('register to channel', <channelId>);
- * 
- * Envoie au back une demande de désinscription du channel
- * socket?.emit('leave channel', <channelId>);
- * 
- * Vérifie si le mot de passe saisi correspond à celui du channel demandé
- * socket?.emit('check password', <channelId>, <password>, (data: boolean) => {
- *   <code here>
- * });
- * le callback reçpot true si le mot de passe est correct, false sinon
- */
-
   // EVENT HANDLERS
   const handleSearch = (query: string) => {
     console.log(`Recherche en cours pour : ${query}`);
@@ -354,22 +340,21 @@ const Chat = () => {
     setIsUserPopupVisible(false);
   };
 
-useEffect(() => {
-  if (socket) {
-    socket.on('password check result', (isPasswordCorrect: boolean) => {
-      console.log('isPasswordCorrect', isPasswordCorrect);
-      if (isPasswordCorrect) {
-        console.log('Password is correct');
-        setPassword(false);
-        setActiveChannel(tempActiveChannel);
-        setTempActiveChannel(0);
-      } else {
-        console.log('Password is not correct');
-      }
-    });
-  }
-}, [socket, tempActiveChannel]);
-
+  useEffect(() => {
+    if (socket) {
+      socket.on('password check result', (isPasswordCorrect: boolean) => {
+        console.log('isPasswordCorrect', isPasswordCorrect);
+        if (isPasswordCorrect) {
+          console.log('Password is correct');
+          setPassword(false);
+          setActiveChannel(tempActiveChannel);
+          setTempActiveChannel(0);
+        } else {
+          console.log('Password is not correct');
+        }
+      });
+    }
+  }, [socket, tempActiveChannel]);
 
   const handlePasswordSubmit = (password: string) => {
     const channel = channels.find((c: any) => c.id === tempActiveChannel);

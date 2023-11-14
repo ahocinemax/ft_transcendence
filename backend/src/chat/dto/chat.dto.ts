@@ -48,4 +48,8 @@ export class ChannelDTO {
     @IsArray()
     @IsOptional()
     members: Array<Pair>;
+
+    @IsArray()
+    @IsOptional()
+    banned: Array<Pair>;
 }
