@@ -317,6 +317,30 @@ export class ChatService {
 		}
 	}
 
+	async getRoles(channelId: number, userId: number) {
+		console.log('channelId: ', channelId, 'userId: ', userId);
+		try {
+			const channel = await this.prisma.channel.findUnique({
+				where: { id: channelId, },
+				select: {
+					owners: true,
+					admins: true,
+					members: true,
+				}
+			});
+			let isOwner = channel.owners.find((owner) => owner.id === userId);
+			if (isOwner !== undefined) return 'owner';
+			let isAdmin = channel.admins.find((admin) => admin.id === userId);
+			if (isAdmin !== undefined) return 'admin';
+			let isMember = channel.members.find((member) => member.id === userId);
+			if (isMember !== undefined) return 'member';
+			return 'none';
+		} catch (error) {
+			console.log('getRoles error:', error);
+			throw new WsException(error);
+		}
+	}
+
 	async checkPassword(channelId: number, password: string) {
 		console.log('channelId: ', channelId, 'password: ', password);
 		try {
