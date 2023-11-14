@@ -351,43 +351,36 @@ const Chat = () => {
     setIsUserPopupVisible(false);
   };
 
-  const handlePasswordSubmit = (password: string) => {
-    // Vérifiez si le mot de passe saisi correspond à celui du canal actif
-    const channel: channelModel|undefined = channels.find((c: any) => c.id === tempActiveChannel);
+//  const handlePasswordSubmit = (password: string) => {
+//    // Vérifiez si le mot de passe saisi correspond à celui du canal actif
+//    const channel: channelModel|undefined = channels.find((c: any) => c.id === tempActiveChannel);
+//    console.log('tempActiveChannel(handlePasswordAubmit)', tempActiveChannel);
+//
+//    if (channel && channel?.password === password) {
+//      // Mot de passe correct, accédez au canal
+//      setPassword(false); // Fermez le pop-up de mot de passe
+//      setActiveChannel(tempActiveChannel);
+//    } else { // Mot de passe incorrect, affichez un message d'erreur ou gérez-le comme vous le souhaitez
+//      console.log('Mot de passe incorrect');
+//    }
+//  };
 
-    if (channel && channel?.password === password) {
-      // Mot de passe correct, accédez au canal
-      setPassword(false); // Fermez le pop-up de mot de passe
-      setActiveChannel(tempActiveChannel);
-    } else { // Mot de passe incorrect, affichez un message d'erreur ou gérez-le comme vous le souhaitez
-      console.log('Mot de passe incorrect');
-    }
-    console.log('socket', socket);
-    console.log('channel', channel);
-    if (channel && socket)
-    {
-      socket.emit('check password', password, channel.id );
-    }
-  };
-
-  useEffect(() => {
-    if (socket) {
-      socket.on('check password', (isPasswordCorrect) => {
-        if (isPasswordCorrect) {
-          setActiveChannel(tempActiveChannel);
-          setPassword(false); 
-        } else {
-          console.log('Password is not correct');
-        }
-      });
-    }
-    
-    return () => {
-      if (socket) {
-        socket.off('check password');
+const handlePasswordSubmit = (password: string) => {
+  const channel = channels.find((c: any) => c.id === tempActiveChannel);
+  console.log('tempActiveChannel(handlePasswordAubmit)', tempActiveChannel);
+  if (channel && socket) {
+    socket.emit('check password', channel.id, password, (isPasswordCorrect: boolean) => {
+      console.log('isPasswordCorrect', isPasswordCorrect);
+      if (isPasswordCorrect) {
+        console.log('Password is correct');
+        setPassword(false); 
+        setActiveChannel(tempActiveChannel);
+      } else {
+        console.log('Password is not correct');
       }
-    };
-  }, [socket]);
+    });
+  }
+};
 
   const createChannel = () => 
   {
