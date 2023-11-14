@@ -12,6 +12,7 @@ interface User {
 	gamesPlayed: number;
 	gamesWon: number;
 	gamesLost: number;
+    score: number;
 }
 
 async function getUserByToken() { await backFunctions.getUserByToken(); }
@@ -81,13 +82,16 @@ useEffect(() => {
 								<h1 className="h1 leaderboard">{user.name}</h1>
 							</div>
 							<div className="games_div">
-								<h1 className="h1 leaderboard">Games: {user.gamesPlayed}</h1>
+								<h1 className="h1 leaderboard">Games {user.gamesPlayed}</h1>
 							</div>
 							<div className="pseudo_div">
-								<h1 className="h1 leaderboard">Wins: {user.gamesWon}</h1>
+								<h1 className="h1 leaderboard">Wins {user.gamesWon}</h1>
 							</div>
 							<div className="pseudo_div">
-								<h1 className="h1 leaderboard">Ratio: {user.winRate?.toFixed(2)}%</h1>
+								<h1 className="h1 leaderboard">Score {user.score}</h1>
+							</div>
+							<div className="pseudo_div">
+								<h1 className="h1 leaderboard">Ratio {user.winRate?.toFixed(2)}%</h1>
 							</div>
 						</div>
 					)) : 'Loading...'}

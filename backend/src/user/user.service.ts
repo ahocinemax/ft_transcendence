@@ -137,6 +137,7 @@ export class UserService
 				gamesPlayed: true,
 				gamesWon: true,
 				gamesLost: true,
+                score: true,
 			},
 			orderBy: {rank: 'asc'},
 		});

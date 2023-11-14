@@ -23,6 +23,7 @@ function Gamepage() {
   const [isDownPressed, setIsDownPressed] = useState(false);
   const navigate = useNavigate();
   const [gameOver, setGameOver] = useState(false);
+  const [mode, setMode] = useState('');
   const [player1, setPlayer1] = useState('');
   const [player2, setPlayer2] = useState('');
   const [player1img, setPlayer1img] = useState('');
@@ -87,7 +88,7 @@ function Gamepage() {
 
 	useEffect(() => {
     if (roomID.roomID) socket?.emit("room infos request", roomID.roomID);
-    else navigate('/start');
+    /* else navigate('/start'); */
 		socket?.on("room infos response", (response: Room) => {
       if (response){
         console.log("received room infos:", response);
@@ -109,6 +110,7 @@ function Gamepage() {
       ballRef.current?.style.setProperty('top', data.yBall + '%');
       setplayer1Score(data.player1Score);
       setplayer2Score(data.player2Score);
+      setMode(data.mode);
 		});
     socket?.on("game over", ({ winner, room }: { winner: number, room: Room }) => {
       setGameOver(true);
@@ -120,8 +122,6 @@ function Gamepage() {
       winner == 1 ? setLooserScore(room.ScorePlayer2) : setLooserScore(room.ScorePlayer1);
       winner == 1 ? setWinnerName(room.NamePlayer1) : setWinnerName(room.NamePlayer2);
       winner == 1 ? setLooserName(room.NamePlayer2) : setLooserName(room.NamePlayer1);
-      console.log("P1 NAME: ", room.NamePlayer1);
-      console.log("P2 NAME: ", room.NamePlayer2);
     });
 		return () => {
 			socket?.off("room infos response");

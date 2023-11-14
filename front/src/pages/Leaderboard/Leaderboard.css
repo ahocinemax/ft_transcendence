@@ -25,7 +25,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3); /* Adjust the opacity as needed */
+    background-color: rgba(0, 0, 0, 0.3);
     z-index: 1;
 }
 
@@ -33,7 +33,7 @@
     position: relative;
     width: 20vw;
     height: 50vh;
-    background-color: rgba(0, 0, 0, 0.5); /* Adjust the opacity as needed */
+    background-color: rgba(0, 0, 0, 0.5);
     border: 0.6vh solid rgb(0, 0, 0);
     z-index: 1;
     border-radius: 5%;
@@ -47,14 +47,14 @@
 }
 
 .profile_picture {
+    position: absolute;
+    background-position: center;
     background-color: black;
-    height: 130px;
-    width: 130px;
+    height: 100px;
+    width: 100px;
     border-radius: 50%;
     background-image: url(../../../public/profile_img/avatar.png);
     background-size: cover;
-    background-position: center;
-    position: absolute;
     top: 10%;
   }
 
@@ -62,7 +62,7 @@
     position: absolute;
     color: white;
     font-weight: bold;
-    font-size: 1em;
+    font-size: 1vw;
     font-family: 'Press Start 2P', sans-serif;
     top: 50%;
 }
@@ -78,13 +78,13 @@
 .user_rank {
     color: white;
     font-weight: bold;
-    font-size: 1em;
+    font-size: 1vw;
     margin-bottom: 10px;
 }
 
 .user_info {
     color: white;
-    font-size: 1em;
+    font-size: 0.85vw;
 }
 
 .user_info p {
@@ -119,7 +119,7 @@
     margin-top: 1.25%;
     margin-bottom: 1.25%;
     padding-right: 2.5%;
-    font-size: 0.7em;
+    font-size: 0.7vw;
     letter-spacing: -2px;
     display : flex;
     align-items: center;
@@ -128,7 +128,7 @@
 }
 
 .rank_div_gold{
-    width: 98%;
+    width: 120%;
     height: 9%;
     background-color: rgb(255, 215, 0, 0.95);
     box-shadow: rgb(0, 0, 0);
@@ -142,7 +142,7 @@
     margin-top: 1.25%;
     margin-bottom: 1.25%;
     padding-right: 2.5%;
-    font-size: 1em;
+    font-size: 1vw;
     letter-spacing: -2px;
     display : flex;
     align-items: center;
@@ -151,7 +151,7 @@
 }
 
 .rank_div_silver{
-    width: 94%;
+    width: 110%;
     height: 8%;
     background-color: rgb(192, 192, 192, 0.95);
     box-shadow: rgb(0, 0, 0);
@@ -165,7 +165,7 @@
     margin-top: 1.25%;
     margin-bottom: 1.25%;
     padding-right: 2.5%;
-    font-size: 0.9em;
+    font-size: 0.9vw;
     letter-spacing: -2px;
     display : flex;
     align-items: center;
@@ -174,7 +174,7 @@
 }
 
 .rank_div_bronze{
-    width: 88%;
+    width: 100%;
     height: 7.5%;
     background-color: rgb(205, 127, 50, 0.95);
     box-shadow: rgb(0, 0, 0);
@@ -188,7 +188,7 @@
     margin-top: 1.25%;
     margin-bottom: 1.25%;
     padding-right: 2.5%;
-    font-size: 0.8em;
+    font-size: 0.8vw;
     letter-spacing: -2px;
     display : flex;
     align-items: center;
@@ -233,7 +233,7 @@
 .h1{
     color: rgb(255, 255, 255);
     font: bold;
-    font-size: 1em;
+    font-size: 1vw;
     font-family: 'Press Start 2P', sans-serif;
     text-shadow:
       2px 2px 2px rgb(243, 152, 6);
@@ -242,5 +242,5 @@
 
 h1.leaderboard
 {
-    font-size: 1.10em;
+    font-size: 0.9vw;
 }

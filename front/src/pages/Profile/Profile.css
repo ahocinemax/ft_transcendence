@@ -5,9 +5,6 @@
     background-color: rgba(0, 0, 0, 0.889);
     background-image: url(../../../public/SpaceWithPlanet.png);
     padding-top: 10vh;
-    
-    overflow-x: scroll;
-    /* overflow: hidden; */
   }
   
   .bande {
@@ -51,7 +48,7 @@
   .info {
     color: rgb(255, 255, 255);
     font-weight: bold;
-    font-size: 1em;
+    font-size: 1vw;
     text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
     font-family: 'Press Start 2P', sans-serif;
     margin: 0 15%;
@@ -60,7 +57,7 @@
 
   .stat.right
   {
-    font-size: 1.5em;
+    font-size: 1.5vw;
     white-space: nowrap;
   }
 
@@ -91,7 +88,7 @@
   {
     color: rgba(0, 0, 0);
     font-weight: bold;
-    font-size: 2em;
+    font-size: 2vw;
     text-shadow: 0.5px.5px.5px rgba(200, 200, 200, 0.781);
     font-family: 'Press Start 2P', sans-serif;
     margin: 0;
@@ -124,7 +121,7 @@
   
     .info 
     {
-      font-size: 1.2em;
+      font-size: 1.2vw;
     }
     
   }
@@ -251,7 +248,7 @@
   color: rgb(255, 255, 255);
   text-align: center;
   font-weight: bold;
-  font-size: 2em;
+  font-size: 2vw;
   text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
   font-family: 'Press Start 2P', sans-serif;
   margin-top: 5%;
@@ -261,14 +258,14 @@
 {
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  /* flex-direction: column; */
+  /* flex-wrap: wrap; */
+  /* align-items: flex-start; */
   justify-content: top;
   position: absolute;
   top: 55%;
   left: 20%;
-  height: 40%;
+  height: 40vh;
   width: 60%;
   box-shadow: 0 5px 4px rgba(0, 0, 0, 0.2);
   border: 0.6vh solid rgb(0, 0, 0);
@@ -276,8 +273,9 @@
   border-top-right-radius: 30px;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
-  max-height: 60%;
-  overflow-x: auto;
+  /* max-height: auto; */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .match_history::-webkit-scrollbar 
@@ -308,7 +306,7 @@
   align-items: center;
   justify-content: center;
   height: 10%;
-  width: 99%;
+  width: 100%;
   margin: 0.5%;
 }
 
@@ -325,7 +323,7 @@
   align-items: center;
   justify-content: center;
   height: 10%;
-  width: 99%;
+  width: 100%;
   margin: 0.5%;
 }
 
@@ -334,7 +332,7 @@
   color: rgb(255, 255, 255);
   text-align: center;
   font-weight: bold;
-  font-size: 0.8em;
+  font-size: 0.8vw;
   text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
   font-family: 'Press Start 2P', sans-serif;
   padding-left: 2%;
@@ -365,7 +363,7 @@
 
 .info.main
 {
-    font-size: 1.15em;
+    font-size: 1.15vw;
 }
 
 .scores_div_main_profile_bottom.main

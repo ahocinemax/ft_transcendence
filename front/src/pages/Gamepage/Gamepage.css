@@ -186,15 +186,6 @@
     transform: translateY(-50%);
 }
 
-.score_box {
-    /* Styling for score number */
-    padding: 0 1vh;
-}
-
-.score_dash {
-    /* Styling for the dash '-' */
-}
-
 .player_score {
     color: rgb(255, 255, 255);
     font: bold;
