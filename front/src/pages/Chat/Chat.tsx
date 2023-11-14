@@ -10,6 +10,7 @@ import { channelModel } from '../../interface/global';
 import { userModel } from '../../interface/global';
 import { useNavigate } from 'react-router-dom';
 import { RoomID, useUserContext } from '../../context/userContent';
+import { channel } from 'diagnostics_channel';
 
 const userInfoInit = {
   id: 0,
@@ -158,8 +159,12 @@ const Chat = () => {
     socket?.emit('get channels', userInfos.email.email, (data: any) => {}); // 1st load of channels
     socket?.on('fetch channels', (data: channelModel[]) => {
       data = !Array.isArray(data) ? Array.from(data) : data;
+      for (let index = 0 ; index < data.length ; index++) {
+        console.log('username:', userInfos.userName.userName, 'member:', data[index].members)
+        if (data[index].members.some(member => member.name === userInfos.userName.userName)) data[index].isMember = true;
+        else data[index].isMember = false;
+      }
       setChannels(data);
-      console.log("CHANNELS: ", channels);
       if (tempActiveChannel != 0) setActiveChannel(tempActiveChannel);
       setTempActiveChannel(0);
     });
@@ -225,6 +230,35 @@ const Chat = () => {
     if (mode === '') return;
     socket?.emit("duel request", selectedUserID, selectedUser, mode);
   }, [socket, mode]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('password check result', (isPasswordCorrect: boolean) => {
+        console.log('isPasswordCorrect', isPasswordCorrect);
+        if (isPasswordCorrect) {
+          console.log('Password is correct');
+          setPassword(false);
+          setActiveChannel(tempActiveChannel);
+          setTempActiveChannel(0);
+        } else {
+          console.log('Password is not correct');
+        }
+      });
+    }
+  }, [socket, tempActiveChannel]);
+
+  useEffect(() => {// recuperer le role d'utilisateur
+    if (activeChannel && socket) {
+      socket.emit('get roles', [activeChannel]);
+    }
+    socket?.on('fetch roles', (role) => {
+      setUserRole(role); //set le role d'utilisateur
+      console.log('users role: ', role);
+    });
+    return () => {
+      socket?.off('fetch roles');
+    };
+  }, [activeChannel, socket]);
 
   // EVENT HANDLERS
   const handleSearch = (query: string) => {
@@ -340,22 +374,6 @@ const Chat = () => {
     setIsUserPopupVisible(false);
   };
 
-  useEffect(() => {
-    if (socket) {
-      socket.on('password check result', (isPasswordCorrect: boolean) => {
-        console.log('isPasswordCorrect', isPasswordCorrect);
-        if (isPasswordCorrect) {
-          console.log('Password is correct');
-          setPassword(false);
-          setActiveChannel(tempActiveChannel);
-          setTempActiveChannel(0);
-        } else {
-          console.log('Password is not correct');
-        }
-      });
-    }
-  }, [socket, tempActiveChannel]);
-
   const handlePasswordSubmit = (password: string) => {
     const channel = channels.find((c: any) => c.id === tempActiveChannel);
     if (channel && socket) {
@@ -363,23 +381,25 @@ const Chat = () => {
     }
   };
 
-  useEffect(() => {// recuperer le role d'utilisateur
-    if (activeChannel && socket) {
-      socket.emit('get roles', [activeChannel]);
-    }
-    socket?.on('fetch roles', (role) => {
-      setUserRole(role); //set le role d'utilisateur
-      console.log('users role: ', role);
-    });
-    return () => {
-      socket?.off('fetch roles');
-    };
-  }, [activeChannel, socket]);
-
 const createChannel = () => 
   {
     /* Fonction back pour créer un channel */
     setIsPopupOpen(true);
+  }
+
+  const handleClickMembers = (channel: channelModel, action: string) => {
+    
+    if (action === 'leave') {
+      socket?.emit('leave channel', channel.id);
+      channel.isMember = false;
+      console.log("unregister to channel", channel.id);
+    }
+    if (action === 'join') {
+      socket?.emit('register to channel', channel.id);
+      console.log("register to channel", channel.id);
+      channel.isMember = true;
+    }
+    return undefined;
   }
 
   const closePopup = () => 
@@ -418,19 +438,19 @@ const createChannel = () =>
             </div>
             <div className="channel_div_container">
               {channels.map((channel: channelModel, index: number) => (
-                <div key={index} className="channel_div" onClick={() => channel.members.some(member => member.name === userInfo.name) && handleChannelClick(channel.id)}>
-                {PasswordNeeded && (
+                <div key={index} className="channel_div" onClick={() => channel.members.some(member => member.name === userInfos.userName.userName) && handleChannelClick(channel.id)}>
+                {PasswordNeeded && !channel.isMember && (
                     <PrivateChanPopup onClose={PasswordDone} onPasswordSubmit={handlePasswordSubmit} />
                   )}
                   <div className="channel_content">
                     <h1 className="channel_title">#{channel.name}</h1>
-                    {channel.isProtected && (
+                    {channel.isProtected && !channel.isMember && (
                       <img src="lock.png" alt="Private Channel" className="lock_icon" />
                     )}
-                    {channel.members.some(member => member.name === userInfo.name) ? (
-                      <div className="leaveChannelButton" onClick={(e) => socket?.emit('leave channel', channel.id)}></div>
+                    {channel.isMember ? (
+                      <div className="leaveChannelButton" onClick={(e) => handleClickMembers(channel, 'leave')}></div>
                       ) : (
-                        <div className="joinChannelButton" onClick={(e) => socket?.emit('register to channel', channel.id)}></div>
+                        <div className="joinChannelButton" onClick={(e) => handleClickMembers(channel, 'join')}></div>
                     )}
                   </div>
                 </div>

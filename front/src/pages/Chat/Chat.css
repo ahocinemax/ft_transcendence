@@ -211,6 +211,9 @@
     background-repeat: no-repeat;
     border-radius: 0;
   }
+  .joinChannelButton:hover {
+    cursor: pointer;
+  }
 
   .leaveChannelButton {
     height: 2.2vh;
@@ -221,6 +224,9 @@
     background-image: url(../../../public/MinusSignPixel.png);
     background-size: contain;
     background-repeat: no-repeat;
+  }
+  .leaveChannelButton:hover {
+    cursor: pointer;
   }
 
   /* CSS for the lock icon */

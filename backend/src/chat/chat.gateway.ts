@@ -119,6 +119,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleNewMessage(@MessageBody() data, @ConnectedSocket() client: Socket) {
 		this.logger.log("[NEW  MESSAGE]");
 		const channelId = data.channelId;
+		const isMember = await this.chatService.is_member(channelId, client.data.user?.id);
+		if (!isMember) return;
 		const channel = await this.chatService.get_channel_by_id(channelId); // ajouter une nouvelle etape prisma (add menmber)
 		const isMessageCreated = await this.chatService.new_message(data) === undefined
 		if (isMessageCreated === undefined)
@@ -131,7 +133,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleGetMessages(@MessageBody() channelId: number, @ConnectedSocket() client: Socket) {
 		const userId = client.data.user.id;
 		const isMember = await this.chatService.is_member(channelId, userId);
-		// if (!isMember) return; A ACTIVER QUAND ON POURRA S'INSCRIRE EN TANT QUE MEMBRE
+		if (!isMember) return;
 		const data = await this.chatService.messages_from_channel_id(channelId); 
 		client.emit('fetch messages', data);
 	}

@@ -25,6 +25,7 @@ export interface channelModel {
 	admins: Array<{id: number, email: string, name: string}>;
 	members: Array<{id: number, email: string, name: string}>;
 	banned: Array<{id: number, email: string, name: string}>;
+	isMember?: boolean;
 }
 
 export interface gameModel {

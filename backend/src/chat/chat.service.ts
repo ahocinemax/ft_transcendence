@@ -289,9 +289,9 @@ export class ChatService {
 
 	async	add_channel_member(channelId: number, userId: number) {
 		try {
-			const channel: ChannelDTO = await this.prisma.channel.findUnique({
+			const channel = await this.prisma.channel.findUnique({
 				where: { id: channelId, },
-				select: { members: true }
+				select: { members: true, banned: true }
 			});
 			const isMember = channel.members.find((member) => member.id === userId);
 			const isBanned = channel.banned.find((banned) => banned.id === userId);
