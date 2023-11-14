@@ -56,10 +56,10 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   async handleDisconnect(client: AuthenticatedSocket) {
     this.logger.log(`[DISCONNECTED] :  Client ID ${client.data.name}`);
     this.websocketService.removeUser(client);
+		await this.websocketService.updateStatus(client, 'offline');
 		const users: string[] = Array.from(this.websocketService.clients.keys());
 		this.websocketService.sendMessage(client, 'user_disconnected', users);
     client.removeAllListeners();
-		await this.websocketService.updateStatus(client, 'offline');
   }
 
   @SubscribeMessage('handshake')
@@ -89,6 +89,13 @@ implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   async handleBusy(@ConnectedSocket() client: AuthenticatedSocket) {
     this.logger.log(`[BUSY] :  Client ID ${client.data.name}`);
     this.websocketService.updateStatus(client, 'busy');
+    const busy = await this.websocketService.getBusy();
+    this.websocketService.sendMessage(client, 'user_inGame', busy);
+  }
+
+  @SubscribeMessage('online')
+  async handleOnline(@ConnectedSocket() client: AuthenticatedSocket) {
+    this.websocketService.updateStatus(client, 'online');
     const busy = await this.websocketService.getBusy();
     this.websocketService.sendMessage(client, 'user_inGame', busy);
   }

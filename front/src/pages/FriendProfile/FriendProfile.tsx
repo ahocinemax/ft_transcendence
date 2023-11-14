@@ -125,7 +125,10 @@ const FriendProfile = () => {
 
 	useEffect(() => {
 		socket?.on('user_busy', () => {
-			if (isBusy.length && isBusy?.find((user) => user === friendName)) setIsBusyState(true);
+			if (isBusy.length && isBusy?.find((user) => user === friendName)) {
+				setIsBusyState(true);
+				console.log("this user is busy", isBusy);
+			}
 		});
 
 		socket?.on('user_connected', (users: string[]) => {

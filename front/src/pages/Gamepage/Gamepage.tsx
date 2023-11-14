@@ -41,7 +41,6 @@ function Gamepage() {
   const [WinnerName, setWinnerName] = useState<string | null>(null);
   const [LooserName, setLooserName] = useState<string | null>(null);
 
-
   ////// MAJ DE LA POSITION DANS LE BACKEND ////////////
   const UpdateDirectionThrottled = throttle((
     socket: any,
@@ -107,7 +106,6 @@ function Gamepage() {
       else navigate('/start');
 		});
 		socket?.on("game data", (data: any) => {
-      console.log("received game data", data);
       player1Ref.current?.style.setProperty('top', data.paddleLeft + '%');
       player2Ref.current?.style.setProperty('top', data.paddleRight + '%');
       ballRef.current?.style.setProperty('left', data.xBall + '%');
@@ -125,6 +123,7 @@ function Gamepage() {
       winner === 1 ? setLooserScore(room?.ScorePlayer2) : setLooserScore(room?.ScorePlayer1);
       winner === 1 ? setWinnerName(room?.NamePlayer1) : setWinnerName(room?.NamePlayer2);
       winner === 1 ? setLooserName(room?.NamePlayer2) : setLooserName(room?.NamePlayer1);
+      socket?.emit('online');
     });
 		return () => {
 			socket?.off("room infos response");
