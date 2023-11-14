@@ -276,14 +276,15 @@ const Chat = () => {
     {
       // Salon privé, demandez le mot de passe d'abord
         setTempActiveChannel(channelId);
+        console.log('tempActiveChannel(handleChannelClick)', tempActiveChannel);
         // Ensuite, activez le mot de passe
-        setPassword(true);
         setChannelName(channel.name);
+        setPassword(true);
     } else {
       // Salon public, accédez directement
+      setActiveChannel(channelId);
       setChannelName(channel? channel.name : '');
       setActivePrivateChannel(0);
-      setActiveChannel(channelId);
     }
     setMpInfos(undefined);
   };
@@ -365,24 +366,53 @@ const Chat = () => {
 //    }
 //  };
 
-const handlePasswordSubmit = (password: string) => {
-  const channel = channels.find((c: any) => c.id === tempActiveChannel);
-  console.log('tempActiveChannel(handlePasswordAubmit)', tempActiveChannel);
-  if (channel && socket) {
-    socket.emit('check password', channel.id, password, (isPasswordCorrect: boolean) => {
+//const handlePasswordSubmit = (password: string) => {
+//  const channel = channels.find((c: any) => c.id === tempActiveChannel);
+//  console.log('tempActiveChannel(handlePasswordAubmit)', tempActiveChannel);
+//  if (channel && socket) {
+//    socket.emit('check password', channel.id, password, (isPasswordCorrect: boolean) => {
+//      console.log('isPasswordCorrect', isPasswordCorrect);
+//      if (isPasswordCorrect) {
+//        console.log('Password is correct');
+//        setPassword(false); 
+//        setActiveChannel(tempActiveChannel);
+//      } else {
+//        console.log('Password is not correct');
+//      }
+//    });
+//  }
+//};
+//
+// ...
+
+useEffect(() => {
+  if (socket) {
+    socket.on('password check result', (isPasswordCorrect: boolean) => {
       console.log('isPasswordCorrect', isPasswordCorrect);
       if (isPasswordCorrect) {
         console.log('Password is correct');
-        setPassword(false); 
+        setPassword(false);
         setActiveChannel(tempActiveChannel);
+        setTempActiveChannel(0);
+        console.log('tempActiveChannel(handlePasswordSubmit)', tempActiveChannel);
+        console.log('activeChannel(handlePasswordSubmit)', activeChannel);
       } else {
         console.log('Password is not correct');
       }
     });
   }
-};
+}, [socket, tempActiveChannel]);
 
-  const createChannel = () => 
+
+  const handlePasswordSubmit = (password: string) => {
+    const channel = channels.find((c: any) => c.id === tempActiveChannel);
+    console.log('tempActiveChannel(handlePasswordSubmit)', tempActiveChannel);
+    if (channel && socket) {
+      socket.emit('check password', channel.id, password);
+    }
+  };
+
+const createChannel = () => 
   {
     /* Fonction back pour créer un channel */
     setIsPopupOpen(true);
