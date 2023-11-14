@@ -77,6 +77,9 @@ const Chat = () => {
   const userInfos = useContext(UserContext);
   const [userInfo, setUserInfo] = useState<any>(userInfoInit);
   const [isFetched, setIsFetched] = useState(false);
+  
+  //get role d'utilisateur
+  const [userRole, setUserRole] = useState('member');
 
   const navigate = useNavigate();
 
@@ -276,7 +279,6 @@ const Chat = () => {
     {
       // Salon privé, demandez le mot de passe d'abord
         setTempActiveChannel(channelId);
-        console.log('tempActiveChannel(handleChannelClick)', tempActiveChannel);
         // Ensuite, activez le mot de passe
         setChannelName(channel.name);
         setPassword(true);
@@ -352,39 +354,6 @@ const Chat = () => {
     setIsUserPopupVisible(false);
   };
 
-//  const handlePasswordSubmit = (password: string) => {
-//    // Vérifiez si le mot de passe saisi correspond à celui du canal actif
-//    const channel: channelModel|undefined = channels.find((c: any) => c.id === tempActiveChannel);
-//    console.log('tempActiveChannel(handlePasswordAubmit)', tempActiveChannel);
-//
-//    if (channel && channel?.password === password) {
-//      // Mot de passe correct, accédez au canal
-//      setPassword(false); // Fermez le pop-up de mot de passe
-//      setActiveChannel(tempActiveChannel);
-//    } else { // Mot de passe incorrect, affichez un message d'erreur ou gérez-le comme vous le souhaitez
-//      console.log('Mot de passe incorrect');
-//    }
-//  };
-
-//const handlePasswordSubmit = (password: string) => {
-//  const channel = channels.find((c: any) => c.id === tempActiveChannel);
-//  console.log('tempActiveChannel(handlePasswordAubmit)', tempActiveChannel);
-//  if (channel && socket) {
-//    socket.emit('check password', channel.id, password, (isPasswordCorrect: boolean) => {
-//      console.log('isPasswordCorrect', isPasswordCorrect);
-//      if (isPasswordCorrect) {
-//        console.log('Password is correct');
-//        setPassword(false); 
-//        setActiveChannel(tempActiveChannel);
-//      } else {
-//        console.log('Password is not correct');
-//      }
-//    });
-//  }
-//};
-//
-// ...
-
 useEffect(() => {
   if (socket) {
     socket.on('password check result', (isPasswordCorrect: boolean) => {
@@ -394,8 +363,6 @@ useEffect(() => {
         setPassword(false);
         setActiveChannel(tempActiveChannel);
         setTempActiveChannel(0);
-        console.log('tempActiveChannel(handlePasswordSubmit)', tempActiveChannel);
-        console.log('activeChannel(handlePasswordSubmit)', activeChannel);
       } else {
         console.log('Password is not correct');
       }
@@ -406,11 +373,23 @@ useEffect(() => {
 
   const handlePasswordSubmit = (password: string) => {
     const channel = channels.find((c: any) => c.id === tempActiveChannel);
-    console.log('tempActiveChannel(handlePasswordSubmit)', tempActiveChannel);
     if (channel && socket) {
       socket.emit('check password', channel.id, password);
     }
   };
+
+  useEffect(() => {// recuperer le role d'utilisateur
+    if (activeChannel && socket) {
+      socket.emit('get roles', [activeChannel]);
+    }
+    socket?.on('fetch roles', (role) => {
+      setUserRole(role); //set le role d'utilisateur
+      console.log('users role: ', role);
+    });
+    return () => {
+      socket?.off('fetch roles');
+    };
+  }, [activeChannel, socket]);
 
 const createChannel = () => 
   {
@@ -576,21 +555,23 @@ const createChannel = () =>
           X
         </div>
         <div className="popup_content">
-          <p className="user_popup_name">{selectedUser}</p>
-          <img src={selectedUserImage} alt="User Avatar" className="img_popup1"/>
-          <div className="chat_button_container">
-            <div className="chat_buttons DUEL" onClick={handleDuelRequest}></div>
-            <div className="chat_buttons MSG" onClick={() => addPrivateUser(selectedUser)}></div>
-            <div className="chat_buttons ADD_FRIEND" onClick={() => backFunctions.addFriend(userInfos.userName.userName, selectedUser, userInfos)}></div>
-            <div className="chat_buttons BLOCK"  onClick={() => backFunctions.blockUser(userInfos.userName.userName, selectedUser, userInfos)}></div>
-          </div>
-          <div className="chat_button_container">
-            <div className="chat_buttons PROMOTE"></div>
-            <div className="chat_buttons MUTE"onClick={() => backFunctions.addMute(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
-            <div className="chat_buttons KICK"onClick={() => backFunctions.kickUser(userInfos.userName.userName, selectedUser, activeChannel)}></div>
-            <div className="chat_buttons BAN"onClick={() => backFunctions.banUser(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
-          </div>
-        </div>
+    <p className="user_popup_name">{selectedUser}</p>
+    <img src={selectedUserImage} alt="User Avatar" className="img_popup1"/>
+    <div className="chat_button_container">
+        <div className="chat_buttons DUEL" onClick={handleDuelRequest}></div>
+        <div className="chat_buttons MSG" onClick={() => addPrivateUser(selectedUser)}></div>
+        <div className="chat_buttons ADD_FRIEND" onClick={() => backFunctions.addFriend(userInfos.userName.userName, selectedUser, userInfos)}></div>
+        <div className="chat_buttons BLOCK"  onClick={() => backFunctions.blockUser(userInfos.userName.userName, selectedUser, userInfos)}></div>
+        {userRole === 'admin' || userRole === 'owner' ? (
+                <div className="chat_button_container">
+                <div className="chat_buttons PROMOTE"onClick={() => backFunctions.addNewAdminUser(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
+                <div className="chat_buttons MUTE"onClick={() => backFunctions.addMute(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
+                <div className="chat_buttons KICK"onClick={() => backFunctions.kickUser(userInfos.userName.userName, selectedUser, activeChannel)}></div>
+                <div className="chat_buttons BAN"onClick={() => backFunctions.banUser(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
+            </div>
+        ) : null}
+      </div>
+      </div>
       </div>
       {displayWaiting && (
       <div className="waiting_popup">
