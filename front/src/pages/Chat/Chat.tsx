@@ -272,7 +272,7 @@ const Chat = () => {
     if (PasswordNeeded)
         return;
     const channel: channelModel|undefined = channels.find((c: any) => c.id === channelId);
-    if (channel && channel.isPrivate)
+    if (channel && channel.isProtected)
     {
       // Salon privé, demandez le mot de passe d'abord
         setTempActiveChannel(channelId);
@@ -353,7 +353,7 @@ const Chat = () => {
 
   const handlePasswordSubmit = (password: string) => {
     // Vérifiez si le mot de passe saisi correspond à celui du canal actif
-    const channel: channelModel|undefined = channels.find((c: any) => c.name === tempActiveChannel);
+    const channel: channelModel|undefined = channels.find((c: any) => c.id === tempActiveChannel);
 
     if (channel && channel?.password === password) {
       // Mot de passe correct, accédez au canal
@@ -362,7 +362,32 @@ const Chat = () => {
     } else { // Mot de passe incorrect, affichez un message d'erreur ou gérez-le comme vous le souhaitez
       console.log('Mot de passe incorrect');
     }
+    console.log('socket', socket);
+    console.log('channel', channel);
+    if (channel && socket)
+    {
+      socket.emit('check password', password, channel.id );
+    }
   };
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('check password', (isPasswordCorrect) => {
+        if (isPasswordCorrect) {
+          setActiveChannel(tempActiveChannel);
+          setPassword(false); 
+        } else {
+          console.log('Password is not correct');
+        }
+      });
+    }
+    
+    return () => {
+      if (socket) {
+        socket.off('check password');
+      }
+    };
+  }, [socket]);
 
   const createChannel = () => 
   {
@@ -412,7 +437,7 @@ const Chat = () => {
                   )}
                   <div className="channel_content">
                     <h1 className="channel_title">#{channel.name}</h1>
-                    {channel.isPrivate && (
+                    {channel.isProtected && (
                       <img src="lock.png" alt="Private Channel" className="lock_icon" />
                     )}
                   </div>

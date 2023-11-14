@@ -20,6 +20,7 @@ export interface channelModel {
 	isPrivate: boolean;
 	password: string;
 	updateAt: string;
+	isProtected: boolean;
 	owners: Array<{id: number, email: string, name: string}>;
 	admins: Array<{id: number, email: string, name: string}>;
 	members: Array<{id: number, email: string, name: string}>;

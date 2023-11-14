@@ -317,7 +317,8 @@ export class ChatService {
 		}
 	}
 
-	async check_password(channelId: number, password: string) {
+	async checkPassword(channelId: number, password: string) {
+		console.log('channelId: ', channelId, 'password: ', password);
 		try {
 			const channel = await this.prisma.channel.findUnique({
 				where: { id: channelId, },
