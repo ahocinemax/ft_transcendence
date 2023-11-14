@@ -14,7 +14,7 @@ import CreateProfile from './CreateProfile/CreateProfile';
 import CheckUser from './CreateProfile/CheckUser';
 import { useContext, useEffect, useState } from 'react';
 import { UserContextProvider } from '../context/userContent';
-import PrivateRoute from './PrivateRoute/PrivateRoute';
+//import PrivateRoute from './PrivateRoute/PrivateRoute';
 import SocketContextComponent from '../context/socket';
 
 const socketOptions = { token: localStorage.getItem("userToken") };
