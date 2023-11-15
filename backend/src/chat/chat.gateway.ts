@@ -48,10 +48,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const MPs = await this.chatService.getUsersMPs(email);
 		if (channels) for (const channel of channels) {
 			await client?.join(channel.name);
-			console.log('client ', client.data.name, ' joined channel ', channel.name);
+			// console.log('client ', client.data.name, ' joined channel ', channel.name);
 		}
 		if (MPs) for (const MP of MPs) {
-			console.log('client ', client.data.name, ' joined MP ', MP.name);
+			// console.log('client ', client.data.name, ' joined MP ', MP.name);
 			await client?.join(MP.name);
 		}
 	}

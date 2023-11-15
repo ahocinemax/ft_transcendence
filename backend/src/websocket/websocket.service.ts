@@ -86,6 +86,15 @@ export class WebsocketService {
 		console.log(`${client?.data.name} is now ${type}`);
 	}
 
+	public async getBusy() {
+		const busy = await this.prisma.user.findMany({
+			where: {status: 'busy'},
+			select: {name: true}
+		});
+		console.log('busy list', busy);
+		return busy;
+	}
+
     private async setOnline(@ConnectedSocket() client: AuthenticatedSocket) {
 		try {
 			await this.prisma.user.update({
@@ -103,10 +112,10 @@ export class WebsocketService {
 		try {
 			await this.prisma.user.update({
 				where: {name: client.data.name},
-				data: {status: 'ingame'}
+				data: {status: 'busy'}
 			});
 			this.sendMessage(client, 'update_status', {
-				status: 'ingame',
+				status: 'busy',
 				user: client.data.name,
 			});
 		} catch (error) {

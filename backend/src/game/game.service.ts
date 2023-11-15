@@ -176,7 +176,7 @@ export class GameService {
 		updatedRoom.yball = 50;
 
 		// Détermine la vitesse de la balle en fonction du mode (normal, hard, hardcore)
-		updatedRoom.ballSpeed = room.mode === 'normal' ? 0.3 : room.mode === 'hard' ? 0.7 : 1 ;
+		updatedRoom.ballSpeed = room.mode === 'normal' ? 0.3 : room.mode === 'hard' ? 0.5 : 0.7 ;
 		updatedRoom.xSpeed = updatedRoom.ballSpeed;
 		updatedRoom.ySpeed = 0.15 + Math.random() * updatedRoom.ballSpeed;
 

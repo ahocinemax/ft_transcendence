@@ -90,6 +90,11 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 			SocketDispatch({type: 'update_users', payload: users});
 		});
 
+		socket?.on('user_inGame', (users: string[]) => {
+			console.log('user in game', users);
+			SocketDispatch({type: 'update_busy', payload: users})
+		});
+
 		socket.on('disconnect', (name: string) => {
 			console.info('User disconnected');
 			SocketDispatch({type: 'remove_user', payload: name});
