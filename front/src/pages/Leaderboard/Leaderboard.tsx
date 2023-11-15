@@ -41,7 +41,7 @@ const navigate = useNavigate();
 useEffect(() => { if (!localStorage.getItem("userToken")) navigate("/"); }, []);
 
 useEffect(() => {
-	fetch('http://localhost:4000/user/getLeaderboard', {
+	fetch(process.env.REACT_APP_SERVER_HOST + '/user/getLeaderboard', {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
