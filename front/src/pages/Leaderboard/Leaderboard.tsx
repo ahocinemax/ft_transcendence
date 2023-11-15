@@ -64,9 +64,9 @@ useEffect(() => {
 							<h1 className="user_rank">Rank #{rank.rank}</h1>
 							<div className="user_info">
 								{/* <p>PlayTime: {play.play}</p> */}
-								<p>Score: {score.score}</p>
-								<p>Victoires: {wins.wins}</p>
-                                <p>WinRate: {rate.rate ? (rate.rate * 100).toFixed(2) : "X"} %</p>
+								<h1 className="h1 leaderboard self">Score: {score.score}</h1>
+								<h1 className="h1 leaderboard self">Victoires: {wins.wins}</h1>
+                                <h1 className="h1 leaderboard self">WinRate: {rate.rate ? (rate.rate * 100).toFixed(2) : "X"} %</h1>
                                 {/* <p>(↑PlayTime + score: example d'affichage. vous pouvez changer!)</p> */}
 							</div>
 						</div>

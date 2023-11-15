@@ -5,14 +5,14 @@
     align-items: center;
     min-height: 100vh;
     background-color: rgba(0, 0, 0, 0.889);
-    padding-top: 10vh;
+    padding-top: 20vh;
     overflow: hidden;
   }
 
   .Settingsh1{
     color: rgb(255, 255, 255);
     font: bold;
-    font-size: 2.5em;
+    font-size: 4vw;
     font-family: 'Press Start 2P', sans-serif;
     text-shadow: 3px 3px 3px rgba(69, 87, 191, 0.816);
     padding-bottom: 5%;

@@ -87,7 +87,7 @@
   }
   
   /* Pour les écrans de petite taille */
-  @media (max-width: 768px) 
+/*   @media (max-width: 768px) 
   {
     .bande 
     {
@@ -115,7 +115,7 @@
       font-size: 1.2vw;
     }
     
-  }
+  } */
   
 .centered_div_container
 {

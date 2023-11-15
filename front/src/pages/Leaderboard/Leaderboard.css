@@ -236,7 +236,7 @@
     font-size: 1vw;
     font-family: 'Press Start 2P', sans-serif;
     text-shadow:
-      2px 2px 2px rgb(243, 152, 6);
+      2px 2px 2px rgb(0, 0, 0);
     white-space: nowrap;
 }
 
@@ -252,4 +252,12 @@ h1.leaderboard
     background-color: rgb(0, 0, 0, 0.85);
     box-shadow: rgb(0, 0, 0);
     border: 0.6vh solid rgba(39, 38, 38, 0.774)
+}
+
+h1.leaderboard.self
+{
+    text-shadow:
+      5px 5px 5px rgb(7, 4, 0);
+    font-size: 0.9vw;
+    margin: 2% 2%;
 }
