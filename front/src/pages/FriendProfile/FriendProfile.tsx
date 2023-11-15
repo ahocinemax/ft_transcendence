@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import './FriendProfile.css';
 import { useUserContext } from '../../context/userContent';
+import { UserContext } from '../../context/userContent'
 import { userModel } from '../../interface/global';
 import { useParams, useNavigate, Link} from 'react-router-dom';
 import { backFunctions } from '../../outils_back/BackFunctions';
@@ -47,19 +48,22 @@ const initializeUser = async  (result: any, setUserInfo: any) => {
 
 const FriendProfile = () => {
 	const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
-    const userData = useUserContext();
-    const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
-    const [isFetched, setIsFetched] = useState(false);
+	const userData = useUserContext();
+	const [userInfo, setUserInfo] = useState<userModel>(userInfoInit);
+	const [isFetched, setIsFetched] = useState(false);
 	const [myFriendList, setMyFriendList] = useState<userModel[]>([]);
 	const [myBlockedList, setMyBlockedList] = useState<userModel[]>([]);
 	const [isBusyState, setIsBusyState] = useState(false);
 	const [isOnline, setIsOnline] = useState(false);
 	const { users, isBusy, socket } = useContext(SocketContext).SocketState;
-    const navigate = useNavigate();
+	const userInfos = useContext(UserContext);
+	const navigate = useNavigate();
 	let params =  useParams<{ friendName: string }>();
 	let friendName = params.friendName;
 
-	useEffect(() => { if (!localStorage.getItem("userToken")) navigate("/"); }, []);
+	useEffect(() => { if (!localStorage.getItem("userToken")) navigate("/");
+		if (friendName === userInfos.userName.userName) navigate('/profile');
+	}, [friendName, userInfo]);
 
 	useEffect(() => {
 		const fetchFriendData = async () => {
