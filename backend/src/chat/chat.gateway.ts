@@ -143,7 +143,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const userId = client.data.user.id;
 		const isMember = await this.chatService.is_member(channelId, userId);
 		if (!isMember) return;
-		const data = await this.chatService.messages_from_channel_id(channelId); 
+		const data = await this.chatService.messages_from_channel_id(channelId, userId); 
 		client.emit('fetch messages', data);
 	}
 

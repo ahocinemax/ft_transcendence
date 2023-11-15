@@ -33,9 +33,9 @@ export class ChatService {
 		return ;
 	}
 
-	async	messages_from_channel_id(channelId: number): Promise<oneMessage[]> {
+	async	messages_from_channel_id(channelId: number, userId: number): Promise<oneMessage[]> {
 		try {
-			const source = await this.getAllMessages(channelId);
+			const source = await this.getAllMessages(channelId, userId);
 			return await this.loadMessages(source);
 		} catch (error) {
 			console.log('messages_from_channel_id error:', error);
@@ -57,14 +57,25 @@ export class ChatService {
 		return mutedUsers.map(mute => mute.mutedId);
 	}
 
-	async getAllMessages(channelId: number) {
+	async getBlockedUsers(userId: number): Promise<number[]> {
+		console.log('userId: ', userId);
+		const blockedUsers = await this.prisma.user.findUnique({
+		  where: { id: userId },
+		  select: { blocked: true }
+		});
+	
+		return blockedUsers?.blocked.map((blockedUser) => blockedUser.id);
+	}
+
+	async getAllMessages(channelId: number, userId: number) {
 		try {
+			const blockedUsers = await this.getBlockedUsers(userId);
 			const mutedUsers = await this.prisma.mute.findMany({
 			where: { channelId: channelId },
 			select: { mutedId: true }
 		});
 		const mutedUserIds = mutedUsers.map(mute => mute.mutedId);
-
+		const excludedUserIds = [...blockedUsers, ...mutedUserIds];
 		const source = await this.prisma.channel.findUnique({
 			where: { id: channelId },
 			select: {
@@ -73,7 +84,7 @@ export class ChatService {
 				  unsent: false,
 				  NOT: {
 					userId: {
-					  in: mutedUserIds
+					  in: excludedUserIds
 					}
 				  }
 				},
