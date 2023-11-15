@@ -70,6 +70,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client.emit('password check result', isPasswordCorrect);
 	}
 
+	@SubscribeMessage('get roles')
+	async handleGetRoles(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+		this.logger.log("[GET ROLES]");
+		const userId = client.data?.user?.id;
+		const channelId = data[0];
+		const roles = await this.chatService.getRoles(channelId, userId);
+		client.emit('fetch roles', roles);
+	}
+
 	@SubscribeMessage('new channel')
 	async handleNewChannel(
 		@MessageBody() data: ChannelDTO,
