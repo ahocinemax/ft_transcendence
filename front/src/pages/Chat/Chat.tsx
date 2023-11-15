@@ -269,8 +269,7 @@ const Chat = () => {
 
   // EVENT HANDLERS
   const handleSearch = (query: string) => {
-    console.log(`Recherche en cours pour : ${query}`);
-  };
+    return;  };
 
   // handle create new channel component
   const handleSubmit = (res: any) => {
@@ -451,9 +450,6 @@ const Chat = () => {
     <div className="chat">
       <div className="chan_privmsg_container">
         <div className="channel_part" onClick={closeUserPopup}>
-          <div className="searchbar_div">
-            <SearchComponent onSearch={handleSearch} />
-          </div>
           <div className="channel_top_div">
             <h1 className="h1_channel">
               #Channels({channels ? channels.length : 0})
@@ -674,80 +670,32 @@ const Chat = () => {
             alt="User Avatar"
             className="img_popup1"
           />
-          <div className="chat_button_container">
-            <div
-              className="chat_buttons DUEL"
-              onClick={handleDuelRequest}
-            ></div>
-            <div
-              className="chat_buttons MSG"
-              onClick={() => addPrivateUser(selectedUser)}
-            ></div>
-            <div
-              className="chat_buttons ADD_FRIEND"
-              onClick={() =>
-                backFunctions.addFriend(
-                  userInfos.userName.userName,
-                  selectedUser,
-                  userInfos
-                )
-              }
-            ></div>
-            <div
-              className="chat_buttons BLOCK"
-              onClick={() =>
-                backFunctions.blockUser(
-                  userInfos.userName.userName,
-                  selectedUser,
-                  userInfos
-                )
-              }
-            ></div>
-            {userRole === "admin" || userRole === "owner" ? (
-              <div className="chat_button_container">
-                <div
-                  className="chat_buttons PROMOTE"
-                  onClick={() =>
-                    backFunctions.addNewAdminUser(
-                      userInfos.userName.userName,
-                      selectedUser,
-                      { channelId: activeChannel }
-                    )
-                  }
-                ></div>
-                <div
-                  className="chat_buttons MUTE"
-                  onClick={() =>
-                    backFunctions.addMute(
-                      userInfos.userName.userName,
-                      selectedUser,
-                      { channelId: activeChannel }
-                    )
-                  }
-                ></div>
-                <div
-                  className="chat_buttons KICK"
-                  onClick={() =>
-                    backFunctions.kickUser(
-                      userInfos.userName.userName,
-                      selectedUser,
-                      activeChannel
-                    )
-                  }
-                ></div>
-                <div
-                  className="chat_buttons BAN"
-                  onClick={() =>
-                    backFunctions.banUser(
-                      userInfos.userName.userName,
-                      selectedUser,
-                      { channelId: activeChannel }
-                    )
-                  }
-                ></div>
-              </div>
-            ) : null}
-          </div>
+            {userRole === "admin" || userRole === "owner" ? (   
+            <>
+                <div className="chat_button_container">
+                    <div className="chat_buttons PROMOTE" onClick={() => backFunctions.addNewAdminUser(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
+                    <div className="chat_buttons MUTE" onClick={() => backFunctions.addMute(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
+                    <div className="chat_buttons KICK" onClick={() => backFunctions.kickUser(userInfos.userName.userName, selectedUser, activeChannel)}></div>
+                    <div className="chat_buttons BAN" onClick={() => backFunctions.banUser(userInfos.userName.userName, selectedUser, {channelId : activeChannel })}></div>
+                </div>
+                <div className="chat_button_container">
+                    <div className="chat_buttons DUEL" onClick={handleDuelRequest}></div>
+                    <div className="chat_buttons MSG" onClick={() => addPrivateUser(selectedUser)}></div>
+                    <div className="chat_buttons ADD_FRIEND" onClick={() => backFunctions.addFriend(userInfos.userName.userName, selectedUser, userInfos)}></div>
+                    <div className="chat_buttons BLOCK" onClick={() => backFunctions.blockUser(userInfos.userName.userName, selectedUser, userInfos)}></div>
+                </div>
+            </>
+            ) : (
+            <>
+                <div className="chat_button_container">
+                    {/* Ici, ne mettre que les boutons pour les utilisateurs non-admins et non-owners */}
+                    <div className="chat_buttons DUEL" onClick={handleDuelRequest}></div>
+                    <div className="chat_buttons MSG" onClick={() => addPrivateUser(selectedUser)}></div>
+                    <div className="chat_buttons ADD_FRIEND" onClick={() => backFunctions.addFriend(userInfos.userName.userName, selectedUser, userInfos)}></div>
+                    <div className="chat_buttons BLOCK" onClick={() => backFunctions.blockUser(userInfos.userName.userName, selectedUser, userInfos)}></div>
+                </div>
+            </>
+        )}
         </div>
       </div>
       {displayWaiting && (

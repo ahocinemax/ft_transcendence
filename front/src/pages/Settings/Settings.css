@@ -53,6 +53,8 @@
   top: -17vh;
   font-family: 'Press Start 2P', sans-serif;
   color: rgb(255, 255, 255);
+  font-size: 2vw;
+  text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
 }
 
 .round_div_settings_img:hover {
@@ -98,7 +100,7 @@
     line-height: 30px;
     color: rgb(255, 255, 255);
     font: bold;
-    font-size: 1.75vw;
+    font-size: 1vw;
     font-family: 'Press Start 2P', sans-serif;
     text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
     padding-bottom: 5%;

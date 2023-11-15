@@ -170,8 +170,7 @@ const Settings = () => {
       <h1 className="Settingsh1">Settings</h1>
       <div className="settings_container">
         <div className="round_div_settings_img" onClick={openImageUploader} style={{ backgroundImage: `url(${image.image})` }}></div>
-        <p className="info_settings">{userName.userName}</p> {/* Afficher le pseudo actuel, faudrait prendre celui du back */}
-        <p className="info_settings"></p>
+        <p className="info_settings">{userName.userName}</p>
         <div className="twofa_container">
           <span
             className={`twoFA_status ${!is2FAEnabled ? 'clickable' : ''}`}
