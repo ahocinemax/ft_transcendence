@@ -174,7 +174,7 @@ export class UserService
 
 	async updateUser(req: Request) {
 		try{
-			const accessToken : string = req.cookies.access_token;
+			const accessToken: string = req.cookies.access_token;
 			const users = await this.prisma.user.findMany({ // findFirst better ?
 				where: { accessToken: accessToken },
 				select: { id: true }

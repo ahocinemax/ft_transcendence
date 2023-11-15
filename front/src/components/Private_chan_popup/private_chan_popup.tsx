@@ -7,8 +7,6 @@ interface PrivateChanPopup {
 }
 
 const PrivateChanPopup: React.FC<PrivateChanPopup> = ({ onClose, onPasswordSubmit }) => {  
-  const [channelName, setChannelName] = useState('');
-  const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState('');
   
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {

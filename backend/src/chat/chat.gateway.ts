@@ -140,6 +140,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('get messages') // mute
 	async handleGetMessages(@MessageBody() channelId: number, @ConnectedSocket() client: Socket) {
+		this.logger.log("[FETCH MESSAGES]");
 		const userId = client.data.user.id;
 		const isMember = await this.chatService.is_member(channelId, userId);
 		if (!isMember) return;
