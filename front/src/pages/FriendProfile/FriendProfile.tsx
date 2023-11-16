@@ -86,13 +86,13 @@ const FriendProfile = () => {
 		const fetchFriends = async () => {
 			try {
 				const name = userData.userName.userName; // Remplacez par le nom de l'utilisateur que vous souhaitez obtenir
+				if (!name) return;
 				const data = await backFunctions.getFriend(name); // Appel de la fonction pour obtenir la liste d'amis
 				// const data = await response.json(); // Extraction des données de la réponse
 		
 				// Vérifiez si la réponse a réussi et que les données sont au format attendu
-				if (/* response.ok &&  */Array.isArray(data))
-					setMyFriendList(data); // Mettez à jour l'état avec la liste d'amis
-				else console.error('La requête a échoué ou les données ne sont pas au format attendu.');
+				const ret: userModel[] = !Array.isArray(data) ? Array.from(data) : data;
+				setMyFriendList(ret); // Mettez à jour l'état avec la liste d'amis
 			}
 			catch (error) {
 				console.error('Une erreur s\'est produite lors de la récupération de la liste d\'amis.', error);
@@ -101,16 +101,11 @@ const FriendProfile = () => {
 		const fetchBlocked = async () => {
 			try {
 				const name = userData.userName.userName; // Remplacez par le nom de l'utilisateur que vous souhaitez obtenir
+				if (!name) return;
 				const data = await backFunctions.getBlockedUser(name); // Appel de la fonction pour obtenir la liste d'amis
-				// const data = await response.json(); // Extraction des données de la réponse
-		
-				// Vérifiez si la réponse a réussi et que les données sont au format attendu
-				if (/* response.ok &&  */Array.isArray(data))
-				setMyBlockedList(data); // Mettez à jour l'état avec la liste d'amis
-				else
-				console.error('La requête a échoué ou les données ne sont pas au format attendu.');
-				}
-			catch (error) {
+				const ret: userModel[] = !Array.isArray(data) ? Array.from(data) : data;
+				setMyBlockedList(ret); // Mettez à jour l'état avec la liste d'amis
+			} catch (error) {
 				console.error('Une erreur s\'est produite lors de la récupération de la liste d\'amis.', error);
 			}
 		};
