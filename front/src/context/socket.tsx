@@ -91,7 +91,6 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
 		});
 
 		socket?.on('user_inGame', (users: string[]) => {
-			console.log('user in game', users);
 			SocketDispatch({type: 'update_busy', payload: users})
 		});
 
