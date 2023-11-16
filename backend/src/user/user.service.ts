@@ -121,16 +121,40 @@ export class UserService
 		return (friendList);
 	}
 
+
+
 	async getUserByName(name: string)
 	{
 		try
 		{
-			const user = await this.prisma.user.findFirst({ where: { name: name }});
+			const user = await this.prisma.user.findFirst({ 
+				where: { name: name },
+				select: {
+					id: true,
+					login42: true,
+					name: true,
+					email: true,
+					image: true,
+					status: true,
+					isRegistered: true,
+					friends: true,
+					winRate: true,
+					score: true,
+					rank: true,
+					gamesLost: true,
+					gamesWon: true,
+					gamesPlayed: true,
+					gameHistory: true,
+					owner: true,
+					admin: true,
+					member: true,
+					invited: true,
+
+				}});
 			// console.log(name);
 			// console.log(user);
 			return (user);
-		}
-		catch (error)
+		}		catch (error)
 		{
 			throw new HttpException(
 				{
